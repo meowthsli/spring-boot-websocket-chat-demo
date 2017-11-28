@@ -1,0 +1,15 @@
+#chat-card {
+    width: 80%;
+    padding: 4em;
+    margin: auto;
+    margin-top: 5em;
+}
+
+#chat-card-actions {
+    text-align: right;
+}
+
+.chat-card-field {
+    padding: 1em;
+    width: 90%;
+}
