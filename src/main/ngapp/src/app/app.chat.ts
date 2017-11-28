@@ -6,6 +6,7 @@ import { UsercontextService } from './app.usercontext';
 import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
+import { StompConnector } from './app.stomp';
 
 /**
  * @title Main app component
@@ -17,32 +18,12 @@ import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 })
 export class ChatComponent implements OnInit{
 
-  private socket = new SockJS('/ws');
-  private stompClient = Stomp.over(this.socket);
-
-  constructor(private router:Router, private uctx: UsercontextService) {
+  constructor(private router:Router, private uctx: UsercontextService, private stomp: StompConnector) {
     
   }
 
   ngOnInit(): void {
-    this.stompClient.connect({}, () => this.onStompConnected(), () => this.onStompError());
-  }
-
-  onStompConnected() {
-    console.log("Stomp connected");
-
-    this.stompClient.subscribe('/channel/public', (payload) => this.onStompReceived(payload));
-        this.stompClient.send("/app/chat.addUser",
-            {}, JSON.stringify({sender: this.uctx.username, type: 'JOIN'})
-        );
-  }
-
-  onStompError() {
-    console.log("Stomp error");
-  }
-
-  onStompReceived(payload) {
-    var message = JSON.parse(payload.body);
-    console.log('payload = ', payload.body );
+    this.stomp.incomingMessage.subscribe((msg) => {console.log('Chat page: msg ', msg )});
+    this.stomp.connect(this.uctx.username);   
   }
 }

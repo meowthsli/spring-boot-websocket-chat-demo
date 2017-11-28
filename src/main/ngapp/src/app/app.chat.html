@@ -4,15 +4,29 @@
             <mat-card-title><h1>ЧАТ</h1></mat-card-title>
         </mat-card-header>
         <mat-card-content>
-            <mat-form-field class="chat-card-field">
-                <input matInput type="text" placeholder="Укажите логин клиента" />
-                <button mat-button *ngIf="value" matSuffix mat-icon-button aria-label="Очистить" (click)="username=''">
-                <mat-icon>close</mat-icon>
-                </button>
-            </mat-form-field>              
+            <div>
+                <mat-grid-list cols="4" rowHeight="100px">
+                    <mat-grid-tile rowspan="4" style="background-color: bisque;">
+                        <chat-client-queue>
+
+                        </chat-client-queue>
+                    </mat-grid-tile>
+                    
+                    <mat-grid-tile colspan="3" rowspan="3">
+                        
+                        <!--<chat-chats>
+
+                        </chat-chats>-->
+
+                    </mat-grid-tile>
+                    
+                    
+                    <mat-grid-tile colspan="3" style="background-color: darkgrey;">
+                        <!--<chat-send-element>
+                        </chat-send-element>-->
+                    </mat-grid-tile>
+                </mat-grid-list>
+            </div>
         </mat-card-content>
-        <mat-card-actions id="chat-card-actions">
-            <button mat-raised-button color="primary" id="login-button" (click)='onClick()'>Войти</button>
-        </mat-card-actions>
     </mat-card>
 </section>

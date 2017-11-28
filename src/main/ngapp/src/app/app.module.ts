@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MatGridListModule, MatIcon} from '@angular/material';
+import {MatGridListModule, MatIcon, MatListModule} from '@angular/material';
 import {MatButtonModule, MatCheckboxModule} from '@angular/material';
 import {MatCardModule} from '@angular/material/card';
 import {MatInputModule} from '@angular/material/input';
@@ -14,6 +14,8 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './app.login';
 import { ChatComponent } from './app.chat';
 import { UsercontextService } from './app.usercontext';
+import { StompConnector } from './app.stomp';
+import { ClientQueueComponent } from './app.client-queue';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -24,7 +26,8 @@ const routes: Routes = [
   declarations: [
     AppComponent,
     LoginComponent,
-    ChatComponent
+    ChatComponent,
+    ClientQueueComponent
   ],
   imports: [
     RouterModule.forRoot(routes, {}),
@@ -37,10 +40,12 @@ const routes: Routes = [
     MatCheckboxModule,
     MatCardModule,
     MatInputModule,
-    MatIconModule
+    MatIconModule,
+    MatListModule,
   ],
   providers: [
-    UsercontextService
+    UsercontextService,
+    StompConnector
   ],
   bootstrap: [
     AppComponent

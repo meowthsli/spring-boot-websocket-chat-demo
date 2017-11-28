@@ -25,7 +25,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, "#chat-card {\n    width: 80%;\n    padding: 4em;\n    margin: auto;\n    margin-top: 5em;\n}\n\n#chat-card-actions {\n    text-align: right;\n}\n\n.chat-card-field {\n    padding: 1em;\n    width: 90%;\n}\n", ""]);
+exports.push([module.i, "#chat-card {\n    width: 80%;\n    padding: 3em;\n    margin-left: auto;\n    margin-right: auto;\n    margin-top: 5em;\n}\n\n.chat-center {\n    \n}", ""]);
 
 // exports
 
@@ -38,7 +38,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/app.chat.html":
 /***/ (function(module, exports) {
 
-module.exports = "<section class=\"mat-typography\">\n    <mat-card id=\"chat-card\">\n        <mat-card-header>\n            <mat-card-title><h1>ЧАТ</h1></mat-card-title>\n        </mat-card-header>\n        <mat-card-content>\n            <mat-form-field class=\"chat-card-field\">\n                <input matInput type=\"text\" placeholder=\"Укажите логин клиента\" />\n                <button mat-button *ngIf=\"value\" matSuffix mat-icon-button aria-label=\"Очистить\" (click)=\"username=''\">\n                <mat-icon>close</mat-icon>\n                </button>\n            </mat-form-field>              \n        </mat-card-content>\n        <mat-card-actions id=\"chat-card-actions\">\n            <button mat-raised-button color=\"primary\" id=\"login-button\" (click)='onClick()'>Войти</button>\n        </mat-card-actions>\n    </mat-card>\n</section>"
+module.exports = "<section class=\"mat-typography\">\n    <mat-card id=\"chat-card\">\n        <mat-card-header>\n            <mat-card-title><h1>ЧАТ</h1></mat-card-title>\n        </mat-card-header>\n        <mat-card-content>\n            <div>\n                <mat-grid-list cols=\"4\" rowHeight=\"100px\">\n                    <mat-grid-tile rowspan=\"4\" style=\"background-color: bisque;\">\n                        <chat-client-queue>\n\n                        </chat-client-queue>\n                    </mat-grid-tile>\n                    \n                    <mat-grid-tile colspan=\"3\" rowspan=\"3\">\n                        \n                        <!--<chat-chats>\n\n                        </chat-chats>-->\n\n                    </mat-grid-tile>\n                    \n                    \n                    <mat-grid-tile colspan=\"3\" style=\"background-color: darkgrey;\">\n                        <!--<chat-send-element>\n                        </chat-send-element>-->\n                    </mat-grid-tile>\n                </mat-grid-list>\n            </div>\n        </mat-card-content>\n    </mat-card>\n</section>"
 
 /***/ }),
 
@@ -50,10 +50,7 @@ module.exports = "<section class=\"mat-typography\">\n    <mat-card id=\"chat-ca
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__app_usercontext__ = __webpack_require__("../../../../../src/app/app.usercontext.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_stompjs__ = __webpack_require__("../../../../stompjs/index.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_stompjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_stompjs__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_sockjs_client__ = __webpack_require__("../../../../sockjs-client/lib/entry.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_sockjs_client___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_sockjs_client__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__app_stomp__ = __webpack_require__("../../../../../src/app/app.stomp.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -67,33 +64,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-
 /**
  * @title Main app component
  */
 var ChatComponent = (function () {
-    function ChatComponent(router, uctx) {
+    function ChatComponent(router, uctx, stomp) {
         this.router = router;
         this.uctx = uctx;
-        this.socket = new __WEBPACK_IMPORTED_MODULE_4_sockjs_client__('/ws');
-        this.stompClient = __WEBPACK_IMPORTED_MODULE_3_stompjs__["over"](this.socket);
+        this.stomp = stomp;
     }
     ChatComponent.prototype.ngOnInit = function () {
-        var _this = this;
-        this.stompClient.connect({}, function () { return _this.onStompConnected(); }, function () { return _this.onStompError(); });
-    };
-    ChatComponent.prototype.onStompConnected = function () {
-        var _this = this;
-        console.log("Stomp connected");
-        this.stompClient.subscribe('/channel/public', function (payload) { return _this.onStompReceived(payload); });
-        this.stompClient.send("/app/chat.addUser", {}, JSON.stringify({ sender: this.uctx.username, type: 'JOIN' }));
-    };
-    ChatComponent.prototype.onStompError = function () {
-        console.log("Stomp error");
-    };
-    ChatComponent.prototype.onStompReceived = function (payload) {
-        var message = JSON.parse(payload.body);
-        console.log('payload = ', payload.body);
+        this.stomp.incomingMessage.subscribe(function (msg) { console.log('Chat page: msg ', msg); });
+        this.stomp.connect(this.uctx.username);
     };
     ChatComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
@@ -101,9 +83,58 @@ var ChatComponent = (function () {
             template: __webpack_require__("../../../../../src/app/app.chat.html"),
             styles: [__webpack_require__("../../../../../src/app/app.chat.css")]
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["a" /* Router */], __WEBPACK_IMPORTED_MODULE_2__app_usercontext__["a" /* UsercontextService */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["a" /* Router */], __WEBPACK_IMPORTED_MODULE_2__app_usercontext__["a" /* UsercontextService */], __WEBPACK_IMPORTED_MODULE_3__app_stomp__["a" /* StompConnector */]])
     ], ChatComponent);
     return ChatComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/app.client-queue.html":
+/***/ (function(module, exports) {
+
+module.exports = "<mat-list>\n    <mat-list-item>Item 1</mat-list-item>\n    <mat-list-item>Item 2</mat-list-item>\n    <mat-list-item>Item 3</mat-list-item>\n</mat-list>"
+
+/***/ }),
+
+/***/ "../../../../../src/app/app.client-queue.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ClientQueueComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_stomp__ = __webpack_require__("../../../../../src/app/app.stomp.ts");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+var ClientQueueComponent = (function () {
+    function ClientQueueComponent(stomp) {
+        this.stomp = stomp;
+    }
+    ClientQueueComponent.prototype.ngOnInit = function () {
+        this.stomp.incomingMessage.subscribe(this.onMessage);
+    };
+    ClientQueueComponent.prototype.onMessage = function (payload) {
+        console.log('ClientQueueComponent::onMessage: ', payload);
+    };
+    ClientQueueComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["n" /* Component */])({
+            selector: 'chat-client-queue',
+            template: __webpack_require__("../../../../../src/app/app.client-queue.html")
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__app_stomp__["a" /* StompConnector */]])
+    ], ClientQueueComponent);
+    return ClientQueueComponent;
 }());
 
 
@@ -247,12 +278,16 @@ var LoginComponent = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__app_login__ = __webpack_require__("../../../../../src/app/app.login.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__app_chat__ = __webpack_require__("../../../../../src/app/app.chat.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__app_usercontext__ = __webpack_require__("../../../../../src/app/app.usercontext.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__app_stomp__ = __webpack_require__("../../../../../src/app/app.stomp.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__app_client_queue__ = __webpack_require__("../../../../../src/app/app.client-queue.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
+
 
 
 
@@ -279,7 +314,8 @@ var AppModule = (function () {
             declarations: [
                 __WEBPACK_IMPORTED_MODULE_9__app_component__["a" /* AppComponent */],
                 __WEBPACK_IMPORTED_MODULE_10__app_login__["a" /* LoginComponent */],
-                __WEBPACK_IMPORTED_MODULE_11__app_chat__["a" /* ChatComponent */]
+                __WEBPACK_IMPORTED_MODULE_11__app_chat__["a" /* ChatComponent */],
+                __WEBPACK_IMPORTED_MODULE_14__app_client_queue__["a" /* ClientQueueComponent */]
             ],
             imports: [
                 __WEBPACK_IMPORTED_MODULE_3__angular_router__["b" /* RouterModule */].forRoot(routes, {}),
@@ -291,10 +327,12 @@ var AppModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_5__angular_material__["b" /* MatCheckboxModule */],
                 __WEBPACK_IMPORTED_MODULE_6__angular_material_card__["a" /* MatCardModule */],
                 __WEBPACK_IMPORTED_MODULE_7__angular_material_input__["b" /* MatInputModule */],
-                __WEBPACK_IMPORTED_MODULE_8__angular_material_icon__["a" /* MatIconModule */]
+                __WEBPACK_IMPORTED_MODULE_8__angular_material_icon__["a" /* MatIconModule */],
+                __WEBPACK_IMPORTED_MODULE_5__angular_material__["d" /* MatListModule */],
             ],
             providers: [
-                __WEBPACK_IMPORTED_MODULE_12__app_usercontext__["a" /* UsercontextService */]
+                __WEBPACK_IMPORTED_MODULE_12__app_usercontext__["a" /* UsercontextService */],
+                __WEBPACK_IMPORTED_MODULE_13__app_stomp__["a" /* StompConnector */]
             ],
             bootstrap: [
                 __WEBPACK_IMPORTED_MODULE_9__app_component__["a" /* AppComponent */]
@@ -302,6 +340,52 @@ var AppModule = (function () {
         })
     ], AppModule);
     return AppModule;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/app.stomp.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return StompConnector; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_stompjs__ = __webpack_require__("../../../../stompjs/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_stompjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_stompjs__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_sockjs_client__ = __webpack_require__("../../../../sockjs-client/lib/entry.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_sockjs_client___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_sockjs_client__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_Subject__ = __webpack_require__("../../../../rxjs/_esm5/Subject.js");
+
+
+
+var StompConnector = (function () {
+    function StompConnector() {
+        this.incomingMessage = new __WEBPACK_IMPORTED_MODULE_2_rxjs_Subject__["a" /* Subject */]();
+        this.socket = new __WEBPACK_IMPORTED_MODULE_1_sockjs_client__('/ws');
+        this.stompClient = __WEBPACK_IMPORTED_MODULE_0_stompjs__["over"](this.socket);
+    }
+    StompConnector.prototype.connect = function (username) {
+        var _this = this;
+        this.stompClient.connect({}, function () { return _this.onStompConnected(username); }, function () { return _this.onStompError(); });
+    };
+    StompConnector.prototype.disconnect = function (username) {
+    };
+    StompConnector.prototype.onStompConnected = function (username) {
+        var _this = this;
+        console.log("Stomp connected");
+        this.stompClient.subscribe('/channel/public', function (payload) { return _this.onStompReceived(payload); });
+        this.stompClient.send("/app/chat.addUser", {}, JSON.stringify({ sender: username, type: 'JOIN' }));
+    };
+    StompConnector.prototype.onStompError = function () {
+        console.log("Stomp error");
+    };
+    StompConnector.prototype.onStompReceived = function (payload) {
+        var message = JSON.parse(payload.body);
+        console.log('payload = ', payload.body);
+        this.incomingMessage.next(message);
+    };
+    return StompConnector;
 }());
 
 
