@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { NgModel } from '@angular/forms';
+import { NgModel, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { UsercontextService } from './app.usercontext';
 
 /**
  * @title Main app component
@@ -11,13 +12,21 @@ import { Router } from '@angular/router';
   styleUrls: ['./app.login.css']
 })
 export class LoginComponent {
-  public value: string;
+
+  $username: string;
+  $emailFormControl = new FormControl('', [
+    Validators.required
+  ]);
   
-  constructor(private router:Router) {
-    
+  constructor(private router:Router, private uctx: UsercontextService) {
   }  
 
-  public onClick() {
-    console.log(this.router.navigateByUrl('/chat'));
+  public $onLogonClick() {
+    if(!this.$username) {
+      return;
+    }
+
+    this.uctx.username = this.$username;
+    this.router.navigateByUrl('/chat');
   }
 }
