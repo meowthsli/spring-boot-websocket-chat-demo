@@ -10,13 +10,17 @@
               <button mat-button *ngIf="$username" matSuffix mat-icon-button aria-label="Очистить" (click)="$username=''">
                 <mat-icon>close</mat-icon>
               </button>
+              <button mat-button *ngIf="$username" matSuffix mat-icon-button aria-label="Очистить" (click)="$username=''">
+                  <mat-icon>close</mat-icon>
+                </button>
               <mat-error *ngIf="$emailFormControl.hasError('required')">
                   Логин <strong>обязателен</strong>
               </mat-error>
             </mat-form-field>              
         </mat-card-content>
         <mat-card-actions id="login-card-actions">
-          <button mat-raised-button color="primary" (click)='$onLogonClick()'>Войти</button>
+          <button mat-raised-button color="primary" (click)='$onLogonClick()'>Оп</button>
+          <button mat-raised-button color="accented" (click)='$onClientClick()'>Client</button>
         </mat-card-actions>
     </mat-card>
 </section>

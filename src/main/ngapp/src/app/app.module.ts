@@ -16,10 +16,13 @@ import { ChatComponent } from './app.chat';
 import { UsercontextService } from './app.usercontext';
 import { StompConnector } from './app.stomp';
 import { ClientQueueComponent } from './app.client-queue';
+import { ClientChatComponent } from './app.client-chat';
+import { ClientStompConnector } from './app.client-stomp';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
-  { path: 'chat', component: ChatComponent },
+  { path: 'ops-chat', component: ChatComponent },
+  { path: 'clients-chat', component: ClientChatComponent },
 ];
 
 @NgModule({
@@ -27,7 +30,8 @@ const routes: Routes = [
     AppComponent,
     LoginComponent,
     ChatComponent,
-    ClientQueueComponent
+    ClientQueueComponent,
+    ClientChatComponent,
   ],
   imports: [
     RouterModule.forRoot(routes, {}),
@@ -45,7 +49,8 @@ const routes: Routes = [
   ],
   providers: [
     UsercontextService,
-    StompConnector
+    StompConnector,
+    ClientStompConnector,
   ],
   bootstrap: [
     AppComponent

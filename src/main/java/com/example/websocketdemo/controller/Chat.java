@@ -5,6 +5,7 @@
  */
 package com.example.websocketdemo.controller;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayDeque;
@@ -16,13 +17,44 @@ import java.util.Deque;
  */
 public class Chat {
     public String userID = "cGFzc3dvcmQ=";
+    private String locker;
+    private Instant lockTime;
+    
+    private int ids = 0;
     
     public Chat() {
-        this.history.addFirst(new Item(1, "Hello? Is anybody here", ZonedDateTime.now(), false));
-        this.history.addFirst(new Item(2, "Yes we are here", ZonedDateTime.now(), true));
+        this.history.addFirst(new Item(ids++, "Hello? Is anybody here", ZonedDateTime.now(), false));
+        this.history.addFirst(new Item(ids++, "Yes we are here", ZonedDateTime.now(), true));
     }
     
     public final Deque<Chat.Item> history = new ArrayDeque<>();
+
+    synchronized boolean lock(String clientId) {
+        if(isLocked(clientId)) {
+            return true;
+        }
+        
+        this.locker = clientId;
+        this.lockTime = Instant.now();
+        
+        return true;
+    }
+    
+    public boolean isLocked(String clientId) {
+        return this.lockTime != null || (clientId.equals(locker) 
+                && Duration.between(lockTime, Instant.now()).toMinutes() < 5);
+    }
+    
+    public synchronized void unlock(String clientId) {
+        this.lockTime = null;
+        this.locker = null;
+    }
+
+    synchronized int appendText(String text) {
+        int id = ids++;
+        this.history.add(new Item(id, text, ZonedDateTime.now(), true));
+        return id;
+    }
     
     public final class Item {
         
@@ -40,6 +72,5 @@ public class Chat {
     
     public Item[] getLastN(int n) {
         return history.stream().limit(n).toArray(Item[]::new);
-    }
-    
+    }    
 }

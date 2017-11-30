@@ -31,4 +31,20 @@ public class Chats {
     public Collection<Chat> getUnreadChats() {
         return Collections.unmodifiableCollection(chats.values());
     }
+    
+    public synchronized Chat tryLock(String clientId) {
+        if(chats.containsKey(clientId)) {
+            chats.get(clientId).lock(clientId);
+            return chats.get(clientId);
+        }
+        return null;
+    }
+
+    Chat getChat(String sender) {
+        Chat ch = chats.getOrDefault(sender, new Chat());
+        if(!chats.containsKey(sender)) {
+            chats.put(sender, ch);
+        }
+        return ch;
+    }
 }

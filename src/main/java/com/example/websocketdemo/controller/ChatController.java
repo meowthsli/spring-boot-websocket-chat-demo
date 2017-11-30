@@ -30,7 +30,13 @@ public class ChatController {
 
     @MessageMapping("/client.say")
     @SendTo("/broadcast/all-ops")
-    public Parcel sendMessage(@Payload Parcel chatMessage) {
+    public Parcel sendMessage(@Payload Parcel chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+        String sessionID = headerAccessor.getSessionId();
+        int id = chats.getChat(chatMessage.getSender())
+            .appendText(chatMessage.getText());
+        this.convertAndSendToSession(sessionID, "/queue/client", Parcel.ack(id));
+
+        // relay cli msg to all ops
         return chatMessage;
     }
 
@@ -44,19 +50,32 @@ public class ChatController {
     @SendTo("/broadcast/all-ops")
     public Parcel operatorHello(@Payload Parcel chatMessage,
                                SimpMessageHeaderAccessor headerAccessor) {
-        // Add username in web socket session
-        // headerAccessor.getSessionAttributes().put("opname", chatMessage.getSender());
-        
         String sessionID = headerAccessor.getSessionId();
-        // Read all chats with unread messages
-        
         for(Chat uc: chats.getUnreadChats()) {
             Parcel p = Parcel.makeUnreadList(uc.userID, uc.getLastN(1));
             this.convertAndSendToSession(sessionID, "/queue/op", p);     
         }
         
-        // Enrich with username
-        return Parcel.hello(chatMessage.getSender());
+        return Parcel.helloOp(chatMessage.getSender());
+    }
+    
+    /**
+     * New op is here 
+     * @param clientMessage
+     * @param headerAccessor
+     * @return 
+     */
+    @MessageMapping("/client.hello")
+    @SendTo("/broadcast/all-ops")
+    public Parcel clientHello(@Payload Parcel clientMessage,
+                               SimpMessageHeaderAccessor headerAccessor) {
+        String sessionID = headerAccessor.getSessionId();     
+        Chat uc = chats.getChat(clientMessage.getSender());
+        
+        Parcel p = Parcel.makeClientMessages(uc.userID, uc.getLastN(20));
+        this.convertAndSendToSession(sessionID, "/queue/client", p);     
+        
+        return Parcel.helloCli(uc.userID);
     }
     
     private void convertAndSendToSession(String sessionID, String destination, Object p) {
