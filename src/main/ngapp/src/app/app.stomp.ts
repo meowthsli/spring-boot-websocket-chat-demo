@@ -12,9 +12,7 @@ export class StompConnector {
 
     public connect(username: string) {
         var u64 = btoa(username);
-        this.socket = new SockJS('http://localhost:8080/ws', [], {
-            sessionId: () => {return u64;}
-        });
+        this.socket = new SockJS('http://localhost:8080/ws');
         this.stompClient = Stomp.over(this.socket);
         this.stompClient.connect(u64, '', () => this.onStompConnected(u64), () => this.onStompError());
     }
@@ -32,7 +30,7 @@ export class StompConnector {
         console.log("Stomp connected");
     
         this.broadcastId = this.stompClient.subscribe('/broadcast/all-ops', (payload) => this.onStompReceived(payload));
-        this.opsId = this.stompClient.subscribe('/queue/op-' + username, (payload) => 
+        this.opsId = this.stompClient.subscribe('/user/queue/op', (payload) => 
             {console.log("USER/OP"); this.onStompReceived(payload);}
         );
         this.stompClient.send("/app/operator.hello",
