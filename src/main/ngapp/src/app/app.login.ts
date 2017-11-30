@@ -27,6 +27,6 @@ export class LoginComponent {
     }
 
     this.uctx.username = this.$username;
-    this.router.navigateByUrl('/chat');
+    this.router.navigateByUrl('/chat'), {skipLocationChange: true};
   }
 }

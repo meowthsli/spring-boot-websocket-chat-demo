@@ -17,6 +17,6 @@ export class ClientQueueComponent implements OnInit {
     }
 
     private onMessage(payload:any) {
-        console.log('ClientQueueComponent::onMessage: ', payload);
+        // console.log('ClientQueueComponent::onMessage: ', payload);
     }
 }

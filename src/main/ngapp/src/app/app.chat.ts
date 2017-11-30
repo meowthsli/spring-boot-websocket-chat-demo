@@ -23,7 +23,7 @@ export class ChatComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.stomp.incomingMessage.subscribe((msg) => {console.log('Chat page: msg ', msg )});
+    //this.stomp.incomingMessage.subscribe((msg) => {console.log('Chat page: msg ', msg )});
     this.stomp.connect(this.uctx.username);   
   }
 }

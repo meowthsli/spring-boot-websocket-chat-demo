@@ -1,10 +1,11 @@
 package com.example.websocketdemo.controller;
 
-import com.example.websocketdemo.model.ChatMessage;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.example.websocketdemo.model.Parcel;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.core.MessagePostProcessor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -14,7 +15,7 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 /**
- * Created by rajeevkumarsingh on 24/07/17.
+ * Created by  on 24/07/17.
  */
 @Controller
 public class ChatController {
@@ -26,8 +27,8 @@ public class ChatController {
     SimpMessagingTemplate sender;
 
     @MessageMapping("/client.say")
-    @SendTo("/broker/ops")
-    public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
+    @SendTo("/broadcast/all-ops")
+    public Parcel sendMessage(@Payload Parcel chatMessage) {
         return chatMessage;
     }
 
@@ -38,28 +39,21 @@ public class ChatController {
      * @return 
      */
     @MessageMapping("/operator.hello")
-    @SendTo("/broker/ops")
-    public ChatMessage operatorHello(@Payload ChatMessage chatMessage,
+    @SendTo("/broadcast/all-ops")
+    public Parcel operatorHello(@Payload Parcel chatMessage,
                                SimpMessageHeaderAccessor headerAccessor) {
         // Add username in web socket session
-        headerAccessor.getSessionAttributes().put("opname", chatMessage.getSender());
+        // headerAccessor.getSessionAttributes().put("opname", chatMessage.getSender());
         
+        String sessionID = headerAccessor.getSessionId();
         // Read all chats with unread messages
-        List<Chat.Item[]> ar = chats.getUnreadChats().stream()
-                .map(x -> x.getLastN(10))
-                .collect(Collectors.toList());
         
-        // Make message
-        ChatMessage chm = new ChatMessage();
-        chm.setChatItems(ar.toArray(new Chat.Item[0][]));
-        chm.setSender("SERVER");
-        chm.setType(ChatMessage.MessageType.OP_UNREAD_LIST);
-        
-        // Brokers
-        sender.convertAndSend("/broker/ops", chm);
+        for(Chat uc: chats.getUnreadChats()) {
+            Parcel p = Parcel.makeUnreadList(uc.userID, uc.getLastN(1));
+            sender.convertAndSend("/queue/op-"  + sessionID, p);     
+        }
         
         // Enrich with username
-        chatMessage.setType(ChatMessage.MessageType.OP_STARTED);
-        return chatMessage;
+        return Parcel.hello(chatMessage.getSender());
     }
 }

@@ -20,6 +20,10 @@ public class Chats {
        
     public final Map<String, Chat> chats = new HashMap<>();
     
+    public Chats() {
+        chats.put("cGFzc3dvcmQ=", new Chat());
+    }
+    
     /**
      * Chats to show
      * @return 
