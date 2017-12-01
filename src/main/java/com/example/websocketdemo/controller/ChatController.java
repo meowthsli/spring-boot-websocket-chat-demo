@@ -1,19 +1,13 @@
 package com.example.websocketdemo.controller;
 
 import com.example.websocketdemo.model.Parcel;
-import java.util.HashMap;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.core.MessagePostProcessor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -30,52 +24,78 @@ public class ChatController {
 
     @MessageMapping("/client.say")
     @SendTo("/broadcast/all-ops")
-    public Parcel sendMessage(@Payload Parcel chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-        String sessionID = headerAccessor.getSessionId();
-        int id = chats.getChat(chatMessage.getSender())
-            .appendText(chatMessage.getText());
-        this.convertAndSendToSession(sessionID, "/queue/client", Parcel.ack(id));
+    public Parcel clientSay(@Payload Parcel chatMessage, SimpMessageHeaderAccessor smha) {
+    
+        long id = chats.getChat(getCurrentUserID(smha))
+            .appendText(chatMessage.getText(), null);
+        this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/client", Parcel.ack(chatMessage.getCid(), id));
 
         // relay cli msg to all ops
+        chatMessage.setAuthor(getCurrentUserID(smha));
+        chatMessage.setAck(id);
         return chatMessage;
+    }
+    
+    @MessageMapping("/operator.say")
+    @SendTo("/broadcast/all-ops")
+    public Parcel operatorSay(@Payload Parcel opMessage, SimpMessageHeaderAccessor smha) {
+        
+        // append to chat
+        long id = chats.getChat(opMessage.getTo())
+            .appendText(opMessage.getText(), getCurrentSessionID(smha));
+        
+        // ack
+        this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/op", Parcel.ack(opMessage.getCid(), id));
+        
+        // send to chat client
+        opMessage.setAuthor(getCurrentUserID(smha));
+        opMessage.setAck(id);
+        this.convertAndSendToSession(chats.getChat(opMessage.getTo()).getClientLastSession(), "/queue/client", opMessage);
+        
+        // relay to all ops
+        return opMessage;
     }
 
     /**
      * New op is here 
-     * @param chatMessage
-     * @param headerAccessor
+     * @param opHello
+     * @param smha
      * @return 
      */
     @MessageMapping("/operator.hello")
     @SendTo("/broadcast/all-ops")
-    public Parcel operatorHello(@Payload Parcel chatMessage,
-                               SimpMessageHeaderAccessor headerAccessor) {
-        String sessionID = headerAccessor.getSessionId();
+    public Parcel operatorHello(@Payload Parcel opHello,
+                               SimpMessageHeaderAccessor smha) {
+        setCurrentUserID(smha, opHello.getAuthor());
+        
+        
         for(Chat uc: chats.getUnreadChats()) {
-            Parcel p = Parcel.makeUnreadList(uc.userID, uc.getLastN(1));
-            this.convertAndSendToSession(sessionID, "/queue/op", p);     
+            Parcel p = Parcel.makeUnreadList(uc.getLastN(1));
+            this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/op", p);     
         }
         
-        return Parcel.helloOp(chatMessage.getSender());
+        return Parcel.helloOp(getCurrentUserID(smha));
     }
     
     /**
      * New op is here 
-     * @param clientMessage
-     * @param headerAccessor
+     * @param clientHello
+     * @param smha
      * @return 
      */
     @MessageMapping("/client.hello")
     @SendTo("/broadcast/all-ops")
-    public Parcel clientHello(@Payload Parcel clientMessage,
-                               SimpMessageHeaderAccessor headerAccessor) {
-        String sessionID = headerAccessor.getSessionId();     
-        Chat uc = chats.getChat(clientMessage.getSender());
+    public Parcel clientHello(@Payload Parcel clientHello,
+                               SimpMessageHeaderAccessor smha) {
+        setCurrentUserID(smha, clientHello.getAuthor());
         
-        Parcel p = Parcel.makeClientMessages(uc.userID, uc.getLastN(20));
-        this.convertAndSendToSession(sessionID, "/queue/client", p);     
+        Chat uc = chats.getChat(getCurrentUserID(smha));
+        uc.setLastSession(getCurrentSessionID(smha));
         
-        return Parcel.helloCli(uc.userID);
+        Parcel p = Parcel.makeClientMessages(getCurrentUserID(smha), uc.getLastN(20));
+        this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/client", p);     
+        
+        return Parcel.helloCli(uc.getClientID());
     }
     
     private void convertAndSendToSession(String sessionID, String destination, Object p) {
@@ -87,5 +107,17 @@ public class ChatController {
         headerAccessor.setLeaveMutable(true);
         
         sender.convertAndSendToUser(sessionID, destination, p, headerAccessor.getMessageHeaders());
+    }
+    
+    private String getCurrentUserID(SimpMessageHeaderAccessor smha) {
+        return (String)smha.getSessionAttributes().get("userID");
+    }
+    
+    private void setCurrentUserID(SimpMessageHeaderAccessor smha, String id) {
+        smha.getSessionAttributes().put("userID", id);
+    }
+    
+    private String getCurrentSessionID(SimpMessageHeaderAccessor smha) {
+        return (String)smha.getSessionId();
     }
 }

@@ -16,15 +16,16 @@ import java.util.Deque;
  * @author yurij
  */
 public class Chat {
-    public String userID = "cGFzc3dvcmQ=";
+    private String clientID = "cGFzc3dvcmQ=";
+    private String clientLastSession = "";
     private String locker;
     private Instant lockTime;
     
     private int ids = 0;
     
     public Chat() {
-        this.history.addFirst(new Item(ids++, "Hello? Is anybody here", ZonedDateTime.now(), false));
-        this.history.addFirst(new Item(ids++, "Yes we are here", ZonedDateTime.now(), true));
+        //this.history.addFirst(new Item(ids++, "Hello? Is anybody here", ZonedDateTime.now(), "DvmDK"));
+        //this.history.addFirst(new Item(ids++, "Yes we are here", ZonedDateTime.now(), null));
     }
     
     public final Deque<Chat.Item> history = new ArrayDeque<>();
@@ -49,25 +50,37 @@ public class Chat {
         this.lockTime = null;
         this.locker = null;
     }
-
-    synchronized int appendText(String text) {
-        int id = ids++;
-        this.history.add(new Item(id, text, ZonedDateTime.now(), true));
+    
+    synchronized long appendText(String text, String opId) {
+        long id = ids++;
+        this.history.add(new Item(id, text, ZonedDateTime.now(), opId));
         return id;
+    }
+
+    public void setLastSession(String sessionID) {
+        this.clientLastSession = sessionID;
+    }
+
+    public String getClientLastSession() {
+        return this.clientLastSession;
+    }
+    
+    public String getClientID() {
+        return clientID;
     }
     
     public final class Item {
         
-        public Item(int id, String text, ZonedDateTime at, boolean isClient) {
+        public Item(long id, String text, ZonedDateTime at, String opId) {
             this.id = id;
             this.text = text;
             this.at = at;
-            this.isClient = isClient;
+            this.opId = opId;
         }
         public String text;
         public ZonedDateTime at;
-        public boolean isClient;
         public long id;
+        public  String opId;
     }
     
     public Item[] getLastN(int n) {

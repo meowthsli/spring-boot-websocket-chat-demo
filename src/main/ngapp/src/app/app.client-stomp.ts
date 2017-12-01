@@ -28,7 +28,7 @@ export class ClientStompConnector {
 
     public send(text: string) {
         if(this.clientId) {
-            this.stompClient.send("/app/client.say", {}, JSON.stringify({type: 'CHAT', sender:this.u64, text:text}));
+            this.stompClient.send("/app/client.say", {}, JSON.stringify({type: 'CHAT', text:text}));
         }
     }
 
@@ -36,10 +36,10 @@ export class ClientStompConnector {
         console.log("Stomp connected");
     
         this.clientId = this.stompClient.subscribe('/user/queue/client', (payload) => 
-            {console.log("USER/CLIENT"); this.onStompReceived(payload);}
+            this.onStompReceived(payload)
         );
         this.stompClient.send("/app/client.hello",
-            {}, JSON.stringify({sender: this.u64})
+            {}, JSON.stringify({author: this.u64})
         );
       }
     

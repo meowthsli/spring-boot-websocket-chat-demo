@@ -1,19 +1,22 @@
 <section class="mat-typography">
-        <mat-card>
+        <mat-card id="client-chat-card">
             <mat-card-header>
-                <mat-card-title><h1>TEXT</h1></mat-card-title>
+                <mat-card-title><h1>Чат с оператором</h1></mat-card-title>
             </mat-card-header>
             <mat-card-content>
                 <mat-list>
-                    <mat-list-item>Item 1</mat-list-item>
-                    <mat-list-item>Item 2</mat-list-item>
-                    <mat-list-item>Item 3</mat-list-item>
+                    <mat-list-item *ngFor="let ci of $history">{{ci.username}}: {{ci.text}}</mat-list-item>
                 </mat-list>                  
             </mat-card-content>
             <mat-card-actions>
-                    
-                        <textarea [(ngModel)]="$text" style="width: 90%" matInput placeholder="Leave a comment"></textarea>
-                    <button mat-raised-button color="primary" (click)='$onSendClick()'>Send</button>
+                    <div id="text-items">
+                           
+                            <mat-form-field>
+                              <textarea id="text-area" matInput [(ngModel)]="$text" placeholder="Введите сообщение.."></textarea>
+                            </mat-form-field>
+                          
+                            <button mat-raised-button color="accent" (click)='$onSendClick()'>Send</button>
+                    </div>
             </mat-card-actions>
         </mat-card>
     </section>

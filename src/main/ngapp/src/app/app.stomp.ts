@@ -9,12 +9,13 @@ export class StompConnector {
     private stompClient; // = Stomp.over(this.socket);
     private opsId;
     private broadcastId;
+    private u64: String;
 
     public connect(username: string) {
-        var u64 = btoa(username);
+        this.u64 = btoa(username);
         this.socket = new SockJS('http://localhost:8080/ws');
         this.stompClient = Stomp.over(this.socket);
-        this.stompClient.connect(u64, '', () => this.onStompConnected(u64), () => this.onStompError());
+        this.stompClient.connect(this.u64, '', () => this.onStompConnected(), () => this.onStompError());
     }
 
     public disconnect() {
@@ -26,7 +27,7 @@ export class StompConnector {
         }
     }
 
-    onStompConnected(username: string) {
+    onStompConnected() {
         console.log("Stomp connected");
     
         this.broadcastId = this.stompClient.subscribe('/broadcast/all-ops', (payload) => this.onStompReceived(payload));
@@ -34,13 +35,14 @@ export class StompConnector {
             {console.log("USER/OP"); this.onStompReceived(payload);}
         );
         this.stompClient.send("/app/operator.hello",
-            {}, JSON.stringify({sender: username})
+            {}, JSON.stringify({author: this.u64})
         );
       }
     
       onStompError() {
-        console.log("Stomp error");
-
+        setTimeout(()=> {
+            this.stompClient.connect(this.u64, '', () => this.onStompConnected(), () => this.onStompError());
+        }, 10000);
       }
     
       onStompReceived(payload) {

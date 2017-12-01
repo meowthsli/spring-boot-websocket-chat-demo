@@ -1,7 +1,17 @@
-#chat-card {
-    width: 80%;
+#client-chat-card {
+    width: 40%;
     padding: 3em;
     margin-left: auto;
     margin-right: auto;
     margin-top: 5em;
 }
+
+#text-items {
+    display: flex;
+    flex-direction: column;
+  }
+  
+#text-area {
+    width: 100%;
+}
+  

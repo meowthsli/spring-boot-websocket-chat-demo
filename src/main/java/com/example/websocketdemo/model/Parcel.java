@@ -12,39 +12,39 @@ import java.util.Deque;
 @JsonInclude(Include.NON_NULL)
 public class Parcel {
 
-    public static Parcel makeUnreadList(String userID, Chat.Item[] lastN) {
+    public static Parcel makeUnreadList(Chat.Item[] lastN) {
         Parcel p = new Parcel();
         p.setType(MessageType.OP_UNREAD_LIST);
-        p.setSender(userID);
         p.setChatItems(lastN);
         return p;
     }
 
-    public static Parcel helloOp(String sender) {
+    public static Parcel helloOp(String userID) {
         Parcel p = new Parcel();
-        p.setSender(sender);
+        p.setAuthor(userID);
         p.setType(MessageType.OP_HELLO);
         return p;
     }
     
-    public static Parcel helloCli(String sender) {
+    public static Parcel helloCli(String userID) {
         Parcel p = new Parcel();
-        p.setSender(sender);
+        p.setAuthor(userID);
         p.setType(MessageType.CLI_HELLO);
         return p;
     }
 
-    public static Parcel makeClientMessages(String sender, Chat.Item[] history) {
+    public static Parcel makeClientMessages(String userID, Chat.Item[] history) {
         Parcel p = new Parcel();
-        p.setSender(sender);
         p.setType(MessageType.CLI_HISTORY);
+        p.setChatItems(history);
         return p;
     }
 
-    public static Object ack(int id) {
+    public static Object ack(Long cid, Long id) {
         Parcel p = new Parcel();
         p.setType(MessageType.MSG_ACK);
         p.setAck(id);
+        p.setCid(cid);
         return p;
     }
     
@@ -53,12 +53,11 @@ public class Parcel {
     private Chat.Item[] items;
     private String text;
     private String to;
-    private long ack;
+    private Long ack;
+    private Long cid;
 
     public enum MessageType {
         CHAT,
-        JOIN,
-        LEAVE,
         OP_HELLO, // when operator logs in
         CLI_HELLO,
         OP_UNREAD_LIST,
@@ -73,12 +72,12 @@ public class Parcel {
     public void setType(MessageType type) {
         this.type = type;
     }
-
-    public String getSender() {
+    
+    public String getAuthor() {
         return userID;
     }
 
-    public void setSender(String userID) {
+    public void setAuthor(String userID) {
         this.userID = userID;
     }
     
@@ -106,11 +105,19 @@ public class Parcel {
         this.to = to;
     }
     
-    public void setAck(long ack) {
+    public void setAck(Long ack) {
         this.ack = ack;
     }
     
-    public long getAck() {
+    public Long getAck() {
         return ack;
+    }
+    
+    public Long getCid() {
+        return this.cid;
+    }
+    
+    public void setCid(Long cid) {
+        this.cid = cid;
     }
 }
