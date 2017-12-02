@@ -21,7 +21,6 @@ public class Chats {
     public final Map<String, Chat> chats = new HashMap<>();
     
     public Chats() {
-        chats.put("cGFzc3dvcmQ=", new Chat());
     }
     
     /**
@@ -41,7 +40,7 @@ public class Chats {
     }
 
     Chat getChat(String sender) {
-        Chat ch = chats.getOrDefault(sender, new Chat());
+        Chat ch = chats.getOrDefault(sender, new Chat(sender));
         if(!chats.containsKey(sender)) {
             chats.put(sender, ch);
         }

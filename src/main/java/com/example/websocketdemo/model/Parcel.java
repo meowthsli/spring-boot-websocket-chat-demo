@@ -12,8 +12,9 @@ import java.util.Deque;
 @JsonInclude(Include.NON_NULL)
 public class Parcel {
 
-    public static Parcel makeUnreadList(Chat.Item[] lastN) {
+    public static Parcel makeUnreadList(String author, Chat.Item[] lastN) {
         Parcel p = new Parcel();
+        p.setAuthor(author);
         p.setType(MessageType.OP_UNREAD_LIST);
         p.setChatItems(lastN);
         return p;

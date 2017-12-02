@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { NgModel, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UsercontextService } from './app.usercontext';
+import { UsercontextService } from '../app.usercontext';
+
 
 /**
  * @title Main app component
@@ -18,8 +19,7 @@ export class LoginComponent {
     Validators.required
   ]);
   
-  constructor(private router:Router, private uctx: UsercontextService) {
-  }  
+  constructor(private router:Router, private uctx: UsercontextService) {}  
 
   public $onLogonClick() {
     if(!this.$username) {

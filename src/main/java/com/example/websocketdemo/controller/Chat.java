@@ -16,16 +16,17 @@ import java.util.Deque;
  * @author yurij
  */
 public class Chat {
-    private String clientID = "cGFzc3dvcmQ=";
+    private String clientID;
     private String clientLastSession = "";
     private String locker;
     private Instant lockTime;
     
     private int ids = 0;
     
-    public Chat() {
+    public Chat(String clientID) {
         //this.history.addFirst(new Item(ids++, "Hello? Is anybody here", ZonedDateTime.now(), "DvmDK"));
         //this.history.addFirst(new Item(ids++, "Yes we are here", ZonedDateTime.now(), null));
+        this.clientID = clientID;
     }
     
     public final Deque<Chat.Item> history = new ArrayDeque<>();

@@ -1,0 +1,22 @@
+<section class="mat-typography">
+        <mat-card id="client-chat-card">
+            <mat-card-header>
+                <mat-card-title><h1>Чат с оператором</h1></mat-card-title>
+            </mat-card-header>
+            <mat-card-content style="height: calc(100% - 190px);">
+                <mat-list id="client-chat-panel">
+                    <mat-list-item *ngFor="let ci of $history">{{ci.username}}: {{ci.text}}</mat-list-item>
+                </mat-list>                  
+            </mat-card-content>
+            <mat-card-actions class="client-chat-card-field">
+                    <mat-form-field class="client-chat-card-field">
+                        <textarea id="text-area" matInput [(ngModel)]="$text"
+                            placeholder="Введите сообщение.."></textarea>
+                    </mat-form-field>
+                    <div style="text-align: right">
+                    <button mat-raised-button color="accent"
+                        (click)='$onSendClick()'>Послать</button>
+                    </div>
+            </mat-card-actions>
+        </mat-card>
+    </section>

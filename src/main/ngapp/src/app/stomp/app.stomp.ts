@@ -27,6 +27,12 @@ export class StompConnector {
         }
     }
 
+    public send(text: string, to: string) {
+        if(this.opsId) {
+            this.stompClient.send("/app/operator.say", {}, JSON.stringify({type: 'CHAT', text:text, to: to}));
+        }
+    }
+
     onStompConnected() {
         console.log("Stomp connected");
     

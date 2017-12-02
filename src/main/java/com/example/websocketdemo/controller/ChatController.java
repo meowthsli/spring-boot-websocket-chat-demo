@@ -70,7 +70,7 @@ public class ChatController {
         
         
         for(Chat uc: chats.getUnreadChats()) {
-            Parcel p = Parcel.makeUnreadList(uc.getLastN(1));
+            Parcel p = Parcel.makeUnreadList(uc.getClientID(), uc.getLastN(1));
             this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/op", p);     
         }
         

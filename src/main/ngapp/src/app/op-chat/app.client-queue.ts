@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { StompConnector } from "./app.stomp";
+import { StompConnector } from "../stomp/app.stomp";
 import { OnInit } from "@angular/core/src/metadata/lifecycle_hooks";
 
 @Component({
@@ -19,7 +19,7 @@ export class ClientQueueComponent implements OnInit {
 
     private onMessage(p:any) {
         if(p.type === "OP_UNREAD_LIST") {
-            this.$queue.push(new QueueItem(btoa(p.sender), p.chatItems[0].text, p.chatItems[0].id));
+            this.$queue.push(new QueueItem(atob(p.author), p.chatItems[0].text, p.chatItems[0].id));
         }  
     }
 }

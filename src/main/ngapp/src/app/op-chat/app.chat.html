@@ -1,0 +1,33 @@
+<section class="mat-typography">
+    <mat-card id="chat-card">
+        <mat-card-header>
+            <mat-card-title><h1>ЧАТ</h1></mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <div>
+                <mat-grid-list cols="4" rowHeight="100px">
+                    <mat-grid-tile rowspan="4" style="background-color: bisque; display: flex; flex-direction: column">
+                        <chat-client-queue style="width: 100%;">
+
+                        </chat-client-queue>
+                        
+                    </mat-grid-tile>
+                    
+                    <mat-grid-tile colspan="3" rowspan="4">
+                        
+                            <mat-list>
+                                <mat-list-item *ngFor="let ci of $history">{{ci.username}}: {{ci.text}}</mat-list-item>
+                            </mat-list> 
+                            <mat-form-field>
+                                    <textarea id="text-area" matInput [(ngModel)]="$text" placeholder="Введите сообщение.."></textarea>
+                                  </mat-form-field>
+                                
+                            <button mat-raised-button color="accent" (click)='$onSendClick()'>Send</button>
+
+                    </mat-grid-tile>
+                    
+                </mat-grid-list>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</section>

@@ -11,13 +11,13 @@ import {MatInputModule} from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
 
 import { AppComponent } from './app.component';
-import { LoginComponent } from './app.login';
-import { ChatComponent } from './app.chat';
 import { UsercontextService } from './app.usercontext';
-import { StompConnector } from './app.stomp';
-import { ClientQueueComponent } from './app.client-queue';
-import { ClientChatComponent } from './app.client-chat';
-import { ClientStompConnector } from './app.client-stomp';
+import { LoginComponent } from './login/app.login';
+import { ChatComponent } from './op-chat/app.chat';
+import { ClientChatComponent } from './client-chat/app.client-chat';
+import { ClientQueueComponent } from './op-chat/app.client-queue';
+import { StompConnector } from './stomp/app.stomp';
+import { ClientStompConnector } from './stomp/app.client-stomp';
 
 const routes: Routes = [
   { path: '', component: LoginComponent },
