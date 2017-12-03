@@ -3,8 +3,6 @@ package com.example.websocketdemo.model;
 import com.example.websocketdemo.controller.Chat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import java.util.Collection;
-import java.util.Deque;
 
 /**
  * Created by on 24/07/17.
@@ -12,24 +10,24 @@ import java.util.Deque;
 @JsonInclude(Include.NON_NULL)
 public class Parcel {
 
-    public static Parcel makeUnreadList(String author, Chat.Item[] lastN) {
+    public static Parcel makeUnreadList(String clientID, Chat.Item[] lastN) {
         Parcel p = new Parcel();
-        p.setAuthor(author);
+        p.setClientID(clientID);
         p.setType(MessageType.OP_UNREAD_LIST);
         p.setChatItems(lastN);
         return p;
     }
 
-    public static Parcel helloOp(String userID) {
+    public static Parcel helloOp(String opID) {
         Parcel p = new Parcel();
-        p.setAuthor(userID);
+        p.setOpID(opID);
         p.setType(MessageType.OP_HELLO);
         return p;
     }
     
-    public static Parcel helloCli(String userID) {
+    public static Parcel helloCli(String clientID) {
         Parcel p = new Parcel();
-        p.setAuthor(userID);
+        p.setClientID(clientID);
         p.setType(MessageType.CLI_HELLO);
         return p;
     }
@@ -51,20 +49,21 @@ public class Parcel {
 
     public static Parcel makeHisto(String clientID, Chat.Item[] toArray) {
         Parcel p = new Parcel();
-        p.setTo(clientID);
+        p.setClientID(clientID);
         p.setType(MessageType.CLI_HISTORY);
         p.setChatItems(toArray);
         return p;
     }
     
     private MessageType type;
-    private String userID;
+    private String clientId;
     private Chat.Item[] items;
     private String text;
     private String to;
     private Long ack;
     private Long cid;
-
+    private String opID;
+    
     public enum MessageType {
         CHAT,
         OP_HELLO, // when operator logs in
@@ -82,12 +81,20 @@ public class Parcel {
         this.type = type;
     }
     
-    public String getAuthor() {
-        return userID;
+    public String getClientID() {
+        return clientId;
     }
 
-    public void setAuthor(String userID) {
-        this.userID = userID;
+    public void setClientID(String clientID) {
+        this.clientId = clientID;
+    }
+    
+    public String getOpID() {
+        return opID;
+    }
+
+    public void setOpID(String opID) {
+        this.opID = opID;
     }
     
     public Chat.Item[] getChatItems() {
@@ -104,14 +111,6 @@ public class Parcel {
     
     public void setText(String text) {
         this.text = text;
-    }
-    
-    public String getTo() {
-        return to;
-    }
-    
-    public void setTo(String to) {
-        this.to = to;
     }
     
     public void setAck(Long ack) {

@@ -22,9 +22,9 @@ export class ClientQueueComponent implements OnInit {
     private onMessage(p:any) {
         if(p.type === "OP_UNREAD_LIST") {
             if(p.chatItems && p.chatItems.length > 0) {
-                let qi = this.$queue.find(qi => qi.userid == p.author);
+                let qi = this.$queue.find(qi => qi.clientID == p.clientID);
                 if(!qi) {
-                    this.$queue.push(new QueueItem(atob(p.author), p.author, p.chatItems[0].text, p.chatItems[0].id));
+                    this.$queue.push(new QueueItem(btoa(p.clientID), p.clientID, p.chatItems[0].text, p.chatItems[0].id));
                 } else {
                     qi.text = p.chatItems[0].text;
                 }
@@ -32,16 +32,16 @@ export class ClientQueueComponent implements OnInit {
         }
 
         if(p.type === "CHAT") {
-            var qi = this.$queue.find(qi => qi.userid == p.to);
+            var qi = this.$queue.find(qi => qi.clientID == p.clientID);
             if(!qi) {
-                qi = this.$queue.find(qi => qi.userid == p.author);
+                qi = this.$queue.find(qi => qi.clientID == p.clientID);
             }
             if(qi) {
                 qi.id = p.ack;
                 qi.text = p.text;
             } else {
 
-                this.$queue.push(new QueueItem("??", p.to? p.to : p.author, p.text, p.ack));
+                this.$queue.push(new QueueItem(btoa(p.clientID), p.clientID, p.text, p.ack));
             }
 
         }
@@ -50,7 +50,7 @@ export class ClientQueueComponent implements OnInit {
 
 // item to show
 export class QueueItem {
-    public constructor(public author: String, public userid: string, public text: String, public id: number){
+    public constructor(public author: String, public clientID: string, public text: String, public id: number){
 
     }
 }

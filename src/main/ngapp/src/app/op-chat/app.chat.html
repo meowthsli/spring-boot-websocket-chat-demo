@@ -13,7 +13,7 @@
 
                         </mat-card-header>
                         <mat-card-content style="height: 95%; overflow: scroll;">
-                            <chat-client-queue id="op-chat-queue" style="width: 100%;" ($clientOpen)="$onClientClick($event)">
+                            <chat-client-queue id="op-chat-queue" style="width: 100%;" ($clientOpen)="$startClientChat($event)">
                         </chat-client-queue>
                         </mat-card-content>
                     </mat-card>
@@ -23,10 +23,10 @@
                             <mat-tab-group>
                                 <mat-tab *ngFor="let d of $discussions" [label]="d.userid">
                                     <ng-template mat-tab-label>
-                                        <span>{{d.userid}}<mat-icon style="margin-left: 1em; margin-right:-1em;">close</mat-icon></span>
+                                        <span>{{d.clientID}}<mat-icon style="margin-left: 1em; margin-right:-1em;">close</mat-icon></span>
                                     </ng-template>
                                     <mat-list>
-                                        <mat-list-item *ngFor="let ci of d.$history">{{ci.username}}: {{ci.text}}</mat-list-item>
+                                        <mat-list-item *ngFor="let ci of d.$history">{{ci.opID? 'Op' : 'Cli'}}: {{ci.text}}</mat-list-item>
                                     </mat-list> 
                                     <mat-form-field>
                                         <textarea id="text-area" matInput [(ngModel)]="$text" placeholder="Введите сообщение.."></textarea>

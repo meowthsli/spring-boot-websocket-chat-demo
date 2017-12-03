@@ -39,7 +39,7 @@ export class ClientStompConnector {
             this.onStompReceived(payload)
         );
         this.stompClient.send("/app/client.hello",
-            {}, JSON.stringify({author: this.u64})
+            {}, JSON.stringify({clientID: this.u64})
         );
       }
     

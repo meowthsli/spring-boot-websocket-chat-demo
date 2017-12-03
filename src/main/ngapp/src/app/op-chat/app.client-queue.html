@@ -1,7 +1,7 @@
 <mat-list>
-    <mat-list-item *ngFor="let qi of $queue" style="width:100%; cursor: pointer" (click)="$clientOpen.emit(qi.userid)">
+    <mat-list-item *ngFor="let qi of $queue" style="width:100%; cursor: pointer" (click)="$clientOpen.emit(qi.clientID)">
         <img matListAvatar src="favicon.png" alt="">
-        <h3 matLine style="color: rgba(0,0,0,0.52)"><i>{{qi.author}}</i></h3>
+        <h3 matLine style="color: rgba(0,0,0,0.52)"><i>{{qi.clientID}}</i></h3>
         <p matLine>
         <span style="text-overflow: ellipsis">{{qi.text}} </span>
         </p>

@@ -32,7 +32,7 @@ public class ChatController {
         this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/client", Parcel.ack(chatMessage.getCid(), id));
 
         // relay cli msg to all ops
-        chatMessage.setAuthor(getCurrentUserID(smha));
+        chatMessage.setClientID(getCurrentUserID(smha));
         chatMessage.setAck(id);
         return chatMessage;
     }
@@ -42,16 +42,16 @@ public class ChatController {
     public Parcel operatorSay(@Payload Parcel opMessage, SimpMessageHeaderAccessor smha) {
         
         // append to chat
-        long id = chats.getChat(opMessage.getTo())
+        long id = chats.getChat(opMessage.getClientID())
             .appendText(opMessage.getText(), getCurrentSessionID(smha));
         
         // ack
         this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/op", Parcel.ack(opMessage.getCid(), id));
         
         // send to chat client
-        opMessage.setAuthor(getCurrentUserID(smha));
+        opMessage.setOpID(getCurrentUserID(smha));
         opMessage.setAck(id);
-        this.convertAndSendToSession(chats.getChat(opMessage.getTo()).getClientLastSession(), "/queue/client", opMessage);
+        this.convertAndSendToSession(chats.getChat(opMessage.getClientID()).getClientLastSession(), "/queue/client", opMessage);
         
         // relay to all ops
         return opMessage;
@@ -67,7 +67,7 @@ public class ChatController {
     @SendTo("/broadcast/all-ops")
     public Parcel operatorHello(@Payload Parcel opHello,
                                SimpMessageHeaderAccessor smha) {
-        setCurrentUserID(smha, opHello.getAuthor());
+        setCurrentUserID(smha, opHello.getOpID());
         
         
         for(Chat uc: chats.getUnreadChats()) {
@@ -82,9 +82,8 @@ public class ChatController {
     @SendToUser("/queue/op")
     public Parcel operatorHisto(@Payload Parcel opHisto,
                                SimpMessageHeaderAccessor smha) {
-        setCurrentUserID(smha, opHisto.getAuthor());
-        
-        Chat uc = chats.getChat(opHisto.getTo());
+
+        Chat uc = chats.getChat(opHisto.getClientID());
         Parcel p = Parcel.makeHisto(uc.getClientID(), uc.history.toArray(new Chat.Item[0]));
         
         return p;
@@ -100,7 +99,7 @@ public class ChatController {
     @SendTo("/broadcast/all-ops")
     public Parcel clientHello(@Payload Parcel clientHello,
                                SimpMessageHeaderAccessor smha) {
-        setCurrentUserID(smha, clientHello.getAuthor());
+        setCurrentUserID(smha, clientHello.getClientID());
         
         Chat uc = chats.getChat(getCurrentUserID(smha));
         uc.setLastSession(getCurrentSessionID(smha));

@@ -27,15 +27,15 @@ export class StompConnector {
         }
     }
 
-    public send(text: string, to: string) {
+    public send(text: string, clientID: string) {
         if(this.opsId) {
-            this.stompClient.send("/app/operator.say", {}, JSON.stringify({type: 'CHAT', text:text, to: to}));
+            this.stompClient.send("/app/operator.say", {}, JSON.stringify({type: 'CHAT', text:text, clientID: clientID}));
         }
     }
 
     public loadHistory(userid: string) {
         if(this.opsId) {
-            this.stompClient.send("/app/operator.histo", {}, JSON.stringify({author: this.u64, to: userid}));
+            this.stompClient.send("/app/operator.histo", {}, JSON.stringify({clientID: userid}));
         }
     }
 
@@ -44,21 +44,18 @@ export class StompConnector {
     
         this.broadcastId = this.stompClient.subscribe('/broadcast/all-ops', (payload) => this.onStompReceived(payload));
         this.opsId = this.stompClient.subscribe('/user/queue/op', (payload) => 
-            {console.log("USER/OP"); this.onStompReceived(payload);}
+            this.onStompReceived(payload)
         );
         this.stompClient.send("/app/operator.hello",
-            {}, JSON.stringify({author: this.u64})
+            {}, JSON.stringify({opID: this.u64})
         );
       }
     
       onStompError() {
-        setTimeout(()=> {
-            this.stompClient.connect(this.u64, '', () => this.onStompConnected(), () => this.onStompError());
-        }, 10000);
+        
       }
     
       onStompReceived(payload) {
-        // console.log("StompConnector::onStompReceived, payload=", payload);
         var message = JSON.parse(payload.body);
         this.incomingMessage.next(message);
       }

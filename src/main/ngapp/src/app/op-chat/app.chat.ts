@@ -22,32 +22,29 @@ export class ChatComponent implements OnInit{
   @ViewChild(MatTabGroup) $tabs: MatTabGroup;
 
   $text: string;
-  
-  $tab1Text = "Tab One";
-  $tab2Text = "Tab Two";
-
   $discussions: Array<UserChat> = new Array();
 
-  public $onClientClick(userId: string) {
+  /**
+   * Click on client 
+   */
+  public $startClientChat(clientID: string) {
     
-    let uc = this.findChat(userId);
-    if(uc) { // try to find such chat; if found, switch to
-      this.$tabs.selectedIndex = this.$discussions.findIndex(x => x == uc);
-      return;
-    } 
-
-    this.$discussions.push(new UserChat(userId, new Array())); // create chat
-    this.stomp.loadHistory(userId); // ask for history items
+    let uc = this.findChat(clientID);
+    if(!uc) { // try to find such chat; if found, switch to
+      uc = new UserChat(clientID, new Array());
+      this.$discussions.push(uc); // create chat
+      this.stomp.loadHistory(clientID); // ask for history items
+    }
+    
+    this.$tabs.selectedIndex = this.$discussions.findIndex(x => x == uc);
   }
 
   constructor(private router:Router, private uctx: UsercontextService, private stomp: StompConnector) {
-    // this.clientId = btoa(this.uctx.username);
+    
   }
 
-  // clientId: string;
-
   private findChat(userid: string) : UserChat {
-    return this.$discussions.find(uc => uc.userid == userid);
+    return this.$discussions.find(uc => uc.clientID == userid);
   }
 
   ngOnInit(): void {
@@ -56,27 +53,21 @@ export class ChatComponent implements OnInit{
     }
     this.stomp.incomingMessage.subscribe(msg => {
       if(msg.type === 'MSG_ACK') { // acknowledge of message
-        let uc = this.findChat(msg.author);
+        let uc = this.findChat(msg.clientID);
         if(uc) {
           uc.ack(msg.cid, msg.ack);
         }
       } else if(msg.type === 'CHAT') {
-        let uc = this.findChat(msg.author);
-        if(uc && msg.author != msg.to) {
-          uc.addItem(msg.id, msg.text);
-              // if(msg.author === this.clientId && msg.author != msg.to) { // TODO - replace to cli username
-              //  this.$history.push(new ChatItem(msg.id, 'CLI', msg.text, null));
-              // }
+        let uc = this.findChat(msg.clientID);
+        if(uc && msg.opID != btoa(this.uctx.username)) {
+          uc.addItem(msg.ack, msg.text, msg.opID);
         }
       } else if(msg.type === 'CLI_HISTORY') {
         if(!msg.chatItems) return;
-        let uc = this.findChat(msg.to);
+        let uc = this.findChat(msg.clientID);
         if(uc) {
           uc.addHistory(msg.chatItems);
         }
-              //for(var ci of msg.chatItems) {
-              //    this.$history.push(new ChatItem(ci.id, ci.opId?'OPS':'CLI', ci.text, null));
-              //}
       }  
     });
     this.stomp.connect(this.uctx.username);   
@@ -87,27 +78,27 @@ export class ChatComponent implements OnInit{
   public $onSendClick(chat: UserChat) {
     if(this.$text != '') {
       // this.$history.push(new ChatItem(this.cids--, 'OPS', this.$text, null));
-      chat.addItem(this.cids--, this.$text);
-      this.stomp.send(this.$text, chat.userid); // TODO
+      chat.addItem(this.cids--, this.$text, btoa(this.uctx.username));
+      this.stomp.send(this.$text, chat.clientID); // TODO
       this.$text = null;
     }
   }
 }
 
 export class ChatItem {
-  public constructor(public id, public username, public text, public date) {}
+  public constructor(public id, public username, public text, public opID, public date) {}
 }
 
 class UserChat {
   public addHistory(items: any): any {
     for(var ci of items) {
-        this.$history.push(new ChatItem(ci.id, ci.opId?'OPS':'CLI', ci.text, null));
+        this.$history.push(new ChatItem(ci.id, '*', ci.text, ci.opId, null));
     }
   }
-  constructor(public userid: string, public $history: Array<ChatItem>){}
+  constructor(public clientID: string, public $history: Array<ChatItem>){}
 
-  public addItem(id, text: string) {
-    this.$history.push(new ChatItem(id, this.userid, text, null));
+  public addItem(id, text: string, opID: string) {
+    this.$history.push(new ChatItem(id, this.clientID, text, opID, null));
   }
 
   public ack(ack: number, cid: number) {
