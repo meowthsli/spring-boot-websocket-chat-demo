@@ -4,7 +4,7 @@
                 <mat-card-title><h1>Чат с оператором</h1></mat-card-title>
             </mat-card-header>
             <mat-card-content style="height: calc(100% - 190px);">
-                <mat-list id="client-chat-panel">
+                <mat-list #scroller id="client-chat-panel">
                     <mat-list-item *ngFor="let ci of $history">{{ci.username}}: {{ci.text}}</mat-list-item>
                 </mat-list>                  
             </mat-card-content>
@@ -15,7 +15,7 @@
                     </mat-form-field>
                     <div style="text-align: right">
                     <button mat-raised-button color="accent"
-                        (click)='$onSendClick()'>Послать</button>
+                        (click)='$onSendClick()'>Отправить</button>
                     </div>
             </mat-card-actions>
         </mat-card>

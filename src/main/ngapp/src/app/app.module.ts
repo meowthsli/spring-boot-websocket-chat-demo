@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MatGridListModule, MatIcon, MatListModule} from '@angular/material';
+import {MatGridListModule, MatIcon, MatListModule, MatTabsModule} from '@angular/material';
 import {MatButtonModule, MatCheckboxModule} from '@angular/material';
 import {MatCardModule} from '@angular/material/card';
 import {MatInputModule} from '@angular/material/input';
@@ -46,6 +46,7 @@ const routes: Routes = [
     MatInputModule,
     MatIconModule,
     MatListModule,
+    MatTabsModule,
   ],
   providers: [
     UsercontextService,

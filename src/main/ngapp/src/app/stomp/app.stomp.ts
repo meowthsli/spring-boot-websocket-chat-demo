@@ -33,6 +33,12 @@ export class StompConnector {
         }
     }
 
+    public loadHistory(userid: string) {
+        if(this.opsId) {
+            this.stompClient.send("/app/operator.histo", {}, JSON.stringify({author: this.u64, to: userid}));
+        }
+    }
+
     onStompConnected() {
         console.log("Stomp connected");
     

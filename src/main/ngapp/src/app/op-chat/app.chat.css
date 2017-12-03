@@ -4,6 +4,12 @@
     margin-left: auto;
     margin-right: auto;
     margin-top: 5em;
+    height: 75vh;
+}
+
+#op-chat-queue {
+    overflow-y: auto;
+    height: 95%;
 }
 
 .chat-center {

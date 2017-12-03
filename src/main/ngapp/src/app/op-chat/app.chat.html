@@ -4,30 +4,39 @@
             <mat-card-title><h1>ЧАТ</h1></mat-card-title>
         </mat-card-header>
         <mat-card-content>
-            <div>
-                <mat-grid-list cols="4" rowHeight="100px">
-                    <mat-grid-tile rowspan="4" style="background-color: bisque; display: flex; flex-direction: column">
-                        <chat-client-queue style="width: 100%;">
+            
+            <mat-grid-list cols="4" rowHeight="120">
+                <mat-grid-tile rowspan="4">
+                    <mat-card style="height: 90%; padding: 1em;">
+                        <mat-card-header>
+                            Клиенты 
 
+                        </mat-card-header>
+                        <mat-card-content style="height: 95%; overflow: scroll;">
+                            <chat-client-queue id="op-chat-queue" style="width: 100%;" ($clientOpen)="$onClientClick($event)">
                         </chat-client-queue>
-                        
-                    </mat-grid-tile>
-                    
-                    <mat-grid-tile colspan="3" rowspan="4">
-                        
-                            <mat-list>
-                                <mat-list-item *ngFor="let ci of $history">{{ci.username}}: {{ci.text}}</mat-list-item>
-                            </mat-list> 
-                            <mat-form-field>
-                                    <textarea id="text-area" matInput [(ngModel)]="$text" placeholder="Введите сообщение.."></textarea>
-                                  </mat-form-field>
-                                
-                            <button mat-raised-button color="accent" (click)='$onSendClick()'>Send</button>
-
-                    </mat-grid-tile>
-                    
-                </mat-grid-list>
-            </div>
+                        </mat-card-content>
+                    </mat-card>
+                </mat-grid-tile>
+                <mat-grid-tile colspan="3" rowspan="4">
+                        <mat-card style="height: 90%; padding: 1em; width: calc(100% - 20px); margin-left:0.5em; margin-right: 0.5em;">
+                            <mat-tab-group>
+                                <mat-tab *ngFor="let d of $discussions" [label]="d.userid">
+                                    <ng-template mat-tab-label>
+                                        <span>{{d.userid}}<mat-icon style="margin-left: 1em; margin-right:-1em;">close</mat-icon></span>
+                                    </ng-template>
+                                    <mat-list>
+                                        <mat-list-item *ngFor="let ci of d.$history">{{ci.username}}: {{ci.text}}</mat-list-item>
+                                    </mat-list> 
+                                    <mat-form-field>
+                                        <textarea id="text-area" matInput [(ngModel)]="$text" placeholder="Введите сообщение.."></textarea>
+                                    </mat-form-field>
+                                    <button mat-raised-button color="accent" (click)='$onSendClick(d)'>Отправить</button>
+                                </mat-tab>                                
+                            </mat-tab-group>    
+                        </mat-card>
+                </mat-grid-tile>
+            </mat-grid-list>
         </mat-card-content>
     </mat-card>
 </section>

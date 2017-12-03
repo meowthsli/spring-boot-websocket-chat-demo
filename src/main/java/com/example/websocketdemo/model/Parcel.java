@@ -48,6 +48,14 @@ public class Parcel {
         p.setCid(cid);
         return p;
     }
+
+    public static Parcel makeHisto(String clientID, Chat.Item[] toArray) {
+        Parcel p = new Parcel();
+        p.setTo(clientID);
+        p.setType(MessageType.CLI_HISTORY);
+        p.setChatItems(toArray);
+        return p;
+    }
     
     private MessageType type;
     private String userID;

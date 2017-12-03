@@ -8,6 +8,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -75,6 +76,18 @@ public class ChatController {
         }
         
         return Parcel.helloOp(getCurrentUserID(smha));
+    }
+    
+    @MessageMapping("/operator.histo")
+    @SendToUser("/queue/op")
+    public Parcel operatorHisto(@Payload Parcel opHisto,
+                               SimpMessageHeaderAccessor smha) {
+        setCurrentUserID(smha, opHisto.getAuthor());
+        
+        Chat uc = chats.getChat(opHisto.getTo());
+        Parcel p = Parcel.makeHisto(uc.getClientID(), uc.history.toArray(new Chat.Item[0]));
+        
+        return p;
     }
     
     /**
