@@ -85,9 +85,9 @@ export class ChatComponent implements OnInit{
 
   cids : number = -1;
 
-  public $onSendClick(chat: UserChat) {
+  public $onSendClick() {
     if(this.$text != '') {
-      // this.$history.push(new ChatItem(this.cids--, 'OPS', this.$text, null));
+      var chat = this.$discussions[this.$tabs.selectedIndex];
       chat.addItem(this.cids--, this.$text, btoa(this.uctx.username));
       this.stomp.send(this.$text, chat.clientID); // TODO
       this.$text = null;
