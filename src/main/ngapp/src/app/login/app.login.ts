@@ -3,7 +3,6 @@ import { NgModel, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UsercontextService } from '../app.usercontext';
 
-
 /**
  * @title Main app component
  */

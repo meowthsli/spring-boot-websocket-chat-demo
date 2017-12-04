@@ -7,7 +7,6 @@ import * as SockJS from 'sockjs-client';
 import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { UsercontextService } from '../app.usercontext';
 import { StompConnector } from '../stomp/app.stomp';
-import { MatTabGroup } from '@angular/material';
 
 
 /**
@@ -19,7 +18,7 @@ import { MatTabGroup } from '@angular/material';
   styleUrls: ['./app.chat.css']
 })
 export class ChatComponent implements OnInit{
-  @ViewChild(MatTabGroup) $tabs: MatTabGroup;
+  /*@ViewChild(MatTabGroup)*/ $tabs: any;
 
   $text: string;
   $discussions: Array<UserChat> = new Array();
