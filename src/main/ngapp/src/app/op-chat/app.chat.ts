@@ -39,6 +39,16 @@ export class ChatComponent implements OnInit{
     this.$tabs.selectedIndex = this.$discussions.findIndex(x => x == uc);
   }
 
+  /**
+   * Close chat by click
+   * @param item 
+   */
+  public $onCloseClick(item: UserChat) {
+    console.log('Tab Click');
+    var i = this.$discussions.findIndex(x => x == item);
+    this.$discussions.splice(i, 1);
+  }
+
   constructor(private router:Router, private uctx: UsercontextService, private stomp: StompConnector) {
     
   }
@@ -86,7 +96,7 @@ export class ChatComponent implements OnInit{
 }
 
 export class ChatItem {
-  public constructor(public id, public username, public text, public opID, public date) {}
+  public constructor(public id, public username, public text, public opId, public date) {}
 }
 
 class UserChat {

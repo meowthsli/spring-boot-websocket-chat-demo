@@ -3,7 +3,7 @@
     padding: 3em;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 5em;
+    margin-top: 3em;
     height: 75vh;
 }
 
@@ -12,6 +12,71 @@
     height: 95%;
 }
 
-.chat-center {
-    
+#chat-lines {
+    height: calc(100%); 
+    width: 100%;
+
+    list-style: none;
+    margin-left: -3em;
+    overflow-y: auto;
+}
+
+.chat-item {
+    font-size: 14px;
+    display:flex;
+    padding: 0.5em;
+    width: 70%;
+}
+
+.chat-item-client {
+    justify-content: flex-end;
+    margin-left: auto;
+}
+
+.chat-avatar-client {
+    background-image: url('/assets/client-ava.jpg');
+    background-size: cover;
+    min-height: 4em;
+    min-width: 4em;
+    width: 4em;
+    height: 4em;
+    border-radius: 3em;
+    margin-right: 1em;
+}
+
+.chat-avatar-op {
+    background-image: url('/assets/op-ava.png');
+    background-size: cover;
+    min-height: 4em;
+    min-width: 4em;
+    width: 4em;
+    height: 4em;
+    border-radius: 3em;
+    margin-left: 1em;
+}
+
+.chat-client-text {
+    /*border-style: solid;*/
+    border-color: rgba(0,0, 0, 0.17);
+    border-width: 1px;
+    border-radius: 6px;
+    min-width: 8em;
+    padding: 0.5em 0.9em;
+    margin-bottom: 0px;
+}
+
+.chat-color-client {
+    background-color: pink;
+}
+
+.chat-color-op {
+    background-color: rgb(157, 136, 248);
+}
+
+.chat-client-at {
+    font-size: 9px;
+    color: darkgray;
+    float: right;
+    clear: both;
+    font-style: italic;
 }

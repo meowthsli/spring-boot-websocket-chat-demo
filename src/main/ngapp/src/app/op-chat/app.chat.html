@@ -5,7 +5,7 @@
         </mat-card-header>
         <mat-card-content>
             
-            <mat-grid-list cols="4" rowHeight="120">
+            <mat-grid-list cols="4" rowHeight="140">
                 <mat-grid-tile rowspan="4">
                     <mat-card style="height: 90%; padding: 1em;">
                         <mat-card-header>
@@ -23,11 +23,21 @@
                             <mat-tab-group>
                                 <mat-tab *ngFor="let d of $discussions" [label]="d.userid">
                                     <ng-template mat-tab-label>
-                                        <span>{{d.clientID}}<mat-icon style="margin-left: 1em; margin-right:-1em;">close</mat-icon></span>
+                                        <span>{{d.clientID}}</span>
                                     </ng-template>
-                                    <mat-list>
-                                        <mat-list-item *ngFor="let ci of d.$history">{{ci.opID? 'Op' : 'Cli'}}: {{ci.text}}</mat-list-item>
-                                    </mat-list> 
+                                    <ul id="chat-lines">
+                                            <li *ngFor="let ci of d.$history" class="chat-item" [ngClass]="{'chat-item-client':ci.opId}">
+                                                <span *ngIf="!ci.opId" class="chat-avatar-client"></span>
+                                                <div>
+                                                    <p class="chat-client-text"
+                                                        [ngClass]="{'chat-color-op':!ci.opId, 'chat-color-client':ci.opId}">
+                        
+                                                        {{ci.text}}</p>
+                                                    <span class="chat-client-at">{{ci.at}}</span>
+                                                </div> 
+                                                <span *ngIf="ci.opId" class="chat-avatar-op"></span>
+                                            </li>
+                                    </ul>
                                     <mat-form-field>
                                         <textarea id="text-area" matInput [(ngModel)]="$text" placeholder="Введите сообщение.."></textarea>
                                     </mat-form-field>
