@@ -25,8 +25,8 @@ export class ClientChatComponent implements OnInit, AfterViewChecked {
         private rendere: Renderer2 ) {}
     
     public $onSendClick() {
-        this.$history.push(new ChatItem(this.cids--, 'ME', this.$text, null));
-        this.stomp.send(this.$text);
+        this.$history.push(new ChatItem(this.cids--, null, this.$text, '11:22'));
+        this.stomp.send(this.$text, this.cids);
         this.$text = null;
         this.scrollDown();
     }
@@ -46,11 +46,11 @@ export class ClientChatComponent implements OnInit, AfterViewChecked {
                     item.id = msg.ack;
                 }
             } else if(msg.type === 'CHAT') {                
-                this.$history.push(new ChatItem(msg.id, 'OPS', msg.text, null));
+                this.$history.push(new ChatItem(msg.id, msg.opID, msg.text, undefined));
                 this.scrollDown();
             } else if(msg.type === 'CLI_HISTORY') {
                 for(var ci of msg.chatItems) {
-                    this.$history.push(new ChatItem(ci.id, ci.opId?'OPS':'ME', ci.text, null));
+                    this.$history.push(new ChatItem(ci.id, ci.opId, ci.text, undefined));
                 }
                 this.scrollDown();
             }
@@ -79,5 +79,5 @@ export class ClientChatComponent implements OnInit, AfterViewChecked {
 }
 
 export class ChatItem {
-    public constructor(public id, public username, public text, public date) {}
+    public constructor(public id, public opId, public text, public at) {}
 }

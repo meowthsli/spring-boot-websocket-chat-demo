@@ -4,13 +4,25 @@
                 <mat-card-title><h1>Чат с оператором</h1></mat-card-title>
             </mat-card-header>
             <mat-card-content style="height: calc(100% - 190px);">
-                <mat-list #scroller id="client-chat-panel">
-                    <mat-list-item *ngFor="let ci of $history">{{ci.username}}: {{ci.text}}</mat-list-item>
-                </mat-list>                  
+         
+                <ul id="chat-lines">
+                    <li *ngFor="let ci of $history" class="chat-item" [ngClass]="{'chat-item-client':!ci.opId}">
+                        <span *ngIf="ci.opId" class="chat-avatar-client"></span>
+                        <div>
+                            <p class="chat-client-text"
+                                [ngClass]="{'chat-color-op':ci.opId, 'chat-color-client':!ci.opId}">
+
+                                {{ci.text}}</p>
+                            <span class="chat-client-at">{{ci.at}}</span>
+                        </div> 
+                        <span *ngIf="!ci.opId" class="chat-avatar-op"></span>
+                    </li>
+                </ul>
+                 
             </mat-card-content>
-            <mat-card-actions class="client-chat-card-field">
-                    <mat-form-field class="client-chat-card-field">
-                        <textarea id="text-area" matInput [(ngModel)]="$text"
+            <mat-card-actions class="client-chat-card-action">
+                    <mat-form-field class="client-chat-card-action">
+                        <textarea id="text-area" matInput [(ngModel)]="$text" (keydown.enter)="$onSendClick();false"
                             placeholder="Введите сообщение.."></textarea>
                     </mat-form-field>
                     <div style="text-align: right">

@@ -26,9 +26,9 @@ export class ClientStompConnector {
         }
     }
 
-    public send(text: string) {
+    public send(text: string, cid: number) {
         if(this.clientId) {
-            this.stompClient.send("/app/client.say", {}, JSON.stringify({type: 'CHAT', text:text}));
+            this.stompClient.send("/app/client.say", {}, JSON.stringify({type: 'CHAT', text:text, cid: cid}));
         }
     }
 
