@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, Renderer2, AfterViewChecked } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { NgModel, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
@@ -18,11 +18,10 @@ export class ClientChatComponent implements OnInit, AfterViewChecked {
     $text: string;
     $history: Array<ChatItem> = new Array();
 
-    @ViewChild('scroller') private $chatHistory: any;
+   private $chatHistory: any;
     
 
-    constructor(private router:Router, private uctx: UsercontextService, private stomp: ClientStompConnector,
-        private rendere: Renderer2 ) {}
+    constructor(private router:Router, private uctx: UsercontextService, private stomp: ClientStompConnector) {}
     
     public $onSendClick() {
         this.$history.push(new ChatItem(this.cids--, null, this.$text, '11:22'));
@@ -70,11 +69,11 @@ export class ClientChatComponent implements OnInit, AfterViewChecked {
     }
 
     ngAfterViewChecked(): void {
-        if(this.toUpdate) {
+        /*if(this.toUpdate) {
             this.toUpdate = false;
             let element = document.getElementById('client-chat-panel');
             element.scrollTop = this.$history.length * 100;
-        }
+        }*/
     }
 }
 

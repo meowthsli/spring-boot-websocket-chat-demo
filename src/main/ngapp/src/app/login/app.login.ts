@@ -26,7 +26,7 @@ export class LoginComponent {
     }
 
     this.uctx.username = this.$username;
-    this.router.navigateByUrl('/ops-chat'), {skipLocationChange: true};
+    this.router.navigateByUrl('/ops-chat'), {skipLocationChange: false};
   }
 
   public $onClientClick() {
@@ -35,6 +35,6 @@ export class LoginComponent {
     }
 
     this.uctx.username = this.$username;
-    this.router.navigateByUrl('/clients-chat'), {skipLocationChange: true};
+    this.router.navigateByUrl('/clients-chat'), {skipLocationChange: false};
   }
 }

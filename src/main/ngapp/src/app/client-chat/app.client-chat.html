@@ -33,3 +33,35 @@
         </mat-card>
     </section>
 -->
+
+<nb-layout>
+        <nb-layout-column>
+            <div class="col-md-6 offset-md-3">
+                <nb-card>
+                    <nb-card-header> Чат с оператором </nb-card-header>
+                    <nb-card-body>
+                        <ul id="chat-lines">
+                            <li *ngFor="let ci of $history" [ngClass]="{'chat-line-fromclient':!ci.opId}">
+                                <span *ngIf="!ci.opId" class="chat-line-avatar-op"></span>
+                                <div>
+                                    <p>
+                                        {{ci.text}}
+                                    </p>
+                                    <span class="chat-line-time">{{ci.at}}</span>
+                                </div>
+                            </li>
+                        </ul> 
+                    </nb-card-body>
+                    <nb-card-body>
+                        <div class="form-group">
+                            <textarea class="form-control" placeholder="Введите текст" rows="2" (keydown.enter)="$onSendClick();false" [(ngModel)]="$text"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary" type="submit" (click)='$onSendClick()'>Отправить</button>
+                        </div>
+                    </nb-card-body>
+                    
+                </nb-card>
+            </div>
+        </nb-layout-column>
+    </nb-layout>

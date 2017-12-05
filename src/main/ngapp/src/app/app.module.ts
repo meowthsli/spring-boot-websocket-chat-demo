@@ -4,22 +4,21 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
 import { NbThemeModule } from '@nebular/theme';
-import { NbSidebarModule, NbLayoutModule, NbSidebarService } from '@nebular/theme';
+import { NbSidebarModule, NbLayoutModule, NbSidebarService, NbCardModule } from '@nebular/theme';
 
 import { AppComponent } from './app.component';
 import { UsercontextService } from './app.usercontext';
 import { LoginComponent } from './login/app.login';
 //import { ChatComponent } from './op-chat/app.chat';
-//import { ClientChatComponent } from './client-chat/app.client-chat';
+import { ClientChatComponent } from './client-chat/app.client-chat';
 //import { ClientQueueComponent } from './op-chat/app.client-queue';
-//import { StompConnector } from './stomp/app.stomp';
-//import { ClientStompConnector } from './stomp/app.client-stomp';
+import { StompConnector } from './stomp/app.stomp';
+import { ClientStompConnector } from './stomp/app.client-stomp';
 
 const routes: Routes = [
-  { path: '', component: LoginComponent },
-  /*{ path: 'ops-chat', component: ChatComponent },
-  { path: 'clients-chat', component: ClientChatComponent },
-  */
+  { path: '', component: LoginComponent, pathMatch: "full" },
+  /*{ path: 'ops-chat', component: ChatComponent },*/
+  { path: 'clients-chat', component: ClientChatComponent, pathMatch: "full" },
 ];
 
 @NgModule({
@@ -28,7 +27,7 @@ const routes: Routes = [
     LoginComponent,
     // ChatComponent,
     // ClientQueueComponent,
-    // ClientChatComponent,
+    ClientChatComponent,
   ],
   imports: [
     RouterModule.forRoot(routes, {}),
@@ -39,11 +38,12 @@ const routes: Routes = [
     NbThemeModule.forRoot({ name: 'default' }),
     RouterModule,
     NbThemeModule,
+    NbCardModule,
   ],
   providers: [
     UsercontextService,
-    // StompConnector,
-    // ClientStompConnector,
+    StompConnector,
+    ClientStompConnector,
     NbSidebarService,
   ],
   bootstrap: [
