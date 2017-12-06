@@ -1,6 +1,7 @@
 package com.example.websocketdemo.controller;
 
 import com.example.websocketdemo.model.Parcel;
+import java.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -27,14 +28,12 @@ public class ChatController {
     @SendTo("/broadcast/all-ops")
     public Parcel clientSay(@Payload Parcel chatMessage, SimpMessageHeaderAccessor smha) {
     
-        long id = chats.getChat(getCurrentUserID(smha))
+        Chat.Item item = chats.getChat(getCurrentUserID(smha))
             .appendText(chatMessage.getText(), null);
-        this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/client", Parcel.ack(chatMessage.getCid(), id));
+        this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/client", Parcel.ack(chatMessage.getCid(), item.id, item.at));
 
         // relay cli msg to all ops
-        chatMessage.setClientID(getCurrentUserID(smha));
-        chatMessage.setAck(id);
-        return chatMessage;
+        return Parcel.makeChatMessage(getCurrentUserID(smha), item, chatMessage.getCid());
     }
     
     @MessageMapping("/operator.say")
@@ -42,19 +41,18 @@ public class ChatController {
     public Parcel operatorSay(@Payload Parcel opMessage, SimpMessageHeaderAccessor smha) {
         
         // append to chat
-        long id = chats.getChat(opMessage.getClientID())
-            .appendText(opMessage.getText(), getCurrentSessionID(smha));
+        Chat.Item item = chats.getChat(opMessage.getClientID())
+            .appendText(opMessage.getText(), getCurrentUserID(smha));
         
         // ack
-        this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/op", Parcel.ack(opMessage.getCid(), id));
+        this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/op", Parcel.ack(opMessage.getCid(), item.id, item.at));
         
         // send to chat client
-        opMessage.setOpID(getCurrentUserID(smha));
-        opMessage.setAck(id);
-        this.convertAndSendToSession(chats.getChat(opMessage.getClientID()).getClientLastSession(), "/queue/client", opMessage);
+        Parcel msg = Parcel.makeChatMessage(opMessage.getClientID(), item, opMessage.getCid());
+        this.convertAndSendToSession(chats.getChat(opMessage.getClientID()).getClientLastSession(), "/queue/client", msg);
         
         // relay to all ops
-        return opMessage;
+        return msg;
     }
 
     /**
@@ -104,7 +102,7 @@ public class ChatController {
         Chat uc = chats.getChat(getCurrentUserID(smha));
         uc.setLastSession(getCurrentSessionID(smha));
         
-        Parcel p = Parcel.makeClientMessages(getCurrentUserID(smha), uc.getLastN(20));
+        Parcel p = Parcel.makeClientHistory(getCurrentUserID(smha), uc.getLastN(20));
         this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/client", p);     
         
         return Parcel.helloCli(uc.getClientID());

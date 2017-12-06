@@ -1,19 +1,7 @@
-<!--
-    <mat-list>
-    <mat-list-item *ngFor="let qi of $queue" style="width:100%; cursor: pointer" (click)="$clientOpen.emit(qi.clientID)">
-        <img matListAvatar src="favicon.png" alt="">
-        <h3 matLine style="color: rgba(0,0,0,0.52)"><i>{{qi.clientID}}</i></h3>
-        <p matLine>
-        <span style="text-overflow: ellipsis">{{qi.text}} </span>
-        </p>
-        <span style="color: rgba(0,0,0,0.52)">qi.at</span>    
-    </mat-list-item>
-</mat-list>
--->
 <nb-tabset>
-    <nb-tab tabTitle="Очередь">
+    <nb-tab tabTitle="Очередь" class="queue">
         <div class="contact" *ngFor="let qi of $queue" style="cursor: pointer" (click)="$clientOpen.emit(qi.clientID)">
-            <nb-user size="large" [name]="qi.clientID" [title]="qi.text"></nb-user>
+            <nb-user size="large" [name]="qi.clientID | atob" [title]="qi.text"></nb-user>
         </div>
     </nb-tab>
     <nb-tab tabTitle="Поиск">

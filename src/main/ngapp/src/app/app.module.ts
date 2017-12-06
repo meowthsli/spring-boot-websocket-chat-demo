@@ -14,6 +14,9 @@ import { ClientChatComponent } from './client-chat/app.client-chat';
 import { ClientQueueComponent } from './op-chat/app.client-queue';
 import { StompConnector } from './stomp/app.stomp';
 import { ClientStompConnector } from './stomp/app.client-stomp';
+import { BtoaPipe, AtobPipe } from './b64.pipe';
+import { CapitalizePipe } from './pipes/capitalize';
+import { TimeformatPipe } from './pipes/time-formatter';
 
 const routes: Routes = [
   { path: '', component: LoginComponent, pathMatch: "full" },
@@ -28,6 +31,10 @@ const routes: Routes = [
     ChatComponent,
     ClientQueueComponent,
     ClientChatComponent,
+    BtoaPipe,
+    AtobPipe,
+    CapitalizePipe,
+    TimeformatPipe
   ],
   imports: [
     RouterModule.forRoot(routes, {}),

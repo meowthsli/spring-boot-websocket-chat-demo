@@ -1,6 +1,7 @@
 import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { Subject } from 'rxjs/Subject';
+import { ChatItem } from '../client-chat/app.client-chat';
 
 export class ClientStompConnector {
     public incomingMessage = new Subject<any>();
@@ -13,7 +14,7 @@ export class ClientStompConnector {
     public connect(username: string) {
         if(!this.clientId) {
             this.u64 = btoa(username);
-            this.socket = new SockJS('http://localhost:8080/ws');
+            this.socket = new SockJS('http://192.168.1.134:8080/ws');
             this.stompClient = Stomp.over(this.socket);
             this.stompClient.connect(this.u64, '', () => this.onStompConnected(), () => this.onStompError());
         }
@@ -26,9 +27,9 @@ export class ClientStompConnector {
         }
     }
 
-    public send(text: string, cid: number) {
+    public send(ci: ChatItem) {
         if(this.clientId) {
-            this.stompClient.send("/app/client.say", {}, JSON.stringify({type: 'CHAT', text:text, cid: cid}));
+            this.stompClient.send("/app/client.say", {}, JSON.stringify({type: 'SAY', text:ci.text, cid: ci.id}));
         }
     }
 

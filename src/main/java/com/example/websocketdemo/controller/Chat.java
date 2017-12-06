@@ -52,10 +52,10 @@ public class Chat {
         this.locker = null;
     }
     
-    synchronized long appendText(String text, String opId) {
-        long id = ids++;
-        this.history.add(new Item(id, text, ZonedDateTime.now(), opId));
-        return id;
+    synchronized Item appendText(String text, String opId) {
+        Item item = new Item(ids++, text, Instant.now(), opId);
+        this.history.add(item);
+        return item;
     }
 
     public void setLastSession(String sessionID) {
@@ -72,14 +72,14 @@ public class Chat {
     
     public final class Item {
         
-        public Item(long id, String text, ZonedDateTime at, String opId) {
+        public Item(long id, String text, Instant at, String opId) {
             this.id = id;
             this.text = text;
             this.at = at;
             this.opId = opId;
         }
         public String text;
-        public ZonedDateTime at;
+        public Instant at;
         public long id;
         public  String opId;
     }

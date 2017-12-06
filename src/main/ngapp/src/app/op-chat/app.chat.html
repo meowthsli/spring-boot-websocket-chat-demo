@@ -60,6 +60,7 @@
             <div class="col-lg-3">
                 <nb-card>
                     <chat-client-queue ($clientOpen)="$startClientChat($event)"></chat-client-queue>
+                    <nb-card-footer></nb-card-footer>
                 </nb-card>
             </div>
             <div class="col-lg-9" *ngIf="$discussions.length == 0">
@@ -71,15 +72,15 @@
             <div class="col-lg-9">
                 <nb-card>
                     <nb-tabset>
-                        <nb-tab *ngFor="let d of $discussions" [tabTitle]="d.clientID" style="padding: 1.25rem;">
+                        <nb-tab *ngFor="let d of $discussions" [tabTitle]="d.clientID | atob" style="padding: 1.25rem;">
                             <ul class="chat-lines" id="{{d.clientID}}">
-                                <li *ngFor="let ci of d.$history" [ngClass]="{'chat-line-fromop':ci.opId}">
+                                <li *ngFor="let ci of d.$history" [class.chat-line-fromop]="ci.opId" [class.noack]="ci.id == null">
                                     <span *ngIf="!ci.opId" class="chat-line-avatar-op"></span>
                                     <div>
                                         <p>
-                                            {{ci.text}}
+                                            {{ci.text | capitalize }}
                                         </p>
-                                        <span class="chat-line-time">{{ci.at}}</span>
+                                        <span class="chat-line-time">{{ci.at | timeformat }}</span>
                                     </div>
                                 </li>
                             </ul> 

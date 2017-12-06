@@ -9,7 +9,11 @@ import { UsercontextService } from '../app.usercontext';
 import { StompConnector } from '../stomp/app.stomp';
 
 import { NbTabsetComponent } from '@nebular/theme/components/tabset/tabset.component';
+import {BtoaPipe, AtobPipe} from '../b64.pipe';
+import {CapitalizePipe} from '../pipes/capitalize';
+import { TimeformatPipe } from '../pipes/time-formatter';
 
+import * as moment from 'moment';
 
 /**
  * @title Main app component
@@ -17,7 +21,7 @@ import { NbTabsetComponent } from '@nebular/theme/components/tabset/tabset.compo
 @Component({
   selector: 'app-chat',
   templateUrl: './app.chat.html',
-  styleUrls: ['./app.chat.css']
+  styleUrls: ['./app.chat.css'],
 })
 export class ChatComponent implements OnInit {
 
@@ -71,14 +75,15 @@ export class ChatComponent implements OnInit {
         }
       } else if(msg.type === 'CHAT') {
         let uc = this.findChat(msg.clientID);
-        if(uc && msg.opID != btoa(this.uctx.username)) {
-          uc.addItem(msg.ack, msg.text, msg.opID);
+        if(uc) {
+          uc.addHistory(btoa(this.uctx.username), msg.chatItems);
+          this.scrollDown(uc);
         }
       } else if(msg.type === 'CLI_HISTORY') {
         if(!msg.chatItems) return;
         let uc = this.findChat(msg.clientID);
         if(uc) {
-          uc.addHistory(msg.chatItems);
+          uc.addHistory(null, msg.chatItems);
           this.scrollDown(uc);
         }
       }  
@@ -88,8 +93,8 @@ export class ChatComponent implements OnInit {
 
   public $onSendClick(chat: UserChat) {
     if(chat.$text != '') {
-      chat.addItem(this.cids--, chat.$text, btoa(this.uctx.username));
-      this.stomp.send(chat.$text, chat.clientID); // TODO
+      let ci = chat.addItem(this.cids--, chat.$text, btoa(this.uctx.username), moment());
+      this.stomp.send(chat.clientID, ci); 
       chat.$text = null;
       this.scrollDown(chat);
     }
@@ -106,21 +111,25 @@ export class ChatComponent implements OnInit {
 }
 
 export class ChatItem {
-  public constructor(public id, public username, public text, public opId, public at) {}
+  public constructor(public id, public username, public text, public opId, public at: moment.Moment) {}
 }
 
 class UserChat {
   public $text: string;
 
-  public addHistory(items: any): any {
-    for(var ci of items) {
-        this.$history.push(new ChatItem(ci.id, '*', ci.text, ci.opId, '12:35'));
+  public addHistory(opId: string, jsonItems: any): any {
+    for(var ci of jsonItems) {
+      if(!opId || opId != ci.opId ) { // skip our
+        this.$history.push(new ChatItem(ci.id, null, ci.text, ci.opId, moment(ci.at*1000)));
+      }
     }
   }
   constructor(public clientID: string, public $history: Array<ChatItem>){}
 
-  public addItem(id, text: string, opID: string) {
-    this.$history.push(new ChatItem(id, this.clientID, text, opID, '12:27'));
+  public addItem(id, text: string, opID: string, at: moment.Moment) {
+    let ci = new ChatItem(id, this.clientID, text, opID, at)
+    this.$history.push(ci);
+    return ci;
   }
 
   public ack(ack: number, cid: number) {

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { UsercontextService } from '../app.usercontext';
 import { ClientStompConnector } from '../stomp/app.client-stomp';
+import * as moment from 'moment';
 
 /**
  * @title Main app component
@@ -21,8 +22,9 @@ export class ClientChatComponent implements OnInit {
     constructor(private router:Router, private uctx: UsercontextService, private stomp: ClientStompConnector) {}
     
     public $onSendClick() {
-        this.$history.push(new ChatItem(this.cids--, null, this.$text, '11:22'));
-        this.stomp.send(this.$text, this.cids);
+        let ci = new ChatItem(this.cids--, null, this.$text, moment());
+        this.$history.push(ci);
+        this.stomp.send(ci);
         this.$text = null;
         this.scrollDown();
     }
@@ -40,12 +42,14 @@ export class ClientChatComponent implements OnInit {
                 if(item) {
                     item.id = msg.ack;
                 }
-            } else if(msg.type === 'CHAT') {                
-                this.$history.push(new ChatItem(msg.id, msg.opID, msg.text, undefined));
+            } else if(msg.type === 'CHAT') {
+                for(var ci of msg.chatItems) {
+                    this.$history.push(new ChatItem(ci.id, ci.opId, ci.text, moment(ci.at*1000)));
+                }
                 this.scrollDown();
             } else if(msg.type === 'CLI_HISTORY') {
                 for(var ci of msg.chatItems) {
-                    this.$history.push(new ChatItem(ci.id, ci.opId, ci.text, undefined));
+                    this.$history.push(new ChatItem(ci.id, ci.opId, ci.text, moment(ci.at*1000)));
                 }
                 this.scrollDown();
             }
@@ -64,5 +68,5 @@ export class ClientChatComponent implements OnInit {
 }
 
 export class ChatItem {
-    public constructor(public id, public opId, public text, public at) {}
+    public constructor(public id, public opId, public text, public at: moment.Moment) {}
 }

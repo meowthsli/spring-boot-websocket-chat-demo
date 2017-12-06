@@ -5,13 +5,13 @@
                 <nb-card-header>Чат с оператором </nb-card-header>
                 <nb-card-body>
                     <ul id="chat-lines">
-                        <li *ngFor="let ci of $history" [ngClass]="{'chat-line-fromclient':!ci.opId}">
+                        <li *ngFor="let ci of $history" [class.chat-line-fromclient]="!ci.opId">
                             <span *ngIf="ci.opId" class="chat-line-avatar-op"></span>
                             <div>
                                 <p>
-                                    {{ci.text}}
+                                    {{ci.text | capitalize}}
                                 </p>
-                                <span class="chat-line-time">{{ci.at}}</span>
+                                <span class="chat-line-time">{{ci.at | timeformat }}</span>
                             </div>
                         </li>
                     </ul> 
