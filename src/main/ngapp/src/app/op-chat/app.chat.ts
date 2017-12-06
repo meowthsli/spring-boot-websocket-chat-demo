@@ -7,8 +7,13 @@ import * as SockJS from 'sockjs-client';
 import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { UsercontextService } from '../app.usercontext';
 import { StompConnector } from '../stomp/app.stomp';
-import { MatTabGroup } from '@angular/material';
 
+import { NbTabsetComponent } from '@nebular/theme/components/tabset/tabset.component';
+import {BtoaPipe, AtobPipe} from '../b64.pipe';
+import {CapitalizePipe} from '../pipes/capitalize';
+import { TimeformatPipe } from '../pipes/time-formatter';
+
+import * as moment from 'moment';
 
 /**
  * @title Main app component
@@ -16,27 +21,29 @@ import { MatTabGroup } from '@angular/material';
 @Component({
   selector: 'app-chat',
   templateUrl: './app.chat.html',
-  styleUrls: ['./app.chat.css']
+  styleUrls: ['./app.chat.css'],
 })
-export class ChatComponent implements OnInit{
-  @ViewChild(MatTabGroup) $tabs: MatTabGroup;
+export class ChatComponent implements OnInit {
 
-  $text: string;
+  @ViewChild(NbTabsetComponent) public $tabs : NbTabsetComponent;
   $discussions: Array<UserChat> = new Array();
 
   /**
    * Click on client 
    */
   public $startClientChat(clientID: string) {
-    
     let uc = this.findChat(clientID);
     if(!uc) { // try to find such chat; if found, switch to
       uc = new UserChat(clientID, new Array());
       this.$discussions.push(uc); // create chat
       this.stomp.loadHistory(clientID); // ask for history items
+      setTimeout(() => {
+        this.$tabs.selectTab(this.$tabs.tabs.last);
+      }, 0);
+    } else {
+      let ucidx = this.$discussions.findIndex(c => c == uc);
+      this.$tabs.selectTab(this.$tabs.tabs.toArray()[ucidx]);
     }
-    
-    this.$tabs.selectedIndex = this.$discussions.findIndex(x => x == uc);
   }
 
   /**
@@ -44,7 +51,6 @@ export class ChatComponent implements OnInit{
    * @param item 
    */
   public $onCloseClick(item: UserChat) {
-    console.log('Tab Click');
     var i = this.$discussions.findIndex(x => x == item);
     this.$discussions.splice(i, 1);
   }
@@ -69,46 +75,61 @@ export class ChatComponent implements OnInit{
         }
       } else if(msg.type === 'CHAT') {
         let uc = this.findChat(msg.clientID);
-        if(uc && msg.opID != btoa(this.uctx.username)) {
-          uc.addItem(msg.ack, msg.text, msg.opID);
+        if(uc) {
+          uc.addHistory(btoa(this.uctx.username), msg.chatItems);
+          this.scrollDown(uc);
         }
       } else if(msg.type === 'CLI_HISTORY') {
         if(!msg.chatItems) return;
         let uc = this.findChat(msg.clientID);
         if(uc) {
-          uc.addHistory(msg.chatItems);
+          uc.addHistory(null, msg.chatItems);
+          this.scrollDown(uc);
         }
       }  
     });
-    this.stomp.connect(this.uctx.username);   
+    this.stomp.connect(this.uctx.username);
   }
 
-  cids : number = -1;
-
-  public $onSendClick() {
-    if(this.$text != '') {
-      var chat = this.$discussions[this.$tabs.selectedIndex];
-      chat.addItem(this.cids--, this.$text, btoa(this.uctx.username));
-      this.stomp.send(this.$text, chat.clientID); // TODO
-      this.$text = null;
+  public $onSendClick(chat: UserChat) {
+    if(chat.$text != '') {
+      let ci = chat.addItem(this.cids--, chat.$text, btoa(this.uctx.username), moment());
+      this.stomp.send(chat.clientID, ci); 
+      chat.$text = null;
+      this.scrollDown(chat);
     }
   }
+
+  private scrollDown(d: UserChat) {
+    setTimeout(() =>  {
+        let element = document.getElementById(d.clientID);
+        element.scrollTop = element.scrollHeight ;
+    }, 0);
+}
+
+  private cids : number = -1;
 }
 
 export class ChatItem {
-  public constructor(public id, public username, public text, public opId, public date) {}
+  public constructor(public id, public username, public text, public opId, public at: moment.Moment) {}
 }
 
 class UserChat {
-  public addHistory(items: any): any {
-    for(var ci of items) {
-        this.$history.push(new ChatItem(ci.id, '*', ci.text, ci.opId, null));
+  public $text: string;
+
+  public addHistory(opId: string, jsonItems: any): any {
+    for(var ci of jsonItems) {
+      if(!opId || opId != ci.opId ) { // skip our
+        this.$history.push(new ChatItem(ci.id, null, ci.text, ci.opId, moment(ci.at*1000)));
+      }
     }
   }
   constructor(public clientID: string, public $history: Array<ChatItem>){}
 
-  public addItem(id, text: string, opID: string) {
-    this.$history.push(new ChatItem(id, this.clientID, text, opID, null));
+  public addItem(id, text: string, opID: string, at: moment.Moment) {
+    let ci = new ChatItem(id, this.clientID, text, opID, at)
+    this.$history.push(ci);
+    return ci;
   }
 
   public ack(ack: number, cid: number) {

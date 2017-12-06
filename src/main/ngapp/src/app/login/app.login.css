@@ -1,15 +1,4 @@
-#login-card {
-    width: 40%;
-    padding: 4em;
-    margin: auto;
-    margin-top: 10em;
-}
-
-#login-card-actions {
-    text-align: center;
-}
-
-.login-card-field {
-    padding: 1em;
-    width: 90%;
+.pushout {
+    display: flex;
+    justify-content: space-between;
 }

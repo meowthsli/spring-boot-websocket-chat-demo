@@ -3,12 +3,8 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MatGridListModule, MatIcon, MatListModule, MatTabsModule} from '@angular/material';
-import {MatButtonModule, MatCheckboxModule} from '@angular/material';
-import {MatCardModule} from '@angular/material/card';
-import {MatInputModule} from '@angular/material/input';
-import {MatIconModule} from '@angular/material/icon';
+import { NbThemeModule, NbTabsetModule, NbUserModule } from '@nebular/theme';
+import { NbSidebarModule, NbLayoutModule, NbSidebarService, NbCardModule } from '@nebular/theme';
 
 import { AppComponent } from './app.component';
 import { UsercontextService } from './app.usercontext';
@@ -18,11 +14,14 @@ import { ClientChatComponent } from './client-chat/app.client-chat';
 import { ClientQueueComponent } from './op-chat/app.client-queue';
 import { StompConnector } from './stomp/app.stomp';
 import { ClientStompConnector } from './stomp/app.client-stomp';
+import { BtoaPipe, AtobPipe } from './b64.pipe';
+import { CapitalizePipe } from './pipes/capitalize';
+import { TimeformatPipe } from './pipes/time-formatter';
 
 const routes: Routes = [
-  { path: '', component: LoginComponent },
-  { path: 'ops-chat', component: ChatComponent },
-  { path: 'clients-chat', component: ClientChatComponent },
+  { path: '', component: LoginComponent, pathMatch: "full" },
+  { path: 'ops-chat', component: ChatComponent, pathMatch: "full" },
+  { path: 'clients-chat', component: ClientChatComponent, pathMatch: "full" },
 ];
 
 @NgModule({
@@ -32,26 +31,29 @@ const routes: Routes = [
     ChatComponent,
     ClientQueueComponent,
     ClientChatComponent,
+    BtoaPipe,
+    AtobPipe,
+    CapitalizePipe,
+    TimeformatPipe
   ],
   imports: [
     RouterModule.forRoot(routes, {}),
     FormsModule, ReactiveFormsModule,
     BrowserModule,
-    NoopAnimationsModule,
-    MatGridListModule,
-
-    MatButtonModule,
-    MatCheckboxModule,
-    MatCardModule,
-    MatInputModule,
-    MatIconModule,
-    MatListModule,
-    MatTabsModule,
+    NbLayoutModule,
+    NbSidebarModule,
+    NbThemeModule.forRoot({ name: 'default' }),
+    RouterModule,
+    NbThemeModule,
+    NbCardModule,
+    NbTabsetModule,
+    NbUserModule,
   ],
   providers: [
     UsercontextService,
     StompConnector,
     ClientStompConnector,
+    NbSidebarService,
   ],
   bootstrap: [
     AppComponent

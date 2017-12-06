@@ -1,34 +1,31 @@
-<section class="mat-typography">
-        <mat-card id="client-chat-card">
-            <mat-card-header>
-                <mat-card-title><h1>Чат с оператором</h1></mat-card-title>
-            </mat-card-header>
-            <mat-card-content style="height: calc(100% - 190px);">
-         
-                <ul id="chat-lines">
-                    <li *ngFor="let ci of $history" class="chat-item" [ngClass]="{'chat-item-client':!ci.opId}">
-                        <span *ngIf="ci.opId" class="chat-avatar-client"></span>
-                        <div>
-                            <p class="chat-client-text"
-                                [ngClass]="{'chat-color-op':ci.opId, 'chat-color-client':!ci.opId}">
-
-                                {{ci.text}}</p>
-                            <span class="chat-client-at">{{ci.at}}</span>
-                        </div> 
-                        <span *ngIf="!ci.opId" class="chat-avatar-op"></span>
-                    </li>
-                </ul>
-                 
-            </mat-card-content>
-            <mat-card-actions class="client-chat-card-action">
-                    <mat-form-field class="client-chat-card-action">
-                        <textarea id="text-area" matInput [(ngModel)]="$text" (keydown.enter)="$onSendClick();false"
-                            placeholder="Введите сообщение.."></textarea>
-                    </mat-form-field>
-                    <div style="text-align: right">
-                    <button mat-raised-button color="accent"
-                        (click)='$onSendClick()'>Отправить</button>
+<nb-layout>
+    <nb-layout-column>
+        <div class="col-md-6 offset-md-3">
+            <nb-card>
+                <nb-card-header>Чат с оператором </nb-card-header>
+                <nb-card-body>
+                    <ul id="chat-lines">
+                        <li *ngFor="let ci of $history" [class.chat-line-fromclient]="!ci.opId">
+                            <span *ngIf="ci.opId" class="chat-line-avatar-op"></span>
+                            <div>
+                                <p>
+                                    {{ci.text | capitalize}}
+                                </p>
+                                <span class="chat-line-time">{{ci.at | timeformat }}</span>
+                            </div>
+                        </li>
+                    </ul> 
+                </nb-card-body>
+                <nb-card-body>
+                    <div class="form-group">
+                        <textarea class="form-control" placeholder="Введите текст" rows="2" (keydown.enter)="$onSendClick();false" [(ngModel)]="$text"></textarea>
                     </div>
-            </mat-card-actions>
-        </mat-card>
-    </section>
+                    <div class="form-group">
+                        <button class="btn btn-primary" type="submit" (click)='$onSendClick()'>Отправить</button>
+                    </div>
+                </nb-card-body>
+                
+            </nb-card>
+        </div>
+    </nb-layout-column>
+</nb-layout>

@@ -3,6 +3,7 @@ package com.example.websocketdemo.model;
 import com.example.websocketdemo.controller.Chat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import java.time.Instant;
 
 /**
  * Created by on 24/07/17.
@@ -24,7 +25,7 @@ public class Parcel {
         p.setType(MessageType.OP_HELLO);
         return p;
     }
-    
+
     public static Parcel helloCli(String clientID) {
         Parcel p = new Parcel();
         p.setClientID(clientID);
@@ -32,18 +33,35 @@ public class Parcel {
         return p;
     }
 
-    public static Parcel makeClientMessages(String userID, Chat.Item[] history) {
+    public static Parcel makeClientHistory(String userID, Chat.Item[] history) {
         Parcel p = new Parcel();
+        p.setClientID(userID);
         p.setType(MessageType.CLI_HISTORY);
         p.setChatItems(history);
         return p;
     }
+    
+    /**
+     * - type
+     * - clientID
+     * - chatItems [1]
+     * @param userID
+     * @param item
+     * @return 
+     */
+    public static Parcel makeChatMessage(String userID, Chat.Item item, Long cid) {
+        Parcel p = makeClientHistory(userID, new Chat.Item[]{item});
+        p.setType(MessageType.CHAT);
+        p.setCid(cid);
+        return p;
+    }
 
-    public static Object ack(Long cid, Long id) {
+    public static Object ack(Long cid, Long id, Instant when) {
         Parcel p = new Parcel();
         p.setType(MessageType.MSG_ACK);
         p.setAck(id);
         p.setCid(cid);
+        p.setWhen(when);
         return p;
     }
 
@@ -54,7 +72,7 @@ public class Parcel {
         p.setChatItems(toArray);
         return p;
     }
-    
+
     private MessageType type;
     private String clientId;
     private Chat.Item[] items;
@@ -63,8 +81,18 @@ public class Parcel {
     private Long ack;
     private Long cid;
     private String opID;
+    private Instant when;
+
+    public void setWhen(Instant when) {
+        this.when = when;
+    }
     
+    public Instant getWhen() {
+        return this.when;
+    }
+
     public enum MessageType {
+        SAY,
         CHAT,
         OP_HELLO, // when operator logs in
         CLI_HELLO,
@@ -80,7 +108,7 @@ public class Parcel {
     public void setType(MessageType type) {
         this.type = type;
     }
-    
+
     public String getClientID() {
         return clientId;
     }
@@ -88,7 +116,7 @@ public class Parcel {
     public void setClientID(String clientID) {
         this.clientId = clientID;
     }
-    
+
     public String getOpID() {
         return opID;
     }
@@ -96,35 +124,35 @@ public class Parcel {
     public void setOpID(String opID) {
         this.opID = opID;
     }
-    
+
     public Chat.Item[] getChatItems() {
         return this.items;
     }
-    
+
     public void setChatItems(Chat.Item[] items) {
         this.items = items;
     }
-    
+
     public String getText() {
         return text;
     }
-    
+
     public void setText(String text) {
         this.text = text;
     }
-    
+
     public void setAck(Long ack) {
         this.ack = ack;
     }
-    
+
     public Long getAck() {
         return ack;
     }
-    
+
     public Long getCid() {
         return this.cid;
     }
-    
+
     public void setCid(Long cid) {
         this.cid = cid;
     }

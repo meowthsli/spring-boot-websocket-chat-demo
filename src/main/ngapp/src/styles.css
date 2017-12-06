@@ -1,6 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
-@import "~@angular/material/prebuilt-themes/indigo-pink.css";
-
 body {
-    background-color: #747474;
+    background-color: #474747;
+}
+
+div, li, span {
+    /*border-style: solid !important;
+    border-color: black !important;
+    border-width: 0.5px;*/
+}
+.form-control:disabled {
+    color: #a4abb3 !important;
+}
+
+.form-control:focus {
+    box-shadow: unset !important;
+}
+
+:root {
+    --chat-client: #8a7fff;
+    --chat-op: #40dc7e;
 }

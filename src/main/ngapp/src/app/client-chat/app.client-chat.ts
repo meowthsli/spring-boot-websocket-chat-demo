@@ -1,9 +1,10 @@
-import { Component, ViewChild, ElementRef, Renderer2, AfterViewChecked } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { NgModel, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { UsercontextService } from '../app.usercontext';
 import { ClientStompConnector } from '../stomp/app.client-stomp';
+import * as moment from 'moment';
 
 /**
  * @title Main app component
@@ -13,26 +14,22 @@ import { ClientStompConnector } from '../stomp/app.client-stomp';
   templateUrl: './app.client-chat.html',
   styleUrls: ['./app.client-chat.css']
 })
-export class ClientChatComponent implements OnInit, AfterViewChecked {
+export class ClientChatComponent implements OnInit {
 
     $text: string;
     $history: Array<ChatItem> = new Array();
 
-    @ViewChild('scroller') private $chatHistory: any;
-    
-
-    constructor(private router:Router, private uctx: UsercontextService, private stomp: ClientStompConnector,
-        private rendere: Renderer2 ) {}
+    constructor(private router:Router, private uctx: UsercontextService, private stomp: ClientStompConnector) {}
     
     public $onSendClick() {
-        this.$history.push(new ChatItem(this.cids--, null, this.$text, '11:22'));
-        this.stomp.send(this.$text, this.cids);
+        let ci = new ChatItem(this.cids--, null, this.$text, moment());
+        this.$history.push(ci);
+        this.stomp.send(ci);
         this.$text = null;
         this.scrollDown();
     }
 
     cids : number = -1;
-    toUpdate: boolean;
 
     ngOnInit(): void {
         if(!this.uctx.username) {
@@ -45,12 +42,14 @@ export class ClientChatComponent implements OnInit, AfterViewChecked {
                 if(item) {
                     item.id = msg.ack;
                 }
-            } else if(msg.type === 'CHAT') {                
-                this.$history.push(new ChatItem(msg.id, msg.opID, msg.text, undefined));
+            } else if(msg.type === 'CHAT') {
+                for(var ci of msg.chatItems) {
+                    this.$history.push(new ChatItem(ci.id, ci.opId, ci.text, moment(ci.at*1000)));
+                }
                 this.scrollDown();
             } else if(msg.type === 'CLI_HISTORY') {
                 for(var ci of msg.chatItems) {
-                    this.$history.push(new ChatItem(ci.id, ci.opId, ci.text, undefined));
+                    this.$history.push(new ChatItem(ci.id, ci.opId, ci.text, moment(ci.at*1000)));
                 }
                 this.scrollDown();
             }
@@ -61,23 +60,13 @@ export class ClientChatComponent implements OnInit, AfterViewChecked {
 
 
     private scrollDown() {
-        this.toUpdate = true;
-        //this.$chatHistory.scrollTop = this.$chatHistory.scrollHeight;
-        //setTimeout(() =>  {
-        //let element = document.getElementById('client-chat-panel');
-        //element.scrollTop = this.$history.length * 100;
-        //}, 1000);
-    }
-
-    ngAfterViewChecked(): void {
-        if(this.toUpdate) {
-            this.toUpdate = false;
-            let element = document.getElementById('client-chat-panel');
-            element.scrollTop = this.$history.length * 100;
-        }
+        setTimeout(() =>  {
+            let element = document.getElementById('chat-lines');
+            element.scrollTop = element.scrollHeight ;
+        }, 0);
     }
 }
 
 export class ChatItem {
-    public constructor(public id, public opId, public text, public at) {}
+    public constructor(public id, public opId, public text, public at: moment.Moment) {}
 }

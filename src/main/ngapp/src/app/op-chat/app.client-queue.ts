@@ -2,10 +2,13 @@ import { Component, Output, EventEmitter } from "@angular/core";
 import { StompConnector } from "../stomp/app.stomp";
 import { OnInit } from "@angular/core/src/metadata/lifecycle_hooks";
 
+import {BtoaPipe, AtobPipe} from '../b64.pipe';
+
 
 @Component({
     selector: 'chat-client-queue',
-    templateUrl: './app.client-queue.html'
+    templateUrl: './app.client-queue.html',
+    styleUrls: ['./app.client-queue.css']
   })
 export class ClientQueueComponent implements OnInit {
     // bindings
