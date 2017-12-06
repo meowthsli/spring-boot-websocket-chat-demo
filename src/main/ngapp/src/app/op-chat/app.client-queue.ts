@@ -5,7 +5,8 @@ import { OnInit } from "@angular/core/src/metadata/lifecycle_hooks";
 
 @Component({
     selector: 'chat-client-queue',
-    templateUrl: './app.client-queue.html'
+    templateUrl: './app.client-queue.html',
+    styleUrls: ['./app.client-queue.css']
   })
 export class ClientQueueComponent implements OnInit {
     // bindings

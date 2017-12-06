@@ -13,13 +13,10 @@ import { ClientStompConnector } from '../stomp/app.client-stomp';
   templateUrl: './app.client-chat.html',
   styleUrls: ['./app.client-chat.css']
 })
-export class ClientChatComponent implements OnInit, AfterViewChecked {
+export class ClientChatComponent implements OnInit {
 
     $text: string;
     $history: Array<ChatItem> = new Array();
-
-   private $chatHistory: any;
-    
 
     constructor(private router:Router, private uctx: UsercontextService, private stomp: ClientStompConnector) {}
     
@@ -31,7 +28,6 @@ export class ClientChatComponent implements OnInit, AfterViewChecked {
     }
 
     cids : number = -1;
-    toUpdate: boolean;
 
     ngOnInit(): void {
         if(!this.uctx.username) {
@@ -60,20 +56,10 @@ export class ClientChatComponent implements OnInit, AfterViewChecked {
 
 
     private scrollDown() {
-        this.toUpdate = true;
-        //this.$chatHistory.scrollTop = this.$chatHistory.scrollHeight;
-        //setTimeout(() =>  {
-        //let element = document.getElementById('client-chat-panel');
-        //element.scrollTop = this.$history.length * 100;
-        //}, 1000);
-    }
-
-    ngAfterViewChecked(): void {
-        /*if(this.toUpdate) {
-            this.toUpdate = false;
-            let element = document.getElementById('client-chat-panel');
-            element.scrollTop = this.$history.length * 100;
-        }*/
+        setTimeout(() =>  {
+            let element = document.getElementById('chat-lines');
+            element.scrollTop = element.scrollHeight ;
+        }, 0);
     }
 }
 

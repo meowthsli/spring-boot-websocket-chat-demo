@@ -8,6 +8,8 @@ import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { UsercontextService } from '../app.usercontext';
 import { StompConnector } from '../stomp/app.stomp';
 
+import { NbTabsetComponent } from '@nebular/theme/components/tabset/tabset.component';
+
 
 /**
  * @title Main app component
@@ -17,25 +19,27 @@ import { StompConnector } from '../stomp/app.stomp';
   templateUrl: './app.chat.html',
   styleUrls: ['./app.chat.css']
 })
-export class ChatComponent implements OnInit{
-  /*@ViewChild(MatTabGroup)*/ $tabs: any;
+export class ChatComponent implements OnInit {
 
-  $text: string;
+  @ViewChild(NbTabsetComponent) public $tabs : NbTabsetComponent;
   $discussions: Array<UserChat> = new Array();
 
   /**
    * Click on client 
    */
   public $startClientChat(clientID: string) {
-    
     let uc = this.findChat(clientID);
     if(!uc) { // try to find such chat; if found, switch to
       uc = new UserChat(clientID, new Array());
       this.$discussions.push(uc); // create chat
       this.stomp.loadHistory(clientID); // ask for history items
+      setTimeout(() => {
+        this.$tabs.selectTab(this.$tabs.tabs.last);
+      }, 0);
+    } else {
+      let ucidx = this.$discussions.findIndex(c => c == uc);
+      this.$tabs.selectTab(this.$tabs.tabs.toArray()[ucidx]);
     }
-    
-    this.$tabs.selectedIndex = this.$discussions.findIndex(x => x == uc);
   }
 
   /**
@@ -43,7 +47,6 @@ export class ChatComponent implements OnInit{
    * @param item 
    */
   public $onCloseClick(item: UserChat) {
-    console.log('Tab Click');
     var i = this.$discussions.findIndex(x => x == item);
     this.$discussions.splice(i, 1);
   }
@@ -76,38 +79,48 @@ export class ChatComponent implements OnInit{
         let uc = this.findChat(msg.clientID);
         if(uc) {
           uc.addHistory(msg.chatItems);
+          this.scrollDown(uc);
         }
       }  
     });
-    this.stomp.connect(this.uctx.username);   
+    this.stomp.connect(this.uctx.username);
   }
-
-  cids : number = -1;
 
   public $onSendClick(chat: UserChat) {
-    if(this.$text != '') {
-      // this.$history.push(new ChatItem(this.cids--, 'OPS', this.$text, null));
-      chat.addItem(this.cids--, this.$text, btoa(this.uctx.username));
-      this.stomp.send(this.$text, chat.clientID); // TODO
-      this.$text = null;
+    if(chat.$text != '') {
+      chat.addItem(this.cids--, chat.$text, btoa(this.uctx.username));
+      this.stomp.send(chat.$text, chat.clientID); // TODO
+      chat.$text = null;
+      this.scrollDown(chat);
     }
   }
+
+  private scrollDown(d: UserChat) {
+    setTimeout(() =>  {
+        let element = document.getElementById(d.clientID);
+        element.scrollTop = element.scrollHeight ;
+    }, 0);
+}
+
+  private cids : number = -1;
 }
 
 export class ChatItem {
-  public constructor(public id, public username, public text, public opId, public date) {}
+  public constructor(public id, public username, public text, public opId, public at) {}
 }
 
 class UserChat {
+  public $text: string;
+
   public addHistory(items: any): any {
     for(var ci of items) {
-        this.$history.push(new ChatItem(ci.id, '*', ci.text, ci.opId, null));
+        this.$history.push(new ChatItem(ci.id, '*', ci.text, ci.opId, '12:35'));
     }
   }
   constructor(public clientID: string, public $history: Array<ChatItem>){}
 
   public addItem(id, text: string, opID: string) {
-    this.$history.push(new ChatItem(id, this.clientID, text, opID, null));
+    this.$history.push(new ChatItem(id, this.clientID, text, opID, '12:27'));
   }
 
   public ack(ack: number, cid: number) {

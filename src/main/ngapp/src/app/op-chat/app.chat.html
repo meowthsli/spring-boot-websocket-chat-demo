@@ -53,3 +53,48 @@
 </section>
 
 -->
+<nb-layout>
+    <nb-layout-header fixed>Оператор чата Х</nb-layout-header>
+    <nb-layout-column>
+        <div class="row">
+            <div class="col-lg-3">
+                <nb-card>
+                    <chat-client-queue ($clientOpen)="$startClientChat($event)"></chat-client-queue>
+                </nb-card>
+            </div>
+            <div class="col-lg-9" *ngIf="$discussions.length == 0">
+                <nb-card>
+                    <nb-card-header>Выберите клиента в очереди</nb-card-header>
+                    <nb-card-body>Тут появится чат</nb-card-body>
+                </nb-card>
+            </div>
+            <div class="col-lg-9">
+                <nb-card>
+                    <nb-tabset>
+                        <nb-tab *ngFor="let d of $discussions" [tabTitle]="d.clientID" style="padding: 1.25rem;">
+                            <ul class="chat-lines" id="{{d.clientID}}">
+                                <li *ngFor="let ci of d.$history" [ngClass]="{'chat-line-fromop':ci.opId}">
+                                    <span *ngIf="!ci.opId" class="chat-line-avatar-op"></span>
+                                    <div>
+                                        <p>
+                                            {{ci.text}}
+                                        </p>
+                                        <span class="chat-line-time">{{ci.at}}</span>
+                                    </div>
+                                </li>
+                            </ul> 
+                            <div class="form-group">
+                                <textarea class="form-control" placeholder="Введите текст" rows="2" 
+                                    (keydown.enter)="$onSendClick(d);false" [(ngModel)]="d.$text"></textarea>
+                            </div>
+                            <div class="form-group pushout">
+                                <button class="btn btn-warning" type="submit" (click)='$forget(d)'>Покинуть</button>
+                                <button class="btn btn-success" type="submit" (click)='$onSendClick(d)'>Отправить</button>
+                            </div>
+                        </nb-tab>
+                    </nb-tabset>
+                </nb-card>
+            </div>
+        </div>
+    </nb-layout-column>
+</nb-layout>

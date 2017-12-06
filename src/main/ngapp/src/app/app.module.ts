@@ -3,21 +3,21 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
-import { NbThemeModule } from '@nebular/theme';
+import { NbThemeModule, NbTabsetModule, NbUserModule } from '@nebular/theme';
 import { NbSidebarModule, NbLayoutModule, NbSidebarService, NbCardModule } from '@nebular/theme';
 
 import { AppComponent } from './app.component';
 import { UsercontextService } from './app.usercontext';
 import { LoginComponent } from './login/app.login';
-//import { ChatComponent } from './op-chat/app.chat';
+import { ChatComponent } from './op-chat/app.chat';
 import { ClientChatComponent } from './client-chat/app.client-chat';
-//import { ClientQueueComponent } from './op-chat/app.client-queue';
+import { ClientQueueComponent } from './op-chat/app.client-queue';
 import { StompConnector } from './stomp/app.stomp';
 import { ClientStompConnector } from './stomp/app.client-stomp';
 
 const routes: Routes = [
   { path: '', component: LoginComponent, pathMatch: "full" },
-  /*{ path: 'ops-chat', component: ChatComponent },*/
+  { path: 'ops-chat', component: ChatComponent, pathMatch: "full" },
   { path: 'clients-chat', component: ClientChatComponent, pathMatch: "full" },
 ];
 
@@ -25,8 +25,8 @@ const routes: Routes = [
   declarations: [
     AppComponent,
     LoginComponent,
-    // ChatComponent,
-    // ClientQueueComponent,
+    ChatComponent,
+    ClientQueueComponent,
     ClientChatComponent,
   ],
   imports: [
@@ -39,6 +39,8 @@ const routes: Routes = [
     RouterModule,
     NbThemeModule,
     NbCardModule,
+    NbTabsetModule,
+    NbUserModule,
   ],
   providers: [
     UsercontextService,

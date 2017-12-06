@@ -13,13 +13,12 @@
                             <label for="enterprise" style="color:#a4abb3">Организация</label>
                             <input name="enterprise" class="form-control" disabled="true" value="ACME, Inc"/>
                         </div>
-                        <div>
-                            <button class="btn btn-danger" type="submit" (click)='$onClientClick()'>Клиент</button>
-                            <button class="btn btn-primary" type="submit" (click)='$onLogonClick()'>Оператор</button>
+                        <div class="pushout">
+                            <button class="btn btn-primary" type="submit" (click)='$onClientClick()'>Клиент</button>
+                            <button class="btn btn-success" type="submit" (click)='$onLogonClick()'>Оператор</button>
                         </div>
                     </form>
                 </nb-card-body>
-                <!-- <nb-card-footer>FOOTER</nb-card-footer> -->
             </nb-card>
         </div>
     </nb-layout-column>
