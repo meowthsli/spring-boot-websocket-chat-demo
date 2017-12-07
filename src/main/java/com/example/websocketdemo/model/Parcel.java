@@ -85,6 +85,14 @@ public class Parcel {
         p.setChatItems(toArray);
         return p;
     }
+    
+    public static Parcel makeInfo(String[] info, String[] desc) {
+        Parcel p = new Parcel();
+        p.setInfo(info);
+        p.setInfoDesc(desc);
+        p.setType(MessageType.INFO);
+        return p;
+    }
 
     private MessageType type;
     private String clientId;
@@ -95,6 +103,9 @@ public class Parcel {
     private Long cid;
     private String opID;
     private Instant when;
+    private String clientDesc;
+    private String[] info;
+     private String[] infoDesc;
 
     public void setWhen(Instant when) {
         this.when = when;
@@ -113,6 +124,7 @@ public class Parcel {
         CLI_HISTORY,
         MSG_ACK,
         LOCK_OK,
+        INFO,
     }
 
     public MessageType getType() {
@@ -169,5 +181,29 @@ public class Parcel {
 
     public void setCid(Long cid) {
         this.cid = cid;
+    }
+    
+    public void setClientDesc(String desc) {
+        this.clientDesc = desc;
+    }
+    
+    public String getClientDesc() {
+        return this.clientDesc;
+    }
+    
+    public String[] getInfo() {
+        return this.info;
+    }
+    
+    public void setInfo(String[] info) {
+        this.info = info;
+    }
+    
+    public String[] getInfoDesc() {
+        return this.infoDesc;
+    }
+    
+    public void setInfoDesc(String[] infoDesc) {
+        this.infoDesc = infoDesc;
     }
 }

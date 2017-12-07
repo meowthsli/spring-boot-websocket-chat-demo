@@ -114,7 +114,7 @@ public class ChatController {
                                SimpMessageHeaderAccessor smha) {
         setCurrentUserID(smha, clientHello.getClientID());
         
-        Chat uc = chats.getChat(getCurrentUserID(smha));
+        Chat uc = chats.getChat(getCurrentUserID(smha), clientHello.getClientDesc());
         uc.setLastSession(getCurrentSessionID(smha));
         
         Parcel p = Parcel.makeClientHistory(getCurrentUserID(smha), uc.getLastN(20));
@@ -158,6 +158,18 @@ public class ChatController {
         //}
         //return null;
         
+    }
+    
+    @MessageMapping("/operator.getInfo")
+    @SendToUser("/queue/op")
+    public Parcel getInfo(@Payload Parcel msgGetInfo, SimpMessageHeaderAccessor smha) {
+        msgGetInfo.setInfoDesc(msgGetInfo.getInfo().clone());
+        for(int i = 0; i < msgGetInfo.getInfo().length; ++i) {
+            Chat ch = chats.getChat(msgGetInfo.getInfo()[i]);
+            msgGetInfo.getInfoDesc()[i] = "".equals(ch.getClientDesc()) ? null : ch.getClientDesc();
+        }
+        msgGetInfo.setType(Parcel.MessageType.INFO);
+        return msgGetInfo;
     }
     
     private void convertAndSendToSession(String sessionID, String destination, Object p) {

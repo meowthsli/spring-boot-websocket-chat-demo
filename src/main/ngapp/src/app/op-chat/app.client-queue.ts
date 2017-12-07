@@ -29,10 +29,12 @@ export class ClientQueueComponent implements OnInit {
                 let text = p.chatItems[p.chatItems.length-1].text; // последнее сообщение
                 let id = p.chatItems[p.chatItems.length-1].id
                 if(!qi) {
-                    this.$queue.push(new QueueItem(btoa(p.clientID), p.clientID, text, id));
+                    this.$queue.push(new QueueItem(null, p.clientID, text, id));
                 } else {
                     qi.text = text;
                 }
+
+                this.stomp.getInfo([p.clientID]);
             }
         }
 
@@ -41,16 +43,16 @@ export class ClientQueueComponent implements OnInit {
                 return;
             }
             var qi = this.$queue.find(qi => qi.clientID == p.clientID);
-            if(!qi) {
-                qi = this.$queue.find(qi => qi.clientID == p.clientID);
-            }
             if(qi) {
                 qi.id = p.ack;
                 qi.text = p.chatItems[0].text;
             } else {
-                this.$queue.push(new QueueItem(btoa(p.clientID), p.clientID, p.chatItems[0].text, p.ack));
+                this.$queue.push(new QueueItem(this.nameCache[p.clientID], p.clientID, p.chatItems[0].text, p.ack));
             }
 
+            if(!this.nameCache[p.clientID]) {
+                this.stomp.getInfo([p.clientID]);
+            }
         }
 
         if(p.type === 'LOCK_OK') {
@@ -59,7 +61,23 @@ export class ClientQueueComponent implements OnInit {
                 this.$queue.splice(i, 1);
             }
         }
+
+        if(p.type === 'INFO') {
+            console.log("LOOKING INFO");
+            for(var i = 0; i < p.info.length; ++i) {
+                let qi = this.$queue.find(x => x.clientID === p.info[i]);
+                if(qi) {
+                    console.log("replace qi.autor () by (): ", qi.author, p.infoDesc[i]);
+                    qi.author = p.infoDesc[i];
+                    this.nameCache[qi.clientID] = qi.author;
+                }
+            }
+        }
     }
+
+    private nameCache = {
+
+    };
 }
 
 // item to show

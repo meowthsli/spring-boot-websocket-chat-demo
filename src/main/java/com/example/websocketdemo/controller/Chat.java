@@ -17,6 +17,7 @@ import java.util.Deque;
  */
 public class Chat {
     private String clientID;
+    private String clientDesc;
     private String clientLastSession = "";
     private String locker;
     private Instant lockTime;
@@ -24,10 +25,13 @@ public class Chat {
     private int ids = 0;
     private String lockSession;
     
-    public Chat(String clientID) {
-        //this.history.addFirst(new Item(ids++, "Hello? Is anybody here", ZonedDateTime.now(), "DvmDK"));
-        //this.history.addFirst(new Item(ids++, "Yes we are here", ZonedDateTime.now(), null));
+    public Chat(String clientID, String clientDesc) {
         this.clientID = clientID;
+        this.clientDesc = clientDesc;
+    }
+    
+    public String getClientDesc() {
+        return this.clientDesc;
     }
     
     public final Deque<Chat.Item> history = new ArrayDeque<>();

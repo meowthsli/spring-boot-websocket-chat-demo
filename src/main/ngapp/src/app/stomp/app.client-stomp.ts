@@ -40,7 +40,7 @@ export class ClientStompConnector {
             this.onStompReceived(payload)
         );
         this.stompClient.send("/app/client.hello",
-            {}, JSON.stringify({clientID: this.u64})
+            {}, JSON.stringify({clientID: this.u64, clientDesc: atob(this.u64) + '@mail.ru'})
         );
       }
     

@@ -52,6 +52,12 @@ export class StompConnector {
         }
     }
 
+    public getInfo(info: Array<string>) {
+        if(this.opsId) {
+            this.stompClient.send("/app/operator.getInfo", {}, JSON.stringify({info: info}));
+        }
+    }
+
     onStompConnected() {
         console.log("Stomp connected");
     

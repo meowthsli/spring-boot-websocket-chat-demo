@@ -39,11 +39,15 @@ public class Chats {
         return null;
     }
 
-    Chat getChat(String sender) {
-        Chat ch = chats.getOrDefault(sender, new Chat(sender));
-        if(!chats.containsKey(sender)) {
-            chats.put(sender, ch);
+    Chat getChat(String clientID, String clientDesc) {
+        Chat ch = chats.getOrDefault(clientID, new Chat(clientID, clientDesc));
+        if(!chats.containsKey(clientID)) {
+            chats.put(clientID, ch);
         }
         return ch;
+    }
+    
+    Chat getChat(String clientID) {     
+        return this.getChat(clientID, null);
     }
 }

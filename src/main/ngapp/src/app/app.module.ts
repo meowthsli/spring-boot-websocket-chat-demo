@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
-import { NbThemeModule, NbTabsetModule, NbUserModule } from '@nebular/theme';
+import { NbThemeModule, NbTabsetModule, NbUserModule, NbActionsModule } from '@nebular/theme';
 import { NbSidebarModule, NbLayoutModule, NbSidebarService, NbCardModule } from '@nebular/theme';
 
 import { AppComponent } from './app.component';
@@ -50,6 +50,7 @@ const routes: Routes = [
     NbCardModule,
     NbTabsetModule,
     NbUserModule,
+    NbActionsModule,
   ],
   providers: [
     UsercontextService,
