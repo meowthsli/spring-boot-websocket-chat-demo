@@ -46,6 +46,12 @@ export class StompConnector {
         }
     }
 
+    public release(clientID: string) {
+        if(this.opsId) {
+            this.stompClient.send("/app/operator.release", {}, JSON.stringify({clientID: clientID}));
+        }
+    }
+
     onStompConnected() {
         console.log("Stomp connected");
     

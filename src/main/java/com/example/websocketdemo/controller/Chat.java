@@ -53,7 +53,7 @@ public class Chat {
         return locker != null;
     }
     
-    public synchronized void unlock(String opID) {
+    public synchronized void unlock() {
         this.lockTime = null;
         this.locker = null;
         this.lockSession = null;
@@ -106,5 +106,5 @@ public class Chat {
         }
         return history.stream().
                 skip(size - n).toArray(Item[]::new);
-    }    
+    }
 }

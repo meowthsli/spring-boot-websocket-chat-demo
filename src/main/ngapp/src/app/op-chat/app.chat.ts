@@ -94,7 +94,7 @@ export class ChatComponent implements OnInit {
   }
 
   public $onSendClick(chat: UserChat) {
-    if(chat.$text != '') {
+    if(chat.$text && chat.$text != '') {
       let ci = chat.addItem(this.cids--, chat.$text, btoa(this.uctx.username), moment());
       this.stomp.send(chat.clientID, ci); 
       chat.$text = null;
@@ -102,15 +102,15 @@ export class ChatComponent implements OnInit {
     }
   }
 
-  /*public $forget(chat: UserChat) {
-    if(chat.$text != '') {
-      let ci = chat.addItem(this.cids--, chat.$text, btoa(this.uctx.username), moment());
-      this.stomp.send(chat.clientID, ci); 
-      chat.$text = null;
-      this.scrollDown(chat);
+  public $release(chat: UserChat) {
+    if(chat) {
+      this.stomp.release(chat.clientID);
+      let i = this.$discussions.findIndex(c => c == chat);
+      if(i >= 0) {
+        this.$discussions.splice(i, 1);
+      }
     }
   }
-  */
 
   private scrollDown(d: UserChat) {
     setTimeout(() =>  {

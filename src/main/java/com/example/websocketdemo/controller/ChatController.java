@@ -137,6 +137,29 @@ public class ChatController {
         //return null;
     }
     
+    @MessageMapping("/operator.release")
+    // @SendTo("/broadcast/all-ops")
+    public Parcel releaseChat(@Payload Parcel msgLock,
+                               SimpMessageHeaderAccessor smha) {
+        
+        Chat uc = chats.getChat(msgLock.getClientID());
+        uc.unlock();
+        
+        //Chat.Item[] item = uc.getUnreadItems();
+        //if(item.length > 0) {
+            
+        //}
+        return null;
+        
+        //if(uc.lock(getCurrentUserID(smha))) {
+        //uc.lock(getCurrentUserID(smha), getCurrentSessionID(smha));
+        //    Parcel p = Parcel.makeLockOk(msgLock.getClientID(), getCurrentUserID(smha));
+        //    return p;
+        //}
+        //return null;
+        
+    }
+    
     private void convertAndSendToSession(String sessionID, String destination, Object p) {
         SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
         if(sender.getHeaderInitializer()!= null) {
