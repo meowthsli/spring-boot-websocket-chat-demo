@@ -31,9 +31,9 @@ public class Chats {
         return Collections.unmodifiableCollection(chats.values());
     }
     
-    public synchronized Chat tryLock(String clientId) {
+    public synchronized Chat tryLock(String clientId, String sessionId) {
         if(chats.containsKey(clientId)) {
-            chats.get(clientId).lock(clientId);
+            chats.get(clientId).lock(clientId, sessionId);
             return chats.get(clientId);
         }
         return null;

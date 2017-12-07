@@ -144,7 +144,7 @@ class UserChat {
     return ci;
   }
 
-  public ack(ack: number, cid: number) {
+  public ack(cid: number, ack: number) {
     var item = this.$history.find(ci => ci.id == cid); // find by candidate id
     if(item) {
         item.id = ack;

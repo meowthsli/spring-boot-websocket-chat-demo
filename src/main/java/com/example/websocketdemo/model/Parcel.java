@@ -53,24 +53,29 @@ public class Parcel {
      * - type
      * - clientID
      * - chatItems [1]
-     * @param userID
+     * @param clientID
      * @param item
      * @return 
      */
-    public static Parcel makeChatMessage(String userID, Chat.Item item, Long cid) {
-        Parcel p = makeClientHistory(userID, new Chat.Item[]{item});
+    public static Parcel makeChatMessage(String clientID, Chat.Item item, Long cid) {
+        Parcel p = makeClientHistory(clientID, new Chat.Item[]{item});
         p.setType(MessageType.CHAT);
         p.setCid(cid);
         return p;
     }
 
-    public static Object ack(Long cid, Long id, Instant when) {
+    public static Object ack(Long cid, Long id, Instant when, String clientId) {
         Parcel p = new Parcel();
         p.setType(MessageType.MSG_ACK);
         p.setAck(id);
         p.setCid(cid);
         p.setWhen(when);
+        p.setClientID(clientId);
         return p;
+    }
+    
+    public static Object ack(Long cid, Long id, Instant when) {
+        return ack(cid, id, when, null);
     }
 
     public static Parcel makeHisto(String clientID, Chat.Item[] toArray) {

@@ -37,6 +37,9 @@ export class ClientQueueComponent implements OnInit {
         }
 
         if(p.type === "CHAT") {
+            if(p.opID) {
+                return;
+            }
             var qi = this.$queue.find(qi => qi.clientID == p.clientID);
             if(!qi) {
                 qi = this.$queue.find(qi => qi.clientID == p.clientID);
