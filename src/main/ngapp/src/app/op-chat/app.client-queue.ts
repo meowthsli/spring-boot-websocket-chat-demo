@@ -63,7 +63,6 @@ export class ClientQueueComponent implements OnInit {
         }
 
         if(p.type === 'INFO') {
-            console.log("LOOKING INFO");
             for(var i = 0; i < p.info.length; ++i) {
                 let qi = this.$queue.find(x => x.clientID === p.info[i]);
                 if(qi) {
