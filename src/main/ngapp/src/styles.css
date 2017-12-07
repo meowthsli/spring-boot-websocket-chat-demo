@@ -17,6 +17,6 @@ div, li, span {
 }
 
 :root {
-    --chat-client: #8a7fff;
-    --chat-op: #40dc7e;
+    --chat-client: #ff4c6a;
+    --chat-op: #8a7fff;
 }

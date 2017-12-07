@@ -32,27 +32,7 @@ export class ChatComponent implements OnInit {
    * Click on client 
    */
   public $startClientChat(clientID: string) {
-    let uc = this.findChat(clientID);
-    if(!uc) { // try to find such chat; if found, switch to
-      uc = new UserChat(clientID, new Array());
-      this.$discussions.push(uc); // create chat
-      this.stomp.loadHistory(clientID); // ask for history items
-      setTimeout(() => {
-        this.$tabs.selectTab(this.$tabs.tabs.last);
-      }, 0);
-    } else {
-      let ucidx = this.$discussions.findIndex(c => c == uc);
-      this.$tabs.selectTab(this.$tabs.tabs.toArray()[ucidx]);
-    }
-  }
-
-  /**
-   * Close chat by click
-   * @param item 
-   */
-  public $onCloseClick(item: UserChat) {
-    var i = this.$discussions.findIndex(x => x == item);
-    this.$discussions.splice(i, 1);
+    this.stomp.tryLock(clientID); // we maybe will have for LOCK_OK after that
   }
 
   constructor(private router:Router, private uctx: UsercontextService, private stomp: StompConnector) {
@@ -65,8 +45,9 @@ export class ChatComponent implements OnInit {
 
   ngOnInit(): void {
     if(!this.uctx.username ){
-      this.router.navigateByUrl(''), {skipLocationChange: true};
+      this.router.navigateByUrl(''), {skipLocationChange: false};
     }
+
     this.stomp.incomingMessage.subscribe(msg => {
       if(msg.type === 'MSG_ACK') { // acknowledge of message
         let uc = this.findChat(msg.clientID);
@@ -86,9 +67,30 @@ export class ChatComponent implements OnInit {
           uc.addHistory(null, msg.chatItems);
           this.scrollDown(uc);
         }
-      }  
+      } else if (msg.type === 'LOCK_OK') {
+        this.onMessage_LOCK_OK(msg);
+      }
     });
     this.stomp.connect(this.uctx.username);
+  }
+
+  private onMessage_LOCK_OK(msg) {
+    if(msg.opID != btoa(this.uctx.username)) { //   maybe it's not us
+      return;
+    }
+    let clientID = msg.clientID;
+    let uc = this.findChat(clientID);
+    if(!uc) { // try to find such chat; if found, switch to
+      uc = new UserChat(clientID, new Array());
+      this.$discussions.push(uc); // create chat
+      this.stomp.loadHistory(clientID); // ask for history items
+      setTimeout(() => {
+        this.$tabs.selectTab(this.$tabs.tabs.last);
+      }, 0);
+    } else {
+      let ucidx = this.$discussions.findIndex(c => c == uc);
+      this.$tabs.selectTab(this.$tabs.tabs.toArray()[ucidx]);
+    }
   }
 
   public $onSendClick(chat: UserChat) {
@@ -99,6 +101,16 @@ export class ChatComponent implements OnInit {
       this.scrollDown(chat);
     }
   }
+
+  /*public $forget(chat: UserChat) {
+    if(chat.$text != '') {
+      let ci = chat.addItem(this.cids--, chat.$text, btoa(this.uctx.username), moment());
+      this.stomp.send(chat.clientID, ci); 
+      chat.$text = null;
+      this.scrollDown(chat);
+    }
+  }
+  */
 
   private scrollDown(d: UserChat) {
     setTimeout(() =>  {

@@ -14,7 +14,7 @@ export class ClientStompConnector {
     public connect(username: string) {
         if(!this.clientId) {
             this.u64 = btoa(username);
-            this.socket = new SockJS('http://192.168.1.134:8080/ws');
+            this.socket = new SockJS('http://localhost:8080/ws');
             this.stompClient = Stomp.over(this.socket);
             this.stompClient.connect(this.u64, '', () => this.onStompConnected(), () => this.onStompError());
         }

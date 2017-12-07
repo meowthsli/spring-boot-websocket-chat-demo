@@ -22,6 +22,7 @@ public class Chat {
     private Instant lockTime;
     
     private int ids = 0;
+    private String lockSession;
     
     public Chat(String clientID) {
         //this.history.addFirst(new Item(ids++, "Hello? Is anybody here", ZonedDateTime.now(), "DvmDK"));
@@ -31,25 +32,31 @@ public class Chat {
     
     public final Deque<Chat.Item> history = new ArrayDeque<>();
 
-    synchronized boolean lock(String clientId) {
-        if(isLocked(clientId)) {
-            return true;
+    synchronized boolean lock(String opID, String lockSession) {
+        if(isLocked()){
+            return false;
         }
         
-        this.locker = clientId;
+        this.locker = opID;
         this.lockTime = Instant.now();
+        this.lockSession = lockSession;
         
         return true;
     }
     
-    public boolean isLocked(String clientId) {
-        return this.lockTime != null || (clientId.equals(locker) 
+    public boolean isLocked(String opID) {
+        return this.lockTime != null || (opID.equals(locker) 
                 && Duration.between(lockTime, Instant.now()).toMinutes() < 5);
     }
     
-    public synchronized void unlock(String clientId) {
+    public boolean isLocked() {
+        return locker != null;
+    }
+    
+    public synchronized void unlock(String opID) {
         this.lockTime = null;
         this.locker = null;
+        this.lockSession = null;
     }
     
     synchronized Item appendText(String text, String opId) {
@@ -68,6 +75,14 @@ public class Chat {
     
     public String getClientID() {
         return clientID;
+    }
+
+    public String getLocker() {
+        return this.locker;
+    }
+    
+    public String getLockerSession() {
+        return this.lockSession;
     }
     
     public final class Item {

@@ -14,7 +14,7 @@ export class StompConnector {
 
     public connect(username: string) {
         this.u64 = btoa(username);
-        this.socket = new SockJS('http://192.168.1.134:8080/ws');
+        this.socket = new SockJS('http://localhost:8080/ws');
         this.stompClient = Stomp.over(this.socket);
         this.stompClient.connect(this.u64, '', () => this.onStompConnected(), () => this.onStompError());
     }
@@ -37,6 +37,12 @@ export class StompConnector {
     public loadHistory(userid: string) {
         if(this.opsId) {
             this.stompClient.send("/app/operator.histo", {}, JSON.stringify({clientID: userid}));
+        }
+    }
+
+    public tryLock(clientID: string) {
+        if(this.opsId) {
+            this.stompClient.send("/app/operator.tryLock", {}, JSON.stringify({clientID: clientID}));
         }
     }
 

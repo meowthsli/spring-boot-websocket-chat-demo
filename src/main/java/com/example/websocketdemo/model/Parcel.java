@@ -41,6 +41,14 @@ public class Parcel {
         return p;
     }
     
+     public static Parcel makeLockOk(String clientID, String opID) {
+        Parcel p = new Parcel();
+        p.setClientID(clientID);
+        p.setType(MessageType.LOCK_OK);
+        p.setOpID(opID);
+        return p;
+    }
+    
     /**
      * - type
      * - clientID
@@ -99,6 +107,7 @@ public class Parcel {
         OP_UNREAD_LIST,
         CLI_HISTORY,
         MSG_ACK,
+        LOCK_OK,
     }
 
     public MessageType getType() {

@@ -78,7 +78,7 @@
                     <nb-tabset>
                         <nb-tab *ngFor="let d of $discussions" [tabTitle]="d.clientID | atob" style="padding: 1.25rem;">
                             <ul class="chat-lines" id="{{d.clientID}}">
-                                <li *ngFor="let ci of d.$history" [class.chat-line-fromop]="ci.opId" [class.noack]="ci.id == null">
+                                <li *ngFor="let ci of d.$history" [class.chat-line-fromop]="ci.opId" [class.noack]="ci.id == null || ci.id &lt; 0">
                                     <span *ngIf="!ci.opId" class="chat-line-avatar-op"></span>
                                     <div>
                                         <p>
@@ -94,7 +94,7 @@
                             </div>
                             <div class="form-group pushout">
                                 <button class="btn btn-warning" type="submit" (click)='$forget(d)'>Покинуть</button>
-                                <button class="btn btn-success" type="submit" (click)='$onSendClick(d)'>Отправить</button>
+                                <button class="btn btn-primary" type="submit" (click)='$onSendClick(d)'>Отправить</button>
                             </div>
                         </nb-tab>
                     </nb-tabset>

@@ -49,6 +49,13 @@ export class ClientQueueComponent implements OnInit {
             }
 
         }
+
+        if(p.type === 'LOCK_OK') {
+            let i = this.$queue.findIndex(qi => qi.clientID == p.clientID);
+            if(i >= 0) {
+                this.$queue.splice(i, 1);
+            }
+        }
     }
 }
 
