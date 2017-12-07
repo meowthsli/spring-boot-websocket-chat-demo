@@ -26,10 +26,12 @@ export class ClientQueueComponent implements OnInit {
         if(p.type === "OP_UNREAD_LIST") {
             if(p.chatItems && p.chatItems.length > 0) {
                 let qi = this.$queue.find(qi => qi.clientID == p.clientID);
+                let text = p.chatItems[p.chatItems.length-1].text; // последнее сообщение
+                let id = p.chatItems[p.chatItems.length-1].id
                 if(!qi) {
-                    this.$queue.push(new QueueItem(btoa(p.clientID), p.clientID, p.chatItems[0].text, p.chatItems[0].id));
+                    this.$queue.push(new QueueItem(btoa(p.clientID), p.clientID, text, id));
                 } else {
-                    qi.text = p.chatItems[0].text;
+                    qi.text = text;
                 }
             }
         }
@@ -41,10 +43,9 @@ export class ClientQueueComponent implements OnInit {
             }
             if(qi) {
                 qi.id = p.ack;
-                qi.text = p.text;
+                qi.text = p.chatItems[0].text;
             } else {
-
-                this.$queue.push(new QueueItem(btoa(p.clientID), p.clientID, p.text, p.ack));
+                this.$queue.push(new QueueItem(btoa(p.clientID), p.clientID, p.chatItems[0].text, p.ack));
             }
 
         }

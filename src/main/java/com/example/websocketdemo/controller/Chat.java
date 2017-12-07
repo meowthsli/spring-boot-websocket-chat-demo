@@ -85,6 +85,11 @@ public class Chat {
     }
     
     public Item[] getLastN(int n) {
-        return history.stream().limit(n).toArray(Item[]::new);
+        int size = history.size();
+        if(n > size) {
+            size = n;
+        }
+        return history.stream().
+                skip(size - n).toArray(Item[]::new);
     }    
 }

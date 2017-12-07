@@ -7,3 +7,12 @@
     height: 30rem;
     overflow-x: auto;
 }
+
+/*
+div.user-title {
+    text-overflow: ellipsis;
+    max-width: 10rem;
+    white-space: nowrap;
+    overflow: hidden;
+}
+*/

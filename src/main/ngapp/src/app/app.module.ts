@@ -17,6 +17,7 @@ import { ClientStompConnector } from './stomp/app.client-stomp';
 import { BtoaPipe, AtobPipe } from './b64.pipe';
 import { CapitalizePipe } from './pipes/capitalize';
 import { TimeformatPipe } from './pipes/time-formatter';
+import { ElipsisPipe } from './pipes/elipsis';
 
 const routes: Routes = [
   { path: '', component: LoginComponent, pathMatch: "full" },
@@ -34,7 +35,8 @@ const routes: Routes = [
     BtoaPipe,
     AtobPipe,
     CapitalizePipe,
-    TimeformatPipe
+    TimeformatPipe,
+    ElipsisPipe
   ],
   imports: [
     RouterModule.forRoot(routes, {}),

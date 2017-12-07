@@ -1,7 +1,7 @@
 <nb-tabset>
     <nb-tab tabTitle="Очередь" class="queue">
         <div class="contact" *ngFor="let qi of $queue" style="cursor: pointer" (click)="$clientOpen.emit(qi.clientID)">
-            <nb-user size="large" [name]="qi.clientID | atob" [title]="qi.text"></nb-user>
+            <nb-user size="large" [name]="qi.clientID | atob" [title]="qi.text | elipsis:30"></nb-user>
         </div>
     </nb-tab>
     <nb-tab tabTitle="Поиск">
