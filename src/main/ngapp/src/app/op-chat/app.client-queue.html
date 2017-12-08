@@ -2,6 +2,11 @@
     <nb-tab tabTitle="Очередь" class="queue">
         <div class="contact" *ngFor="let qi of $queue" style="cursor: pointer" (click)="$clientOpen.emit(qi.clientID)">
             <nb-user size="large" [name]="qi.author" [title]="qi.text | elipsis:30 | capitalize"></nb-user>
+            <div style="width:100%;">
+                <div style="float: right; background-color: var(--chat-client); padding: 5px; border-radius: 50%; width: 30px; text-align: center; color: white">
+                {{qi.lost}}
+                </div>
+            </div>
         </div>
     </nb-tab>
     <nb-tab tabTitle="Поиск">

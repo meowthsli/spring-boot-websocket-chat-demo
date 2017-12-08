@@ -34,7 +34,7 @@ public class ChatController {
         this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/client", Parcel.ack(chatMessage.getCid(), item.id, item.at));
 
         // relay cli msg to all ops, if not locked. if so, send to only owner
-        Parcel answer = Parcel.makeChatMessage(getCurrentUserID(smha), item, chatMessage.getCid());
+        Parcel answer = Parcel.makeChatMessage(getCurrentUserID(smha), item, chatMessage.getCid(), uc.getUnreadCount());
         if(uc.isLocked()) {
             answer.setOpID(uc.getLocker());
             this.convertAndSendToSession(uc.getLockerSession(), "/queue/op", answer);
@@ -60,7 +60,7 @@ public class ChatController {
         this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/op", Parcel.ack(opMessage.getCid(), item.id, item.at, uc.getClientID()));
         
         // send to chat client
-        Parcel msg = Parcel.makeChatMessage(opMessage.getClientID(), item, opMessage.getCid());
+        Parcel msg = Parcel.makeChatMessage(opMessage.getClientID(), item, opMessage.getCid(), uc.getUnreadCount());
         this.convertAndSendToSession(chats.getChat(opMessage.getClientID()).getClientLastSession(), "/queue/client", msg);
         
         // relay to all ops
@@ -84,7 +84,7 @@ public class ChatController {
         
         
         for(Chat uc: chats.getUnreadChats()) {
-            Parcel p = Parcel.makeUnreadList(uc.getClientID(), uc.getLastN(1));
+            Parcel p = Parcel.makeUnreadList(uc.getClientID(), uc.getLastN(1), uc.getUnreadCount());
             this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/op", p);     
         }
         

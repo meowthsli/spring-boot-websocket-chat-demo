@@ -9,7 +9,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
+import java.util.List;
 
 /**
  *
@@ -87,6 +90,23 @@ public class Chat {
     
     public String getLockerSession() {
         return this.lockSession;
+    }
+
+    public Long getUnreadCount() {
+        
+        
+        List<Item> hist =  Arrays.asList(history.toArray(new Item[0]));
+        Collections.reverse(hist);
+        
+        Long count = 0L;
+        for(Item i : hist) {
+            if(i.opId == null) {
+                count++;
+            } else {
+                break;
+            }
+        }
+        return count;
     }
     
     public final class Item {

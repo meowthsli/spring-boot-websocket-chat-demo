@@ -29,7 +29,7 @@ export class ClientQueueComponent implements OnInit {
                 let text = p.chatItems[p.chatItems.length-1].text; // последнее сообщение
                 let id = p.chatItems[p.chatItems.length-1].id
                 if(!qi) {
-                    this.$queue.push(new QueueItem(null, p.clientID, text, id));
+                    this.$queue.push(new QueueItem(null, p.clientID, text, id, p.ack));
                 } else {
                     qi.text = text;
                 }
@@ -46,8 +46,9 @@ export class ClientQueueComponent implements OnInit {
             if(qi) {
                 qi.id = p.ack;
                 qi.text = p.chatItems[0].text;
+                qi.lost = p.ack;
             } else {
-                this.$queue.push(new QueueItem(this.nameCache[p.clientID], p.clientID, p.chatItems[0].text, p.ack));
+                this.$queue.push(new QueueItem(this.nameCache[p.clientID], p.clientID, p.chatItems[0].text, p.ack, p.ack));
             }
 
             if(!this.nameCache[p.clientID]) {
@@ -81,7 +82,8 @@ export class ClientQueueComponent implements OnInit {
 
 // item to show
 export class QueueItem {
-    public constructor(public author: String, public clientID: string, public text: String, public id: number){
+    public constructor(public author: String, public clientID: string, public text: String, public id: number, 
+        public lost: number){
 
     }
 }

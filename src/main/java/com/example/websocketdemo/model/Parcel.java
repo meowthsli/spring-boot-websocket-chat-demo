@@ -11,11 +11,12 @@ import java.time.Instant;
 @JsonInclude(Include.NON_NULL)
 public class Parcel {
 
-    public static Parcel makeUnreadList(String clientID, Chat.Item[] lastN) {
+    public static Parcel makeUnreadList(String clientID, Chat.Item[] lastN, Long unreadCount) {
         Parcel p = new Parcel();
         p.setClientID(clientID);
         p.setType(MessageType.OP_UNREAD_LIST);
         p.setChatItems(lastN);
+        p.setAck(unreadCount);
         return p;
     }
 
@@ -55,12 +56,15 @@ public class Parcel {
      * - chatItems [1]
      * @param clientID
      * @param item
+     * @param cid
+     * @param unread
      * @return 
      */
-    public static Parcel makeChatMessage(String clientID, Chat.Item item, Long cid) {
+    public static Parcel makeChatMessage(String clientID, Chat.Item item, Long cid, Long unread) {
         Parcel p = makeClientHistory(clientID, new Chat.Item[]{item});
         p.setType(MessageType.CHAT);
         p.setCid(cid);
+        p.setAck(unread);
         return p;
     }
 
@@ -105,7 +109,7 @@ public class Parcel {
     private Instant when;
     private String clientDesc;
     private String[] info;
-     private String[] infoDesc;
+    private String[] infoDesc;
 
     public void setWhen(Instant when) {
         this.when = when;
