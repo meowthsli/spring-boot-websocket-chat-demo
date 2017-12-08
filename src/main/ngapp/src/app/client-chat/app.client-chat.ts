@@ -5,6 +5,9 @@ import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { UsercontextService } from '../app.usercontext';
 import { ClientStompConnector } from '../stomp/app.client-stomp';
 import * as moment from 'moment';
+import { NbSpinnerService } from '@nebular/theme';
+import { ToasterService } from 'angular2-toaster/src/toaster.service';
+import { ToasterConfig } from 'angular2-toaster';
 
 /**
  * @title Main app component
@@ -18,8 +21,16 @@ export class ClientChatComponent implements OnInit {
 
     $text: string;
     $history: Array<ChatItem> = new Array();
+    $connecting: number = 0;
 
-    constructor(private router:Router, private uctx: UsercontextService, private stomp: ClientStompConnector) {}
+    $toasterconfig = new ToasterConfig({
+        showCloseButton: false, 
+        tapToDismiss: true, 
+        timeout: 0
+    });
+
+    constructor(private router:Router, private uctx: UsercontextService, private stomp: ClientStompConnector, 
+        private spinner: NbSpinnerService, private toaster: ToasterService) {}
     
     public $onSendClick() {
         let ci = new ChatItem(this.cids--, null, this.$text, moment());
@@ -55,9 +66,35 @@ export class ClientChatComponent implements OnInit {
             }
         });
 
-        this.stomp.connect(this.uctx.username);  
-    }   
+        this.stomp.onConnected.subscribe(()=> {
+            this.spinner.clear();
+            this.$connecting = 2;
+        });
 
+        this.stomp.onError.subscribe(()=> this.onDisconnect());
+        
+        this.beginConnect();
+    }
+
+    private beginConnect() {
+        this.$connecting = 1;
+        this.spinner.load();
+        this.stomp.connect(this.uctx.username);  
+    }
+
+    private onDisconnect() {
+        this.spinner.clear();
+        this.$connecting = 0;
+
+        let toast = this.toaster.pop("warning", "Cannot connect to server", "Click to reconnect");
+        toast.showCloseButton = true;
+        toast.clickHandler = (toast, button) => {
+            this.toaster.clear();
+            this.beginConnect()
+            return true;
+        }
+        // show warning
+    }
 
     private scrollDown() {
         setTimeout(() =>  {

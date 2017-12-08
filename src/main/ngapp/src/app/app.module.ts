@@ -1,10 +1,13 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
 import { NbThemeModule, NbTabsetModule, NbUserModule, NbActionsModule } from '@nebular/theme';
-import { NbSidebarModule, NbLayoutModule, NbSidebarService, NbCardModule } from '@nebular/theme';
+import { NbSidebarModule, NbLayoutModule, NbSidebarService, NbCardModule, NbSpinnerService } from '@nebular/theme';
+
+import {ToasterService} from 'angular2-toaster';
 
 import { AppComponent } from './app.component';
 import { UsercontextService } from './app.usercontext';
@@ -18,6 +21,7 @@ import { BtoaPipe, AtobPipe } from './b64.pipe';
 import { CapitalizePipe } from './pipes/capitalize';
 import { TimeformatPipe } from './pipes/time-formatter';
 import { ElipsisPipe } from './pipes/elipsis';
+import { ToasterModule } from 'angular2-toaster/src/toaster.module';
 
 const routes: Routes = [
   { path: '', component: LoginComponent, pathMatch: "full" },
@@ -41,7 +45,7 @@ const routes: Routes = [
   imports: [
     RouterModule.forRoot(routes, {}),
     FormsModule, ReactiveFormsModule,
-    BrowserModule,
+    BrowserModule, BrowserAnimationsModule,
     NbLayoutModule,
     NbSidebarModule,
     NbThemeModule.forRoot({ name: 'default' }),
@@ -51,12 +55,15 @@ const routes: Routes = [
     NbTabsetModule,
     NbUserModule,
     NbActionsModule,
+    ToasterModule
   ],
   providers: [
     UsercontextService,
     StompConnector,
     ClientStompConnector,
     NbSidebarService,
+    NbSpinnerService,
+    ToasterService
   ],
   bootstrap: [
     AppComponent

@@ -1,8 +1,14 @@
 <nb-layout>
     <nb-layout-column>
+        <toaster-container [toasterconfig]="$toasterconfig"></toaster-container>
         <div class="col-md-6 offset-md-3">
             <nb-card>
-                <nb-card-header>Чат с оператором </nb-card-header>
+                <nb-card-header>
+                        <img *ngIf="$connecting == 1" style="width:1rem; height:1rem; float:left;" src="/assets/loading4.gif" />
+                        <span *ngIf="$connecting == 1" style="margin-left: 0.5rem;">Соединяемся..</span>
+                        <span *ngIf="$connecting == 0">Отсоединено</span>
+                        <span *ngIf="$connecting == 2">Соединено с оператором</span>
+                </nb-card-header>
                 <nb-card-body>
                     <ul id="chat-lines">
                         <li *ngFor="let ci of $history" [class.chat-line-fromclient]="!ci.opId" [class.noack]="ci.id == null || ci.id &lt; 0">
@@ -21,7 +27,7 @@
                         <textarea class="form-control" placeholder="Введите текст" rows="2" (keydown.enter)="$onSendClick();false" [(ngModel)]="$text"></textarea>
                     </div>
                     <div class="form-group">
-                        <button class="btn btn-danger" type="submit" (click)='$onSendClick()'>Отправить</button>
+                        <button class="btn btn-danger" type="submit" [disabled]="$connecting != 2" (click)='$onSendClick()'>Отправить</button>
                     </div>
                 </nb-card-body>
                 

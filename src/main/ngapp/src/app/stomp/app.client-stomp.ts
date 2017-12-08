@@ -5,6 +5,8 @@ import { ChatItem } from '../client-chat/app.client-chat';
 
 export class ClientStompConnector {
     public incomingMessage = new Subject<any>();
+    public onConnected = new Subject<void>();
+    public onError = new Subject<string>();
 
     private socket; // = new SockJS('http://localhost:8080/ws');
     private stompClient; // = Stomp.over(this.socket);
@@ -22,8 +24,11 @@ export class ClientStompConnector {
 
     public disconnect() {
         if(this.clientId) {
+            console.log("Disconnected");
             this.stompClient.unsubscribe(this.clientId);
             this.clientId = null;
+            this.stompClient.disconnect();
+            this.onError.next("Disconnected");
         }
     }
 
@@ -34,7 +39,7 @@ export class ClientStompConnector {
     }
 
     onStompConnected() {
-        console.log("Stomp connected");
+        this.onConnected.next();
     
         this.clientId = this.stompClient.subscribe('/user/queue/client', (payload) => 
             this.onStompReceived(payload)
@@ -46,7 +51,7 @@ export class ClientStompConnector {
     
       onStompError() {
         console.log("Stomp error");
-
+        this.onError.next("Disconnected");
       }
     
       onStompReceived(payload) {

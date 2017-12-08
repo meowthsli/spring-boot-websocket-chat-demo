@@ -8,3 +8,5 @@
 @include nb-install() {
   @include nb-theme-global();
 };
+
+@import 'node_modules/angular2-toaster/toaster';
