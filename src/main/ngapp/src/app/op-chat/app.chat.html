@@ -20,7 +20,7 @@
                         <img *ngIf="$connecting == 1" style="width:1rem; height:1rem; float:left;" src="/assets/loading4.gif" />
                         <span *ngIf="$connecting == 1" style="margin-left: 0.5rem;">Соединяемся..</span>
                     </nb-card-header>
-                    <nb-card-body>Выберите клиента в очереди. Тут появится чат</nb-card-body>
+                    <nb-card-body>Выберите клиента из очереди. Тут появится чат</nb-card-body>
                 </nb-card>
             </div>
             <div class="col-lg-9">
@@ -43,8 +43,8 @@
                                     (keydown.enter)="$onSendClick(d);false" [(ngModel)]="d.$text"></textarea>
                             </div>
                             <div class="form-group pushout">
-                                <button class="btn btn-warning" type="submit" (click)='$release(d)'>Покинуть</button>
-                                <button class="btn btn-primary" type="submit" (click)='$onSendClick(d)'>Отправить</button>
+                                <button class="btn btn-warning" type="submit" (click)='$release(d)' [disabled]="$connecting != 2">Покинуть</button>
+                                <button class="btn btn-primary" type="submit" (click)='$onSendClick(d)' [disabled]="$connecting != 2">Отправить</button>
                             </div>
                         </nb-tab>
                     </nb-tabset>

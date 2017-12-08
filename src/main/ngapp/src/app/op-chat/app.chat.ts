@@ -34,7 +34,8 @@ export class ChatComponent implements OnInit {
   $toasterconfig = new ToasterConfig({
     showCloseButton: false, 
     tapToDismiss: true, 
-    timeout: 0
+    timeout: 0,
+    limit: 1,
   });
 
   /**

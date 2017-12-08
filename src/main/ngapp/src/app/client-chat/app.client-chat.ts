@@ -26,7 +26,8 @@ export class ClientChatComponent implements OnInit {
     $toasterconfig = new ToasterConfig({
         showCloseButton: false, 
         tapToDismiss: true, 
-        timeout: 0
+        timeout: 0,
+        limit: 1,
     });
 
     constructor(private router:Router, private uctx: UsercontextService, private stomp: ClientStompConnector, 
