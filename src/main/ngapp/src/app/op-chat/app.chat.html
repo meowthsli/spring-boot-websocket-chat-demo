@@ -1,5 +1,6 @@
 <nb-layout>
     <nb-layout-header fixed>
+        <toaster-container [toasterconfig]="$toasterconfig"></toaster-container>
         <nb-actions>
             <nb-action icon="nb-email"></nb-action>
         </nb-actions>
@@ -14,8 +15,12 @@
             </div>
             <div class="col-lg-9" *ngIf="$discussions.length == 0">
                 <nb-card>
-                    <nb-card-header>Выберите клиента в очереди</nb-card-header>
-                    <nb-card-body>Тут появится чат</nb-card-body>
+                    <nb-card-header>
+                        <span *ngIf="$connecting == 0" style="margin-left: 0.5rem;">Отсоединено</span>
+                        <img *ngIf="$connecting == 1" style="width:1rem; height:1rem; float:left;" src="/assets/loading4.gif" />
+                        <span *ngIf="$connecting == 1" style="margin-left: 0.5rem;">Соединяемся..</span>
+                    </nb-card-header>
+                    <nb-card-body>Выберите клиента в очереди. Тут появится чат</nb-card-body>
                 </nb-card>
             </div>
             <div class="col-lg-9">

@@ -5,6 +5,8 @@ import { ChatItem } from '../op-chat/app.chat';
 
 export class StompConnector {
     public incomingMessage = new Subject<any>();
+    public onConnected = new Subject<void>();
+    public onError = new Subject<string>();
 
     private socket; // = new SockJS('http://localhost:8080/ws');
     private stompClient; // = Stomp.over(this.socket);
@@ -26,6 +28,7 @@ export class StompConnector {
         if(this.broadcastId) {
             this.stompClient.unsubscribe(this.broadcastId);
         }
+        this.onError.next("Disconnect");
     }
 
     public send(clientId: string, ci: ChatItem) {
@@ -60,6 +63,7 @@ export class StompConnector {
 
     onStompConnected() {
         console.log("Stomp connected");
+        this.onConnected.next();
     
         this.broadcastId = this.stompClient.subscribe('/broadcast/all-ops', (payload) => this.onStompReceived(payload));
         this.opsId = this.stompClient.subscribe('/user/queue/op', (payload) => 
@@ -71,7 +75,8 @@ export class StompConnector {
       }
     
       onStompError() {
-        
+        console.log("Stomp error");
+        this.onError.next("Error");
       }
     
       onStompReceived(payload) {

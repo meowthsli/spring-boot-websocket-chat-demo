@@ -86,7 +86,7 @@ export class ClientChatComponent implements OnInit {
         this.spinner.clear();
         this.$connecting = 0;
 
-        let toast = this.toaster.pop("warning", "Cannot connect to server", "Click to reconnect");
+        let toast = this.toaster.pop("warning", "Нет связи с сервером", "Кликните, чтобы соединиться");
         toast.showCloseButton = true;
         toast.clickHandler = (toast, button) => {
             this.toaster.clear();

@@ -14,6 +14,8 @@ import {CapitalizePipe} from '../pipes/capitalize';
 import { TimeformatPipe } from '../pipes/time-formatter';
 
 import * as moment from 'moment';
+import { ToasterService } from 'angular2-toaster/src/toaster.service';
+import { ToasterConfig } from 'angular2-toaster';
 
 /**
  * @title Main app component
@@ -28,6 +30,13 @@ export class ChatComponent implements OnInit {
   @ViewChild(NbTabsetComponent) public $tabs : NbTabsetComponent;
   $discussions: Array<UserChat> = new Array();
 
+  $connecting: number = 0;
+  $toasterconfig = new ToasterConfig({
+    showCloseButton: false, 
+    tapToDismiss: true, 
+    timeout: 0
+  });
+
   /**
    * Click on client 
    */
@@ -35,7 +44,8 @@ export class ChatComponent implements OnInit {
     this.stomp.tryLock(clientID); // we maybe will have for LOCK_OK after that
   }
 
-  constructor(private router:Router, private uctx: UsercontextService, private stomp: StompConnector) {
+  constructor(private router:Router, private uctx: UsercontextService, private stomp: StompConnector,
+    private toaster: ToasterService) {
     
   }
 
@@ -71,6 +81,29 @@ export class ChatComponent implements OnInit {
         this.onMessage_LOCK_OK(msg);
       }
     });
+
+    this.stomp.onConnected.subscribe(()=> this.onConnect());
+    this.stomp.onError.subscribe(()=> this.onError());
+
+    this.beginConnect();
+  }
+
+  private onError() {
+    this.$connecting = 0;
+    let toast = this.toaster.pop("warning", "Нет связи с сервером", "Кликните, чтобы соединиться");
+    toast.clickHandler = (toast, button) => {
+        this.toaster.clear();
+        this.beginConnect();
+        return true;
+    };
+  }
+
+  private onConnect() {
+    this.$connecting = 2;
+  }
+
+  private beginConnect() {
+    this.$connecting = 1;
     this.stomp.connect(this.uctx.username);
   }
 
