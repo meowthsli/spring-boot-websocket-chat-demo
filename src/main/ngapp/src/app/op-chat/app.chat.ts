@@ -17,6 +17,9 @@ import * as moment from 'moment';
 import { ToasterService } from 'angular2-toaster/src/toaster.service';
 import { ToasterConfig } from 'angular2-toaster';
 
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ProfileComponent } from './app.profile';
+
 /**
  * @title Main app component
  */
@@ -45,9 +48,15 @@ export class ChatComponent implements OnInit {
     this.stomp.tryLock(clientID); // we maybe will have for LOCK_OK after that
   }
 
+  public $profileClick() {
+    const activeModal = this.modal.open(ProfileComponent, { size: 'lg', container: 'nb-layout' });
+    activeModal.componentInstance.$modalHeader = 'Профиль пользователя (демо режим)';
+    activeModal.componentInstance.$email = this.uctx.username + '-op.acme.org';
+  }
+
   constructor(private router:Router, private uctx: UsercontextService, private stomp: StompConnector,
-    private toaster: ToasterService) {
-    
+    private toaster: ToasterService, private modal: NgbModal) {
+     
   }
 
   private findChat(userid: string) : UserChat {
@@ -57,6 +66,7 @@ export class ChatComponent implements OnInit {
   ngOnInit(): void {
     if(!this.uctx.username ){
       this.router.navigateByUrl(''), {skipLocationChange: false};
+      return;
     }
 
     this.stomp.incomingMessage.subscribe(msg => {
@@ -68,7 +78,7 @@ export class ChatComponent implements OnInit {
       } else if(msg.type === 'CHAT') {
         let uc = this.findChat(msg.clientID);
         if(uc) {
-          uc.addHistory(btoa(this.uctx.username), msg.chatItems);
+          uc.addHistory(this.opID, msg.chatItems);
           this.scrollDown(uc);
         }
       } else if(msg.type === 'CLI_HISTORY') {
@@ -80,6 +90,8 @@ export class ChatComponent implements OnInit {
         }
       } else if (msg.type === 'LOCK_OK') {
         this.onMessage_LOCK_OK(msg);
+      } else if (msg.type === 'OP_HELLO') {
+        this.opID = msg.opID;
       }
     });
 
@@ -105,17 +117,19 @@ export class ChatComponent implements OnInit {
 
   private beginConnect() {
     this.$connecting = 1;
-    this.stomp.connect(this.uctx.username);
+    this.stomp.connect(this.uctx.username + '-op.acme.org');
   }
 
   private onMessage_LOCK_OK(msg) {
-    if(msg.opID != btoa(this.uctx.username)) { //   maybe it's not us
+    if(msg.opID != this.opID) { //   maybe it's not us
       return;
     }
     let clientID = msg.clientID;
+    let username = msg.clientDesc.realName;
+
     let uc = this.findChat(clientID);
     if(!uc) { // try to find such chat; if found, switch to
-      uc = new UserChat(clientID, new Array());
+      uc = new UserChat(clientID, new Array(), username);
       this.$discussions.push(uc); // create chat
       this.stomp.loadHistory(clientID); // ask for history items
       setTimeout(() => {
@@ -129,7 +143,7 @@ export class ChatComponent implements OnInit {
 
   public $onSendClick(chat: UserChat) {
     if(chat.$text && chat.$text != '') {
-      let ci = chat.addItem(this.cids--, chat.$text, btoa(this.uctx.username), moment());
+      let ci = chat.addItem(this.cids--, chat.$text, this.opID, moment());
       this.stomp.send(chat.clientID, ci); 
       chat.$text = null;
       this.scrollDown(chat);
@@ -154,6 +168,7 @@ export class ChatComponent implements OnInit {
 }
 
   private cids : number = -1;
+  private opID: string;
 }
 
 export class ChatItem {
@@ -170,7 +185,7 @@ class UserChat {
       }
     }
   }
-  constructor(public clientID: string, public $history: Array<ChatItem>){}
+  constructor(public clientID: string, public $history: Array<ChatItem>, public username: string){}
 
   public addItem(id, text: string, opID: string, at: moment.Moment) {
     let ci = new ChatItem(id, this.clientID, text, opID, at)

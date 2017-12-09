@@ -1,6 +1,7 @@
 package com.example.websocketdemo.model;
 
 import com.example.websocketdemo.controller.Chat;
+import com.example.websocketdemo.controller.Chat.ClientDesc;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.time.Instant;
@@ -42,11 +43,12 @@ public class Parcel {
         return p;
     }
     
-     public static Parcel makeLockOk(String clientID, String opID) {
+     public static Parcel makeLockOk(ClientDesc desc, String clientID, String opID) {
         Parcel p = new Parcel();
         p.setClientID(clientID);
         p.setType(MessageType.LOCK_OK);
         p.setOpID(opID);
+        p.setClientDesc(desc);
         return p;
     }
     
@@ -90,7 +92,7 @@ public class Parcel {
         return p;
     }
     
-    public static Parcel makeInfo(String[] info, String[] desc) {
+    public static Parcel makeInfo(String[] info, Chat.ClientDesc[] desc) {
         Parcel p = new Parcel();
         p.setInfo(info);
         p.setInfoDesc(desc);
@@ -107,9 +109,9 @@ public class Parcel {
     private Long cid;
     private String opID;
     private Instant when;
-    private String clientDesc;
+    private Chat.ClientDesc clientDesc;
     private String[] info;
-    private String[] infoDesc;
+    private Chat.ClientDesc[] infoDesc;
 
     public void setWhen(Instant when) {
         this.when = when;
@@ -187,11 +189,11 @@ public class Parcel {
         this.cid = cid;
     }
     
-    public void setClientDesc(String desc) {
+    public void setClientDesc(Chat.ClientDesc desc) {
         this.clientDesc = desc;
     }
     
-    public String getClientDesc() {
+    public Chat.ClientDesc getClientDesc() {
         return this.clientDesc;
     }
     
@@ -203,11 +205,11 @@ public class Parcel {
         this.info = info;
     }
     
-    public String[] getInfoDesc() {
+    public Chat.ClientDesc[] getInfoDesc() {
         return this.infoDesc;
     }
     
-    public void setInfoDesc(String[] infoDesc) {
+    public void setInfoDesc(Chat.ClientDesc[] infoDesc) {
         this.infoDesc = infoDesc;
     }
 }

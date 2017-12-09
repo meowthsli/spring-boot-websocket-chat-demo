@@ -68,3 +68,19 @@
 .noack {
     opacity: 0.4;
 }
+
+.op-header {
+    display: flex;
+    justify-content: space-between;
+    width:100%;
+}
+
+.op-header-exit {
+    margin-left: auto;
+    display: flex;
+}
+
+.icontext {
+    margin-left: 1rem;
+    cursor: pointer;
+}

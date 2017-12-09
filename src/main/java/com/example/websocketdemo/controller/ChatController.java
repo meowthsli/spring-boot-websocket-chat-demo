@@ -2,6 +2,7 @@ package com.example.websocketdemo.controller;
 
 import com.example.websocketdemo.model.Parcel;
 import java.time.Instant;
+import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -80,6 +81,8 @@ public class ChatController {
     @SendTo("/broadcast/all-ops")
     public Parcel operatorHello(@Payload Parcel opHello,
                                SimpMessageHeaderAccessor smha) {
+        opHello.setOpID(this.generateID(opHello.getClientDesc().getEmail()));
+        
         setCurrentUserID(smha, opHello.getOpID());
         
         
@@ -112,10 +115,13 @@ public class ChatController {
     @SendTo("/broadcast/all-ops")
     public Parcel clientHello(@Payload Parcel clientHello,
                                SimpMessageHeaderAccessor smha) {
+        clientHello.setClientID(this.generateID(clientHello.getClientDesc().getEmail()));
+ 
         setCurrentUserID(smha, clientHello.getClientID());
         
         Chat uc = chats.getChat(getCurrentUserID(smha), clientHello.getClientDesc());
         uc.setLastSession(getCurrentSessionID(smha));
+        uc.setClientDesc(clientHello.getClientDesc());
         
         Parcel p = Parcel.makeClientHistory(getCurrentUserID(smha), uc.getLastN(20));
         this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/client", p);     
@@ -131,7 +137,7 @@ public class ChatController {
         Chat uc = chats.getChat(msgLock.getClientID());        
         //if(uc.lock(getCurrentUserID(smha))) {
         uc.lock(getCurrentUserID(smha), getCurrentSessionID(smha));
-            Parcel p = Parcel.makeLockOk(msgLock.getClientID(), getCurrentUserID(smha));
+            Parcel p = Parcel.makeLockOk(uc.getClientDesc(), msgLock.getClientID(), getCurrentUserID(smha));
             return p;
         //}
         //return null;
@@ -163,10 +169,15 @@ public class ChatController {
     @MessageMapping("/operator.getInfo")
     @SendToUser("/queue/op")
     public Parcel getInfo(@Payload Parcel msgGetInfo, SimpMessageHeaderAccessor smha) {
-        msgGetInfo.setInfoDesc(msgGetInfo.getInfo().clone());
+        Chat.ClientDesc[] descs = new Chat.ClientDesc[msgGetInfo.getInfo().length];
+        for(int i = 0; i < descs.length; ++i) {
+            descs[i] = new Chat.ClientDesc();
+        }
+        msgGetInfo.setInfoDesc(descs);
+                
         for(int i = 0; i < msgGetInfo.getInfo().length; ++i) {
             Chat ch = chats.getChat(msgGetInfo.getInfo()[i]);
-            msgGetInfo.getInfoDesc()[i] = "".equals(ch.getClientDesc()) ? null : ch.getClientDesc();
+            msgGetInfo.getInfoDesc()[i] = ch.getClientDesc();
         }
         msgGetInfo.setType(Parcel.MessageType.INFO);
         return msgGetInfo;
@@ -193,5 +204,11 @@ public class ChatController {
     
     private String getCurrentSessionID(SimpMessageHeaderAccessor smha) {
         return (String)smha.getSessionId();
+    }
+    
+    private String generateID(String email) {
+        return java.util.Base64.getEncoder().encodeToString(
+                email.getBytes()
+        );
     }
 }

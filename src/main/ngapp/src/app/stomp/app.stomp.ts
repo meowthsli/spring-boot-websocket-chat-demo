@@ -12,13 +12,13 @@ export class StompConnector {
     private stompClient; // = Stomp.over(this.socket);
     private opsId;
     private broadcastId;
-    private u64: String;
-
+    private username: string;
+ 
     public connect(username: string) {
-        this.u64 = btoa(username);
+        this.username = username;
         this.socket = new SockJS('http://localhost:8080/ws');
         this.stompClient = Stomp.over(this.socket);
-        this.stompClient.connect(this.u64, '', () => this.onStompConnected(), () => this.onStompError());
+        this.stompClient.connect(btoa(username), '', () => this.onStompConnected(), () => this.onStompError());
     }
 
     public disconnect() {
@@ -70,7 +70,10 @@ export class StompConnector {
             this.onStompReceived(payload)
         );
         this.stompClient.send("/app/operator.hello",
-            {}, JSON.stringify({opID: this.u64})
+            {}, JSON.stringify({clientDesc: { 
+                email: this.username,
+                realName: 'Максим [' + this.username + ']'
+            }})
         );
       }
     

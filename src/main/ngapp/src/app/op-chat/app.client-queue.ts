@@ -67,8 +67,8 @@ export class ClientQueueComponent implements OnInit {
             for(var i = 0; i < p.info.length; ++i) {
                 let qi = this.$queue.find(x => x.clientID === p.info[i]);
                 if(qi) {
-                    console.log("replace qi.autor () by (): ", qi.author, p.infoDesc[i]);
-                    qi.author = p.infoDesc[i];
+                    //console.log("replace qi.autor () by (): ", qi.author, p.infoDesc[i].realName);
+                    qi.author = p.infoDesc[i].realName;
                     this.nameCache[qi.clientID] = qi.author;
                 }
             }

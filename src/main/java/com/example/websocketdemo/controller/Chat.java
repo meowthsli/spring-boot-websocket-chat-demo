@@ -7,7 +7,6 @@ package com.example.websocketdemo.controller;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,8 +18,8 @@ import java.util.List;
  * @author yurij
  */
 public class Chat {
-    private String clientID;
-    private String clientDesc;
+    private final String clientID;
+    private ClientDesc clientDesc;
     private String clientLastSession = "";
     private String locker;
     private Instant lockTime;
@@ -28,12 +27,12 @@ public class Chat {
     private int ids = 0;
     private String lockSession;
     
-    public Chat(String clientID, String clientDesc) {
+    public Chat(String clientID, ClientDesc clientDesc) {
         this.clientID = clientID;
         this.clientDesc = clientDesc;
     }
     
-    public String getClientDesc() {
+    public ClientDesc getClientDesc() {
         return this.clientDesc;
     }
     
@@ -108,6 +107,10 @@ public class Chat {
         }
         return count;
     }
+
+    void setClientDesc(ClientDesc clientDesc) {
+        this.clientDesc = clientDesc;
+    }
     
     public final class Item {
         
@@ -130,5 +133,25 @@ public class Chat {
         }
         return history.stream().
                 skip(size - n).toArray(Item[]::new);
+    }
+    
+    public static class ClientDesc {
+        public String getRealName() {
+            return this.realName;
+        }
+        
+        public void setRealName(String realName) {
+            this.realName = realName;
+        }
+        
+        public String getEmail() {
+            return this.email;
+        }
+        
+        public void setEmail(String email) {
+            this.email = email;
+        }
+        private String email;
+        private String realName;
     }
 }

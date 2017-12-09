@@ -11,14 +11,14 @@ export class ClientStompConnector {
     private socket; // = new SockJS('http://localhost:8080/ws');
     private stompClient; // = Stomp.over(this.socket);
     private clientId;
-    private u64;
+    private username: string;
 
     public connect(username: string) {
         if(!this.clientId) {
-            this.u64 = btoa(username);
+            this.username = username;
             this.socket = new SockJS('http://localhost:8080/ws');
             this.stompClient = Stomp.over(this.socket);
-            this.stompClient.connect(this.u64, '', () => this.onStompConnected(), () => this.onStompError());
+            this.stompClient.connect(btoa(this.username), '', () => this.onStompConnected(), () => this.onStompError());
         }
     }
 
@@ -45,7 +45,10 @@ export class ClientStompConnector {
             this.onStompReceived(payload)
         );
         this.stompClient.send("/app/client.hello",
-            {}, JSON.stringify({clientID: this.u64, clientDesc: atob(this.u64) + '@acme.org'})
+            {}, JSON.stringify({clientDesc: { 
+                email: this.username,
+                realName: 'Иван Иванов [' + this.username + ']'
+            }})
         );
       }
     

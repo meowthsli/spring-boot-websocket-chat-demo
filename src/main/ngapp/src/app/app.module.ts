@@ -22,6 +22,11 @@ import { CapitalizePipe } from './pipes/capitalize';
 import { TimeformatPipe } from './pipes/time-formatter';
 import { ElipsisPipe } from './pipes/elipsis';
 import { ToasterModule } from 'angular2-toaster/src/toaster.module';
+import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap/modal/modal.module';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal/modal';
+import { NgbModalStack } from '@ng-bootstrap/ng-bootstrap/modal/modal-stack';
+import { ProfileComponent } from './op-chat/app.profile';
+
 
 const routes: Routes = [
   { path: '', component: LoginComponent, pathMatch: "full" },
@@ -40,8 +45,10 @@ const routes: Routes = [
     AtobPipe,
     CapitalizePipe,
     TimeformatPipe,
-    ElipsisPipe
+    ElipsisPipe,
+    ProfileComponent
   ],
+  entryComponents: [ProfileComponent],
   imports: [
     RouterModule.forRoot(routes, {}),
     FormsModule, ReactiveFormsModule,
@@ -55,7 +62,8 @@ const routes: Routes = [
     NbTabsetModule,
     NbUserModule,
     NbActionsModule,
-    ToasterModule
+    ToasterModule,
+    NgbModalModule
   ],
   providers: [
     UsercontextService,
@@ -63,7 +71,8 @@ const routes: Routes = [
     ClientStompConnector,
     NbSidebarService,
     NbSpinnerService,
-    ToasterService
+    ToasterService,
+    NgbModalStack
   ],
   bootstrap: [
     AppComponent

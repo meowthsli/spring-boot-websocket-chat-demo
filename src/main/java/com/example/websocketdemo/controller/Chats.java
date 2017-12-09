@@ -5,6 +5,7 @@
  */
 package com.example.websocketdemo.controller;
 
+import com.example.websocketdemo.model.Parcel;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class Chats {
         return null;
     }
 
-    Chat getChat(String clientID, String clientDesc) {
+    Chat getChat(String clientID, Chat.ClientDesc clientDesc) {
         Chat ch = chats.getOrDefault(clientID, new Chat(clientID, clientDesc));
         if(!chats.containsKey(clientID)) {
             chats.put(clientID, ch);

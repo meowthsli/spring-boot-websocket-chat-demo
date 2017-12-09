@@ -42,10 +42,12 @@ export class ClientChatComponent implements OnInit {
     }
 
     cids : number = -1;
+    private clientID: string;
 
     ngOnInit(): void {
         if(!this.uctx.username) {
-            this.router.navigateByUrl(''), {skipLocationChange: true};
+            this.router.navigateByUrl(''), {skipLocationChange: false};
+            return;
         }
 
         this.stomp.incomingMessage.subscribe(msg => {
@@ -60,6 +62,7 @@ export class ClientChatComponent implements OnInit {
                 }
                 this.scrollDown();
             } else if(msg.type === 'CLI_HISTORY') {
+                this.clientID = msg.clientID;
                 for(var ci of msg.chatItems) {
                     this.$history.push(new ChatItem(ci.id, ci.opId, ci.text, moment(ci.at*1000)));
                 }
@@ -80,7 +83,7 @@ export class ClientChatComponent implements OnInit {
     private beginConnect() {
         this.$connecting = 1;
         this.spinner.load();
-        this.stomp.connect(this.uctx.username);  
+        this.stomp.connect(this.uctx.username + '@acme.org');  
     }
 
     private onDisconnect() {
