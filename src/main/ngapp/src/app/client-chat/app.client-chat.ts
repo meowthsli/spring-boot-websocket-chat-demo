@@ -8,6 +8,7 @@ import * as moment from 'moment';
 import { NbSpinnerService } from '@nebular/theme';
 import { ToasterService } from 'angular2-toaster/src/toaster.service';
 import { ToasterConfig } from 'angular2-toaster';
+import { ClientDesc, FIO } from '../stomp/app.stomp';
 
 /**
  * @title Main app component
@@ -83,7 +84,12 @@ export class ClientChatComponent implements OnInit {
     private beginConnect() {
         this.$connecting = 1;
         this.spinner.load();
-        this.stomp.connect(this.uctx.username + '@acme.org');  
+        this.stomp.connect(new ClientDesc(
+            this.uctx.username + '@acme.org', 
+            new FIO(this.uctx.username, '', ' Jackson'), 
+            ['VIP', 'MOSCOW'],
+            '+7 909 0000')
+        );  
     }
 
     private onDisconnect() {

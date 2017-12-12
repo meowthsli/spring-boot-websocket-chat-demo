@@ -26,6 +26,7 @@ import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap/modal/modal.module';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal/modal';
 import { NgbModalStack } from '@ng-bootstrap/ng-bootstrap/modal/modal-stack';
 import { ProfileComponent } from './op-chat/app.profile';
+import { FioPipeSimple } from './pipes/fio-pipe-simple';
 
 
 const routes: Routes = [
@@ -46,6 +47,7 @@ const routes: Routes = [
     CapitalizePipe,
     TimeformatPipe,
     ElipsisPipe,
+    FioPipeSimple,
     ProfileComponent
   ],
   entryComponents: [ProfileComponent],

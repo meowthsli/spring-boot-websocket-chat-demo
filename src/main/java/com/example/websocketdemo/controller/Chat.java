@@ -136,22 +136,13 @@ public class Chat {
     }
     
     public static class ClientDesc {
-        public String getRealName() {
-            return this.realName;
-        }
-        
-        public void setRealName(String realName) {
-            this.realName = realName;
-        }
-        
-        public String getEmail() {
-            return this.email;
-        }
-        
-        public void setEmail(String email) {
-            this.email = email;
-        }
-        private String email;
-        private String realName;
+        public String email;
+        public FIO fio;
+        public String phone;
+        public String[] tags = new String[0];
+    }
+
+    public static class FIO {
+        public String fn, sn, ln;
     }
 }

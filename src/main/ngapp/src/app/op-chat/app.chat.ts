@@ -6,7 +6,7 @@ import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { UsercontextService } from '../app.usercontext';
-import { StompConnector } from '../stomp/app.stomp';
+import { StompConnector, ClientDesc, FIO } from '../stomp/app.stomp';
 
 import { NbTabsetComponent } from '@nebular/theme/components/tabset/tabset.component';
 import {BtoaPipe, AtobPipe} from '../b64.pipe';
@@ -146,7 +146,10 @@ export class ChatComponent implements OnInit {
 
   private beginConnect() {
     this.$connecting = 1;
-    this.stomp.connect(this.uctx.username + '-op.acme.org');
+    this.stomp.connect(new ClientDesc(this.uctx.username + '-op.acme.org',
+      new FIO(this.uctx.username, '', 'Ops'),
+      [],
+      null ));
   }
 
   private onMessage_LOCK_OK(msg) {
@@ -158,7 +161,7 @@ export class ChatComponent implements OnInit {
 
     let uc = this.findChat(clientID);
     if(!uc) { // try to find such chat; if found, switch to
-      uc = new UserChat(clientID, new Array(), this.$clientDescCache[clientID].realName);
+      uc = new UserChat(clientID, new Array(), this.$clientDescCache[clientID]);
       this.$discussions.push(uc); // create chat
       this.stomp.loadHistory(clientID); // ask for history items
       setTimeout(() => {
@@ -223,7 +226,7 @@ class UserChat {
       }
     }
   }
-  constructor(public clientID: string, public $history: Array<ChatItem>, public username: string){}
+  constructor(public clientID: string, public $history: Array<ChatItem>, public clientDesc: ClientDesc){}
 
   public addItem(id, text: string, opID: string, at: moment.Moment) {
     let ci = new ChatItem(id, this.clientID, text, opID, at)

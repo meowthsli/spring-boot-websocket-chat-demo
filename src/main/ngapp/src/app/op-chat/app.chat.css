@@ -70,15 +70,14 @@
     opacity: 0.4;
 }
 
-.op-header {
+#op-header {    
+    width:100%;
     display: flex;
     justify-content: space-between;
-    width:100%;
 }
 
-.op-header-exit {
-    margin-left: auto;
-    display: flex;
+#op-header-exit {    
+    display: flex;    
 }
 
 .icontext {

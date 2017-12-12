@@ -2,23 +2,24 @@ import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { Subject } from 'rxjs/Subject';
 import { ChatItem } from '../op-chat/app.chat';
+import { environment } from '../../environments/environment';
 
 export class StompConnector {
     public incomingMessage = new Subject<any>();
     public onConnected = new Subject<void>();
     public onError = new Subject<string>();
 
-    private socket; // = new SockJS('http://localhost:8080/ws');
-    private stompClient; // = Stomp.over(this.socket);
+    private socket; 
+    private stompClient;
     private opsId;
     private broadcastId;
-    private username: string;
  
-    public connect(username: string) {
-        this.username = username;
-        this.socket = new SockJS('http://localhost:8080/ws');
+    public connect(clientDesc: ClientDesc) {
+        this.clientDesc = clientDesc;
+        
+        this.socket = new SockJS(environment.wsAddress);
         this.stompClient = Stomp.over(this.socket);
-        this.stompClient.connect(btoa(username), '', () => this.onStompConnected(), () => this.onStompError());
+        this.stompClient.connect(btoa(this.clientDesc.email), '', () => this.onStompConnected(), () => this.onStompError());
     }
 
     public disconnect() {
@@ -71,10 +72,7 @@ export class StompConnector {
             this.onStompReceived(payload)
         );
         this.stompClient.send("/app/operator.hello",
-            {}, JSON.stringify({clientDesc: { 
-                email: this.username,
-                realName: 'Максим [' + this.username + ']'
-            }})
+            {}, JSON.stringify({clientDesc: this.clientDesc})
         );
       }
     
@@ -87,4 +85,20 @@ export class StompConnector {
         var message = JSON.parse(payload.body);
         this.incomingMessage.next(message);
       }
+
+    private clientDesc: ClientDesc;
+}
+
+// SDK
+
+export class ClientDesc {
+    constructor(public email: string, public fio: FIO, public tags: Array<string>, public phone: string) {
+
+    }
+}
+
+export class FIO {
+    constructor(public fn: string, public sn: string, public ln: string) {
+
+    }
 }

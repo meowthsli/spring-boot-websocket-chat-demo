@@ -81,7 +81,7 @@ public class ChatController {
     @SendTo("/broadcast/all-ops")
     public Parcel operatorHello(@Payload Parcel opHello,
                                SimpMessageHeaderAccessor smha) {
-        opHello.setOpID(this.generateID(opHello.getClientDesc().getEmail()));
+        opHello.setOpID(this.generateID(opHello.getClientDesc().email));
         
         setCurrentUserID(smha, opHello.getOpID());
         
@@ -115,7 +115,7 @@ public class ChatController {
     @SendTo("/broadcast/all-ops")
     public Parcel clientHello(@Payload Parcel clientHello,
                                SimpMessageHeaderAccessor smha) {
-        clientHello.setClientID(this.generateID(clientHello.getClientDesc().getEmail()));
+        clientHello.setClientID(this.generateID(clientHello.getClientDesc().email));
  
         setCurrentUserID(smha, clientHello.getClientID());
         

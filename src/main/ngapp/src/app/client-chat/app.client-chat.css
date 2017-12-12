@@ -37,7 +37,7 @@
 
 /* Op-avatar */
 .chat-line-avatar-op {
-    background-image: url('/assets/op-ava.png');
+    background-image: url('/assets/client-ava.jpg');
     background-size: cover;
     min-height: 4rem;
     min-width: 4rem;
