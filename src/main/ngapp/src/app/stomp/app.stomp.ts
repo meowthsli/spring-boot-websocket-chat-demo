@@ -16,7 +16,7 @@ export class StompConnector {
  
     public connect(username: string) {
         this.username = username;
-        this.socket = new SockJS('http://localhost:8080/ws');
+        this.socket = new SockJS('/ws');
         this.stompClient = Stomp.over(this.socket);
         this.stompClient.connect(btoa(username), '', () => this.onStompConnected(), () => this.onStompError());
     }
