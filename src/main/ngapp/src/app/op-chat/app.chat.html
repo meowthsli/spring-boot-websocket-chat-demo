@@ -44,15 +44,27 @@
                     <nb-tabset>
                         <nb-tab *ngFor="let d of $discussions" [tabTitle]="d.clientDesc.fio | fioPipeSimple" style="padding: 1.25rem;">
                             <ul class="chat-lines" id="{{d.clientID}}">
-                                <li *ngFor="let ci of d.$history" [class.chat-line-fromop]="ci.opId" [class.noack]="ci.id == null || ci.id &lt; 0">
-                                    <span *ngIf="!ci.opId" class="chat-line-avatar-op"></span>
-                                    <div>
-                                        <p>
-                                            {{ci.text | capitalize }}
-                                        </p>
-                                        <span class="chat-line-time">{{ci.at | timeformat }}</span>
-                                    </div>
-                                </li>
+                                <!-- 
+                                    <li *ngFor="let ci of d.$history" [class.chat-line-fromop]="ci.opId" [class.noack]="ci.id == null || ci.id &lt; 0">
+                                        <span *ngIf="!ci.opId" class="chat-line-avatar-op"></span>
+                                        <div>
+                                            <p>
+                                                {{ ci.text | capitalize }}
+                                            </p>
+                                            <span class="chat-line-time">{{ ci.at | timeformat }}</span>
+                                        </div>
+                                    </li>
+                                -->
+                                <div *ngFor="let ci of d.$history" style="width:auto">
+                                <blockquote  [class.blockquote-reverse]="ci.opId"
+                                        style="background-color: beige;border-radius: 0.5rem;"
+                                        [class.noack]="ci.id == null || ci.id &lt; 0"
+                                        [class.blockquote]="!ci.opId"                                        
+                                        >
+                                    <p class="mb-0">{{ci.text | capitalize }}</p>
+                                    <footer class="blockquote-footer" >{{ci.at | timeformat }}</footer>
+                                </blockquote>
+                                </div>
                             </ul> 
                             <div class="form-group">
                                 <textarea class="form-control" placeholder="Введите текст" rows="2" 
