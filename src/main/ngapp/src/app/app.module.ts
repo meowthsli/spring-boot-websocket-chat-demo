@@ -63,7 +63,7 @@ const routes: Routes = [
     NbUserModule,
     NbActionsModule,
     ToasterModule,
-    NgbModalModule
+    NgbModalModule,
   ],
   providers: [
     UsercontextService,

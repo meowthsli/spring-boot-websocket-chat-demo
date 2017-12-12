@@ -41,6 +41,9 @@ export class ChatComponent implements OnInit {
     limit: 1,
   });
 
+  $clientDescCache = {};
+  $currentClientID: string = null;
+
   /**
    * Click on client 
    */
@@ -54,9 +57,17 @@ export class ChatComponent implements OnInit {
     activeModal.componentInstance.$email = this.uctx.username + '-op.acme.org';
   }
 
+  public $logout() {
+    for(let d of this.$discussions) {
+      this.stomp.release(d.clientID);
+    }
+    this.stomp.disconnect();
+    this.router.navigateByUrl('', {skipLocationChange: false});
+  }
+
   constructor(private router:Router, private uctx: UsercontextService, private stomp: StompConnector,
     private toaster: ToasterService, private modal: NgbModal) {
-     
+      
   }
 
   private findChat(userid: string) : UserChat {
@@ -98,8 +109,26 @@ export class ChatComponent implements OnInit {
     this.stomp.onConnected.subscribe(()=> this.onConnect());
     this.stomp.onError.subscribe(()=> this.onError());
 
+    setInterval(() => {
+      if(this.subscribed || !this.$tabs) return;
+      this.subscribed = true;
+      this.$tabs.changeTab.subscribe(() => {
+      if(this.$tabs) {
+        let activeIndex = this.$tabs.tabs.toArray().findIndex(x => x.active);
+        if(activeIndex >= 0) {
+          this.$currentClientID = this.$discussions[activeIndex].clientID;
+        }
+      }
+    })
+
+    }, 1000);
+    
+    
+
     this.beginConnect();
   }
+
+  subscribed = false;
 
   private onError() {
     this.$connecting = 0;
@@ -125,11 +154,11 @@ export class ChatComponent implements OnInit {
       return;
     }
     let clientID = msg.clientID;
-    let username = msg.clientDesc.realName;
+    this.$clientDescCache[clientID] = msg.clientDesc;
 
     let uc = this.findChat(clientID);
     if(!uc) { // try to find such chat; if found, switch to
-      uc = new UserChat(clientID, new Array(), username);
+      uc = new UserChat(clientID, new Array(), this.$clientDescCache[clientID].realName);
       this.$discussions.push(uc); // create chat
       this.stomp.loadHistory(clientID); // ask for history items
       setTimeout(() => {
@@ -151,12 +180,21 @@ export class ChatComponent implements OnInit {
   }
 
   public $release(chat: UserChat) {
+    let activeIndex = this.$tabs.tabs.toArray().findIndex(x => x.active);
     if(chat) {
       this.stomp.release(chat.clientID);
       let i = this.$discussions.findIndex(c => c == chat);
       if(i >= 0) {
         this.$discussions.splice(i, 1);
       }
+      if(this.$discussions.length > 0) {
+        this.$tabs.selectTab(this.$tabs.tabs.toArray()[i-1]);
+      }
+    }
+
+    // select previous tab
+    if(this.$discussions.length > 0) {
+      this.$currentClientID = this.$discussions[Math.max(activeIndex-1,0)].clientID;
     }
   }
 

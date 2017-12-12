@@ -23,11 +23,12 @@ export class StompConnector {
 
     public disconnect() {
         if(this.opsId) {
-            this.stompClient.unsubscribe(this.opsId);
+            this.opsId.unsubscribe();
         }
         if(this.broadcastId) {
-            this.stompClient.unsubscribe(this.broadcastId);
+            this.broadcastId.unsubscribe();
         }
+        this.stompClient.disconnect();
         this.onError.next("Disconnect");
     }
 

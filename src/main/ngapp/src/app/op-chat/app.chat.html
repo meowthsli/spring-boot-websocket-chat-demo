@@ -26,7 +26,7 @@
                     <nb-card-footer></nb-card-footer>
                 </nb-card>
             </div>
-            <div class="col-lg-9" *ngIf="$discussions.length == 0">
+            <div class="col-lg-6" *ngIf="$discussions.length == 0">
                 <nb-card>
                     <nb-card-header>
                         <span *ngIf="$connecting == 0" style="margin-left: 0.5rem;">Отсоединено</span>
@@ -36,7 +36,7 @@
                     <nb-card-body>Выберите клиента из очереди. Тут появится чат</nb-card-body>
                 </nb-card>
             </div>
-            <div class="col-lg-9">
+            <div class="col-lg-6" *ngIf="$discussions.length > 0">
                 <nb-card>
                     <nb-tabset>
                         <nb-tab *ngFor="let d of $discussions" [tabTitle]="d.username" style="padding: 1.25rem;">
@@ -61,6 +61,16 @@
                             </div>
                         </nb-tab>
                     </nb-tabset>
+                </nb-card>
+            </div>
+            <div class="col-lg-3">
+                <nb-card>
+                    <nb-card-header>О клиенте</nb-card-header>
+                    <nb-card-body>
+                            <div *ngIf="$currentClientID">
+                                {{$clientDescCache[$currentClientID].realName}}
+                            </div>
+                    </nb-card-body>
                 </nb-card>
             </div>
         </div>
