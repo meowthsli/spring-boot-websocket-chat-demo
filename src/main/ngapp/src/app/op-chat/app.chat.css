@@ -11,13 +11,13 @@
 }
 
 /* Chat message */
-.chat-lines > li {
+/*.chat-lines > li {
     margin-bottom: 0.2rem;
     display: flex;
     flex-direction: row;
     max-width: 70%;
     font-size: 0.9rem;
-}
+}*/
 
 /* Shifts message to right */
 .chat-lines > li.chat-line-fromop {
@@ -26,7 +26,7 @@
 }
 
 /*Text inside message (normal)*/
-.chat-lines > li p {
+/*.chat-lines > li p {
     background-color: var(--chat-client, black);
     color: white;
     border-radius: 0.275rem;
@@ -35,12 +35,12 @@
     padding-left: 0.6rem;
     padding-right: 0.6rem;
     margin-bottom: 0.2rem;
-}
+}*/
 
 /*Text inside message from me*/
-.chat-lines > li.chat-line-fromop p {
+/*.chat-lines > li.chat-line-fromop p {
     background-color: var(--chat-op, black) !important;
-}
+}*/
 
 /* Op-avatar */
 .chat-line-avatar-op {

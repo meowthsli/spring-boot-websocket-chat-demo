@@ -86,7 +86,10 @@ export class ClientChatComponent implements OnInit {
         this.spinner.load();
         this.stomp.connect(new ClientDesc(
             this.uctx.username + '@acme.org', 
-            new FIO(this.uctx.username, '', ' Jackson'), 
+            new FIO(
+                this.fn[Math.round(Math.random()*this.fn.length)],
+                '', this.ln[Math.round(Math.random()*this.ln.length)]
+            ), 
             ['VIP', 'MOSCOW'],
             '+7 909 0000')
         );  
@@ -112,6 +115,9 @@ export class ClientChatComponent implements OnInit {
             element.scrollTop = element.scrollHeight ;
         }, 0);
     }
+
+    private fn = ['Михаил', 'Петр', 'Максим', 'Андрей', 'Федор'];
+    private ln = ['Иванов', 'Петров', 'Крамер'];
 }
 
 export class ChatItem {
