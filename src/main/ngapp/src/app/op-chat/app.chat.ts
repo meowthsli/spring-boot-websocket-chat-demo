@@ -19,6 +19,7 @@ import { ToasterConfig } from 'angular2-toaster';
 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ProfileComponent } from './app.profile';
+import { SettingsComponent } from './app.management';
 
 /**
  * @title Main app component
@@ -54,6 +55,12 @@ export class ChatComponent implements OnInit {
   public $profileClick() {
     const activeModal = this.modal.open(ProfileComponent, { size: 'lg', container: 'nb-layout' });
     activeModal.componentInstance.$modalHeader = 'Профиль пользователя (демо режим)';
+    activeModal.componentInstance.$email = this.uctx.username + '-op.acme.org';
+  }
+
+  public $settingsClick() {
+    const activeModal = this.modal.open(SettingsComponent, { size: 'lg', container: 'nb-layout' });
+    activeModal.componentInstance.$modalHeader = 'Панель управления (демо режим)';
     activeModal.componentInstance.$email = this.uctx.username + '-op.acme.org';
   }
 

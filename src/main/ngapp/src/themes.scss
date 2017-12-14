@@ -5,7 +5,10 @@
 // and change some variables inside of the map
 $nb-themes: nb-register-theme((
 
-  tabs-selected: #2a2a2a,
+  tabs-selected: color-fg-text,
   form-control-selected-border-color: color-primary,
   card-header-bg: ghostwhite,
+  card-shadow: unset,
+  header-shadow: unset,
+  layout-bg: color-fg-text,
 ), default, default); // let's leave it as default

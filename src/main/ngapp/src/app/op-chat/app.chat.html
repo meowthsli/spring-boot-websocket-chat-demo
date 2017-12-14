@@ -10,7 +10,7 @@
                     <nb-action (click)='$profileClick()'>
                         <i class="nb-email"></i><span class="icontext">Профиль</span>
                     </nb-action>
-                    <nb-action (click)='$profileClick()'>
+                    <nb-action (click)='$settingsClick()'>
                         <i class="fa fa-cogs"></i><span class="icontext">Управление</span>
                     </nb-action>
                 </nb-actions>
@@ -42,7 +42,7 @@
             <div class="col-lg-6" *ngIf="$discussions.length > 0">
                 <nb-card>
                     <nb-tabset>
-                        <nb-tab *ngFor="let d of $discussions" [tabTitle]="d.clientDesc.fio | fioPipeSimple" style="padding: 1.25rem;">
+                        <nb-tab *ngFor="let d of $discussions" [tabTitle]="d.clientDesc.fio | fioPipeSimple" style="padding: 0 1.25rem;">
                             <ul class="chat-lines" id="{{d.clientID}}">
                                 <!-- 
                                     <li *ngFor="let ci of d.$history" [class.chat-line-fromop]="ci.opId" [class.noack]="ci.id == null || ci.id &lt; 0">
@@ -57,12 +57,12 @@
                                 -->
                                 <li *ngFor="let ci of d.$history" [ngStyle]="{'text-align': (ci.opId ? 'right':'') }">
                                     <blockquote  [class.blockquote-reverse]="ci.opId" class="font-w-light"
-                                            [ngStyle]="{'border-left-color': (ci.opId ? '':'#ff657f'), 'border-right-color': (ci.opId ? '#8a7fff':'')}"
-                                            style="border-width: 0.5rem; display: inline-block; background-color: white; border-radius: 0.25rem; padding: 0.5rem 0.9rem; max-width: 70%"
+                                            [ngStyle]="{'border-left-color': (ci.opId ? '':'var(--chat-client)'), 'border-right-color': (ci.opId ? 'var(--chat-op)':'')}"
+                                            style="border-width: 0.15rem; display: inline-block; border-radius: 0.45rem; padding: 0.5rem 0.9rem; max-width: 80%"
                                             [class.noack]="ci.id == null || ci.id &lt; 0"
                                             [class.blockquote]="!ci.opId">
-                                        <p class="mb-0">{{ci.text | capitalize }}</p>
-                                        <footer class="blockquote-footer" style="font-size:0.7rem; text-align: right" >{{ci.at | timeformat }}</footer>
+                                        <p class="mb-0" style="text-align:left">{{ci.text | capitalize }}</p>
+                                        <footer class="blockquot-footer" style="color: lightgray; font-style: italic; font-size:0.7rem; text-align: right" >{{ci.at | timeformat }}</footer>
                                     </blockquote>
                                 </li>
                             </ul> 
