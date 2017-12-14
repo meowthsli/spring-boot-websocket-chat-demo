@@ -75,7 +75,8 @@ export class ChatComponent implements OnInit {
   public $nowLoading: boolean = false;
   public $onScrollUp() {
     this.$nowLoading = true;
-    setTimeout(()=> {this.$nowLoading = false;}, 5000);
+    // setTimeout(()=> {this.$nowLoading = false;}, 5000);
+    this.stomp.loadHistory(this.$currentClientID);
     // show loader div, if no
     // load
     // hide after 10 seconds or after history load
@@ -109,6 +110,7 @@ export class ChatComponent implements OnInit {
           this.scrollDown(uc);
         }
       } else if(msg.type === 'CLI_HISTORY') {
+        this.$nowLoading = false;
         if(!msg.chatItems) return;
         let uc = this.findChat(msg.clientID);
         if(uc) {
