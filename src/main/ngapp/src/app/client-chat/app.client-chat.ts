@@ -35,11 +35,13 @@ export class ClientChatComponent implements OnInit {
         private spinner: NbSpinnerService, private toaster: ToasterService) {}
     
     public $onSendClick() {
-        let ci = new ChatItem(this.cids--, null, this.$text, moment());
-        this.$history.push(ci);
-        this.stomp.send(ci);
-        this.$text = null;
-        this.scrollDown();
+        if(this.$text) {
+            let ci = new ChatItem(this.cids--, null, this.$text, moment());
+            this.$history.push(ci);
+            this.stomp.send(ci);
+            this.$text = null;
+            this.scrollDown();
+        }
     }
 
     cids : number = -1;
@@ -87,8 +89,8 @@ export class ClientChatComponent implements OnInit {
         this.stomp.connect(new ClientDesc(
             this.uctx.username + '@acme.org', 
             new FIO(
-                this.fn[Math.round(Math.random()*this.fn.length)],
-                '', this.ln[Math.round(Math.random()*this.ln.length)]
+                this.fn[Math.round(Math.random()*this.fn.length-1)],
+                '', this.ln[Math.round(Math.random()*this.ln.length-1)]
             ), 
             ['VIP', 'MOSCOW'],
             '+7 909 0000')
@@ -117,7 +119,7 @@ export class ClientChatComponent implements OnInit {
     }
 
     private fn = ['Михаил', 'Петр', 'Максим', 'Андрей', 'Федор'];
-    private ln = ['Иванов', 'Петров', 'Крамер'];
+    private ln = ['Иванов', 'Петров', 'Крамер', 'Сидоров', 'Фёдоров', 'Маслов'];
 }
 
 export class ChatItem {
