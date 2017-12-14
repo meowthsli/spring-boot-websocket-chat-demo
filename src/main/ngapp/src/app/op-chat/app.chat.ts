@@ -114,8 +114,9 @@ export class ChatComponent implements OnInit {
         if(!msg.chatItems) return;
         let uc = this.findChat(msg.clientID);
         if(uc) {
-          uc.addHistory(null, msg.chatItems);
-          this.scrollDown(uc);
+          uc.merge(null, msg.chatItems);
+          // uc.addHistory(this.opID, msg.chatItems);
+          // this.scrollDown(uc);
         }
       } else if (msg.type === 'LOCK_OK') {
         this.onMessage_LOCK_OK(msg);
@@ -244,6 +245,22 @@ class UserChat {
       }
     }
   }
+
+  public merge(opId: string, jsonItems: any) : any {
+    for(var ci of jsonItems) {
+      let c = this.$history.find(x => x.id == ci.id);
+      //if(c) {
+      //  continue; // no needs to add
+      // }
+      //
+      let newCi = new ChatItem(ci.id, null/*username*/ , ci.text, ci.opId, moment(ci.at*1000));      
+      //this.$history.push(newCi);      
+      this.$history.unshift(newCi);
+    }
+    // this.$history.sort((a, b) => (a.id < b.id? -1 : 1));
+  }
+
+
   constructor(public clientID: string, public $history: Array<ChatItem>, public clientDesc: ClientDesc){}
 
   public addItem(id, text: string, opID: string, at: moment.Moment) {
