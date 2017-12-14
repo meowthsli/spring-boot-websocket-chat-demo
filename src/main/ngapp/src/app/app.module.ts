@@ -29,6 +29,7 @@ import { ProfileComponent } from './op-chat/app.profile';
 import { FioPipeSimple } from './pipes/fio-pipe-simple';
 import { SettingsComponent } from './op-chat/app.management';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { OUChatClientConnector } from './ou-chat-sdk/client-connector';
 
 
 const routes: Routes = [
@@ -65,7 +66,7 @@ const routes: Routes = [
     ToasterModule
   ],
   providers: [
-    UsercontextService,
+    UsercontextService, OUChatClientConnector,
     StompConnector,
     ClientStompConnector,
     NbSidebarService,

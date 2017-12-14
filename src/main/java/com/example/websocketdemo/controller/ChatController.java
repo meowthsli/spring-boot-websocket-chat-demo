@@ -1,6 +1,7 @@
 package com.example.websocketdemo.controller;
 
 import com.example.websocketdemo.model.Parcel;
+import com.example.websocketdemo.model.Parcel2;
 import java.time.Instant;
 import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,20 +114,24 @@ public class ChatController {
      */
     @MessageMapping("/client.hello")
     @SendTo("/broadcast/all-ops")
-    public Parcel clientHello(@Payload Parcel clientHello,
+    public Parcel2 clientHello(@Payload Parcel2 p,
                                SimpMessageHeaderAccessor smha) {
-        clientHello.setClientID(this.generateID(clientHello.getClientDesc().email));
- 
-        setCurrentUserID(smha, clientHello.getClientID());
+        // generate user id
+        setCurrentUserID(smha, this.generateID(p.helloClientReq.userDesc.email));
         
-        Chat uc = chats.getChat(getCurrentUserID(smha), clientHello.getClientDesc());
+        Chat uc = chats.getChat(getCurrentUserID(smha), p.helloClientReq.userDesc);
         uc.setLastSession(getCurrentSessionID(smha));
         uc.setClientDesc(clientHello.getClientDesc());
-        
+
+        // create history
         Parcel p = Parcel.makeClientHistory(getCurrentUserID(smha), uc.getLastN(20));
         this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/client", p);     
-        
-        return Parcel.helloCli(uc.getClientID());
+
+        // say others new client connected (?)
+        Parcel2 pp = new Parcel2();
+        pp.helloCliOk = new Parcel2.HelloCliOk();
+        pp.helloCliOk.clientID = uc.getClientID();
+        return pp;
     }
     
     @MessageMapping("/operator.tryLock")
