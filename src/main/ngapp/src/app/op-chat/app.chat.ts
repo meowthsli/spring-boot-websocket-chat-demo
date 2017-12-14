@@ -72,6 +72,15 @@ export class ChatComponent implements OnInit {
     this.router.navigateByUrl('', {skipLocationChange: false});
   }
 
+  public $nowLoading: boolean = false;
+  public $onScrollUp() {
+    this.$nowLoading = true;
+    setTimeout(()=> {this.$nowLoading = false;}, 5000);
+    // show loader div, if no
+    // load
+    // hide after 10 seconds or after history load
+  }
+
   constructor(private router:Router, private uctx: UsercontextService, private stomp: StompConnector,
     private toaster: ToasterService, private modal: NgbModal) {
       

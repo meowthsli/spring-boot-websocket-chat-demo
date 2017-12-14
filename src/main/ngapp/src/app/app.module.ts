@@ -28,6 +28,7 @@ import { NgbModalStack } from '@ng-bootstrap/ng-bootstrap/modal/modal-stack';
 import { ProfileComponent } from './op-chat/app.profile';
 import { FioPipeSimple } from './pipes/fio-pipe-simple';
 import { SettingsComponent } from './op-chat/app.management';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
 
 const routes: Routes = [
@@ -57,17 +58,11 @@ const routes: Routes = [
     RouterModule.forRoot(routes, {}),
     FormsModule, ReactiveFormsModule,
     BrowserModule, BrowserAnimationsModule,
-    NbLayoutModule,
-    NbSidebarModule,
-    NbThemeModule.forRoot({ name: 'default' }),
     RouterModule,
-    NbThemeModule,
-    NbCardModule,
-    NbTabsetModule,
-    NbUserModule,
-    NbActionsModule,
-    ToasterModule,
-    NgbModalModule,
+    NbLayoutModule, NbSidebarModule, NbThemeModule, NbCardModule, NbTabsetModule, NbUserModule, NbActionsModule, NgbModalModule,
+    NbThemeModule.forRoot({ name: 'default' }),
+    InfiniteScrollModule,
+    ToasterModule
   ],
   providers: [
     UsercontextService,
