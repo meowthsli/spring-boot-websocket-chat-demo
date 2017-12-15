@@ -120,14 +120,11 @@ export class ChatComponent implements OnInit {
             x = document.getElementById("text_" + uc.$history[0].realId);
           }
           uc.merge(null, msg.chatItems);     
-          if(x && y) {
-            console.log("RESCROLLED!");
+          if(x && y) {            
             setTimeout(() => {
               y.scrollTop = (x.offsetTop - 50);
             }, 0);
-          }
-          // uc.addHistory(this.opID, msg.chatItems);
-          // this.scrollDown(uc);
+          }          
         }
       } else if (msg.type === 'LOCK_OK') {
         this.onMessage_LOCK_OK(msg);
