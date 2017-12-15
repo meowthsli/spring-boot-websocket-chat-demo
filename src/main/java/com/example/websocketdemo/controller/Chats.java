@@ -5,7 +5,6 @@
  */
 package com.example.websocketdemo.controller;
 
-import com.example.websocketdemo.model.Parcel;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;

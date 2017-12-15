@@ -43,11 +43,11 @@
                 <nb-card>
                     <nb-tabset>
                         <nb-tab *ngFor="let d of $discussions" [tabTitle]="d.clientDesc.fio | fioPipeSimple" style="padding: 0 1.25rem;">
-                            <ul class="chat-lines" id="{{d.clientID}}" infiniteScroll debounce [scrollWindow]="true" [infiniteScrollThrottle]="throttle"
-                                [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolledUp)="$onScrollUp()">
+                            <ul class="chat-lines" id="{{d.clientID}}" infiniteScroll debounce [scrollWindow]="false"
+                                [infiniteScrollUpDistance]="0.5" [infiniteScrollThrottle]="1000" (scrolledUp)="$onScrollUp()">
                                 <li id="chat-loading" *ngIf="$nowLoading">Loading...</li>
                                 <li *ngFor="let ci of d.$history" [ngStyle]="{'text-align': (ci.opId ? 'right':'') }">
-                                    <blockquote  [class.blockquote-reverse]="ci.opId" class="font-w-light"
+                                    <blockquote id="text_{{ci.realId}}" [class.blockquote-reverse]="ci.opId" class="font-w-light"
                                             [ngStyle]="{'border-left-color': (ci.opId ? '':'var(--chat-client)'), 'border-right-color': (ci.opId ? 'var(--chat-op)':'')}"
                                             style="border-width: 0.15rem; display: inline-block; border-radius: 0.45rem; padding: 0.5rem 0.9rem; max-width: 80%"
                                             [class.noack]="ci.id == null || ci.id &lt; 0"

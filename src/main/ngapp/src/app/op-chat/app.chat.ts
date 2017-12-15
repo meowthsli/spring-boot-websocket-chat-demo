@@ -114,7 +114,18 @@ export class ChatComponent implements OnInit {
         if(!msg.chatItems) return;
         let uc = this.findChat(msg.clientID);
         if(uc) {
-          uc.merge(null, msg.chatItems);
+          let x = null, y = null;
+          if(uc.$history && uc.$history.length>0) {
+            y = document.getElementById(this.$currentClientID);
+            x = document.getElementById("text_" + uc.$history[0].realId);
+          }
+          uc.merge(null, msg.chatItems);     
+          if(x && y) {
+            console.log("RESCROLLED!");
+            setTimeout(() => {
+              y.scrollTop = (x.offsetTop - 50);
+            }, 0);
+          }
           // uc.addHistory(this.opID, msg.chatItems);
           // this.scrollDown(uc);
         }
@@ -232,10 +243,11 @@ export class ChatComponent implements OnInit {
 }
 
 export class ChatItem {
-  public constructor(public id, public username, public text, public opId, public at: moment.Moment) {}
+  public constructor(public id, public username, public text, public opId, public at: moment.Moment, public realId?: number) {}
 }
 
 class UserChat {
+  realId = 1000;
   public $text: string;
 
   public addHistory(opId: string, jsonItems: any): any {
@@ -253,7 +265,11 @@ class UserChat {
       //  continue; // no needs to add
       // }
       //
-      let newCi = new ChatItem(ci.id, null/*username*/ , ci.text, ci.opId, moment(ci.at*1000));      
+      var s = '';
+      for(var i = 0; i < 10; ++i) {
+        s = s + "abcdefgh".substr(Math.floor(Math.random()*8), 1);
+      }
+      let newCi = new ChatItem(ci.id, null/*username*/, s, ci.opId, moment(ci.at*1000), this.realId++);      
       //this.$history.push(newCi);      
       this.$history.unshift(newCi);
     }
