@@ -4,6 +4,8 @@ import { Subject } from 'rxjs/Subject';
 
 import { HelloClient, Parcel2, UserDesc, RequestHistoryCli, Say } from './dtos';
 
+type USER_ID = string;
+
 /**
  * Client connector
  */
@@ -23,8 +25,8 @@ export class OUChatClientConnector {
 
     /**
      * Set up connection
-     * @param login user login
-     * @param passcode user password
+     * @param login User login. Use ENTERPRISE KEY for client, or email for operator/supervisor
+     * @param passcode user password. Use ENTERPRISE KEY for client, or password for operator/supervisor
      * @param uri endpoint uri
      * @param clientDesc client description
      */
@@ -39,12 +41,11 @@ export class OUChatClientConnector {
         this.stompClient.connect(login, passcode, 
             () => {
                 // subscribe
-                this.onConnected.next();   
+                this.onConnected.next();
 
-                this.subscription = this.stompClient.subscribe('/user/queue/client', (payload) => this.onStompReceived(payload));                
-                this.stompClient.send("/app/client.hello", {}, JSON.stringify(new Parcel2().setHelloClient(new HelloClient(clientDesc))));
+                this._initialConnect(clientDesc); 
             },
-            () => { // error                
+            () => { // error 
                 // TODO: event;
                 this.disconnect();
                 this.onError.next("Error while communication");
@@ -56,12 +57,12 @@ export class OUChatClientConnector {
      * Close and disconnect
      */
     public disconnect() : boolean {
-        if(this.socket) {            
+        if(this.socket) { 
             if(this.subscription) {
                 this.subscription.unsubscribe();
             }
             this.socket.close();
-            this.subscription = null;            
+            this.subscription = null;
             this.stompClient = null;
             this.socket = null;
             this.onError.next("Disconnected");
@@ -71,7 +72,7 @@ export class OUChatClientConnector {
     }
 
     /**
-     * Ask server for history
+     * Ask server for history. clientID is ignored
      */
     public requestHistory(clientID: string) : boolean {
         if(this.isConnected()) {
@@ -82,10 +83,10 @@ export class OUChatClientConnector {
     }
 
     /**
-     * Send message to server
+     * Send message to server. clientID is ignored
      * @param text 
      */
-    public say(cid: number, text: string) {
+    public say(cid: number, text: string, clientID: string) {
         if(this.isConnected()) {
             this.stompClient.send("/app/client.say", {}, JSON.stringify(new Parcel2().setSay(new Say(cid, text))));
             return true;
@@ -94,19 +95,34 @@ export class OUChatClientConnector {
     }
 
     /**
+     * Request history for this client
+     */
+    public loadHistory(clientID: USER_ID) {
+        if(this.isConnected()) {
+            this.stompClient.send("/app/client.histo", {}, JSON.stringify(new Parcel2().setHistory(new RequestHistoryCli())));
+        }
+    }
+
+
+    protected _initialConnect(clientDesc: UserDesc) {
+        this.subscription = this.stompClient.subscribe('/user/queue/client', (payload) => this.onStompReceived(payload));
+        this.stompClient.send("/app/client.hello", {}, JSON.stringify(new Parcel2().setHelloClient(new HelloClient(clientDesc))));
+    }
+
+    /**
      * When message arrives
      * @param payload message
      */
-    private onStompReceived(payload) {
+    protected onStompReceived(payload) {
         var message = JSON.parse(payload.body);
         this.onMessage.next(message);
     }
 
-    private isConnected() : boolean {
+    protected isConnected() : boolean {
         return this.subscription;
     }
     
-    private subscription;
-    private socket;
-    private stompClient;
+    protected subscription;
+    protected socket;
+    protected stompClient;
 }

@@ -8,8 +8,10 @@ export class Parcel2 {
     public helloClientReq : HelloClient;
     public historyReq: RequestHistoryCli;
     public historyResp: History;
+    public historyReqOp: RequestHistoryOp;
     public sayReq: Say;
     public sayResp: SayAck;
+    public requestLock : RequestLock;
 
     public setHelloClient(hc: HelloClient) {
         this.helloClientReq = hc;
@@ -23,6 +25,21 @@ export class Parcel2 {
     
     public setSay(say: Say) {
         this.sayReq = say;
+        return this;
+    }
+
+    public setHistory(hist: RequestHistoryCli) {
+        this.historyReq = hist;
+        return this;
+    }
+
+    public setHistoryOp(hist: RequestHistoryOp) {
+        this.historyReqOp = hist;
+        return this;
+    }
+
+    public setRequestLock(req: RequestLock) {
+        this.requestLock = req;
         return this;
     }
 }
@@ -64,6 +81,14 @@ export class Say {
 }
 
 /**
+ * Message to server
+ */
+export class OpSay {
+    constructor(public cid: number, public text: string, public clientID: string) {
+    }
+}
+
+/**
  * Message acknowledgement
  */
 export class SayAck {
@@ -77,6 +102,34 @@ export class SayAck {
 export class HelloOp {
     constructor(public userDesc: UserDesc) {
     }
+}
+
+/**
+ * Request locking of chat
+ */
+export class RequestLock {
+    constructor(public clientID: USER_ID) {
+
+    }
+}
+
+/**
+ * Lock successfull
+ */
+export class OkLock {
+    constructor(public clientID: USER_ID) {
+
+    }
+}
+
+export class RequestHistoryOp {
+    constructor(public clientID: USER_ID) {
+
+    }
+}
+
+export class HistoryOp extends History {
+
 }
 
 // DATA
