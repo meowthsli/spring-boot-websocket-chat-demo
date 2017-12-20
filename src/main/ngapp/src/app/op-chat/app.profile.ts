@@ -13,16 +13,30 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
     <div class="modal-body">
     <form>
         <div class="form-group">
-            <label for="login" style="color:#a4abb3">Логин</label>
+            <label for="login" style="">Логин</label>
             <input name="login" class="form-control" disabled="true" value="{{$email}}"/>
         </div>
         <div class="form-group">
-            <label for="enterprise" style="color:#a4abb3">Ключ доступа</label>
+            <label for="enterprise" style="">Ключ доступа</label>
             <input name="enterprise" class="form-control" disabled="true" value="1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX"/>
+        </div>        
+        <label for="fio" style="">ФИО (Имя [Отчество] [Фамилия])</label>
+        <div class="input-group" style="padding-bottom:0.25rem;">           
+            <input name="fio" class="form-control" disabled="true" value="Максим Фёдоров"/>
+            <span class="input-group-btn" style="width:20%">
+                <button class="btn btn-primary" disabled="true" style="width:100%" disabled="true">
+                Обновить
+                </button>
+            </span>
         </div>
-        <div class="form-group">
-            <label for="fio" style="color:#a4abb3">Имя оператора</label>
-            <input name="fio" class="form-control" disabled="true" value="Максим Орешкин"/>
+        <label for="fio" style="">Аватар</label>
+        <div class="input-group;" style="display: flex; justify-content: space-between">            
+            <div style='background-image: url("/assets/jack.png"); width:50px; height:50px; border-radius:45%; background-size: cover;'></div>
+            <span class="input-group-btn" style="width:20%">
+                <button class="btn btn-primary" disabled="true" style="width:100%" disabled="true">
+                Загрузить
+                </button>
+            </span>
         </div>
     </form>
     </div>
