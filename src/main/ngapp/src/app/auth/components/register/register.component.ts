@@ -15,7 +15,7 @@ import { NbAuthResult, NbAuthService } from '../../services/auth.service';
   styleUrls: ['./register.component.scss'],
   template: `
     <nb-auth-block>
-      <h2 class="title">Регистрация</h2>
+      <h2 class="title">Регистрация компании</h2>
       <form (ngSubmit)="register()" #form="ngForm">
 
         <div *ngIf="showMessages.error && errors && errors.length > 0 && !submitted"
@@ -30,9 +30,9 @@ import { NbAuthResult, NbAuthService } from '../../services/auth.service';
         </div>
 
         <div class="form-group">
-          <label for="input-name" class="sr-only">Имя</label>
+          <label for="input-name" class="sr-only">Название компании</label>
           <input name="fullName" [(ngModel)]="user.fullName" id="input-name" #fullName="ngModel"
-                 class="form-control" placeholder="Имя"
+                 class="form-control" placeholder="Название компании"
                  [class.form-control-danger]="fullName.invalid && fullName.touched"
                  [required]="getConfigValue('forms.validation.fullName.required')"
                  [minlength]="getConfigValue('forms.validation.fullName.minLength')"
@@ -44,7 +44,7 @@ import { NbAuthResult, NbAuthService } from '../../services/auth.service';
           <small
             class="form-text error"
             *ngIf="fullName.invalid && fullName.touched && (fullName.errors?.minlength || fullName.errors?.maxlength)">
-            Имя должно содержать
+            Название компании должно содержать
             от {{getConfigValue('forms.validation.password.minLength')}}
             до {{getConfigValue('forms.validation.password.maxLength')}}
             символов
@@ -113,7 +113,7 @@ import { NbAuthResult, NbAuthService } from '../../services/auth.service';
 
         <button [disabled]="submitted || !form.valid" class="btn btn-block btn-hero-success"
                 [class.btn-pulse]="submitted">
-          Зарегистрироваться
+          Зарегистрировать компанию
         </button>
       </form>
 

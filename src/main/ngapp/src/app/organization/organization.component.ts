@@ -9,7 +9,7 @@ import { OrganizationService } from './organization.service';
 })
 export class OrganizationComponent implements OnInit {
 
-  settings = {
+  public operatorSettings = {
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
@@ -23,6 +23,9 @@ export class OrganizationComponent implements OnInit {
     delete: {
       deleteButtonContent: '<i class="nb-trash"></i>',
       confirmDelete: true,
+    },
+    actions: {
+      columnTitle: 'Действия'
     },
     columns: {
       username: {
@@ -52,29 +55,65 @@ export class OrganizationComponent implements OnInit {
       createButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
     },
-    delete: {
-      deleteButtonContent: '<i class="nb-trash"></i>',
-      confirmDelete: true,
+    edit: {
+      editButtonContent: '<i class="nb-edit"></i>',
+      saveButtonContent: '<i class="nb-checkmark"></i>',
+      cancelButtonContent: '<i class="nb-close"></i>',
     },
     actions: {
-      edit: false
+      columnTitle: 'Действия',
+      delete: false
     },
     columns: {
       token: {
         title: 'Ключ',
         type: 'string',
       },
+      active: {
+        title: 'Активен',
+        filter: {
+          type: 'checkbox',
+          config: {
+            true: 'Активен',
+            false: 'Блокирован',
+            resetText: 'Сбросить',
+          },
+        },
+        editor: {
+          type: 'list',
+          config: {
+            list: [
+              {
+                value: 'Активен',
+                title: 'Активен'
+              },
+              {
+                value: 'Блокирован',
+                title: 'Блокирован'
+              }
+            ]
+          }
+        }
+      }
     },
   };
 
-  source: LocalDataSource = new LocalDataSource();
+  public operatorSource: LocalDataSource = new LocalDataSource();
+
+  public tokenSource: LocalDataSource = new LocalDataSource();
 
   constructor(private service: OrganizationService) {
-    const data = this.service.getData();
-    this.source.load(data);
+    this.service.getOperators().subscribe(operators => this.operatorSource.load(operators));
+    this.service.getTokens().subscribe(tokens => {
+      this.operatorSettings.columns.token.editor.config.list = tokens.map(token => ({
+        title: token.token,
+        value: token.token
+      }));
+      this.tokenSource.load(tokens);
+    });
   }
 
-  ngOnInit() {
+  public ngOnInit() {
   }
 
   onDeleteConfirm(event): void {
