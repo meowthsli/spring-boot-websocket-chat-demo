@@ -69,29 +69,21 @@ export class OrganizationComponent implements OnInit {
         title: 'Ключ',
         type: 'string',
       },
-      active: {
-        title: 'Активен',
+      disabled: {
+        title: 'Блокирован',
         filter: {
           type: 'checkbox',
           config: {
-            true: 'Активен',
-            false: 'Блокирован',
-            resetText: 'Сбросить',
+            true: 'Блокирован',
+            false: 'Активен',
+            resetText: 'Показать все',
           },
         },
         editor: {
-          type: 'list',
+          type: 'checkbox',
           config: {
-            list: [
-              {
-                value: 'Активен',
-                title: 'Активен'
-              },
-              {
-                value: 'Блокирован',
-                title: 'Блокирован'
-              }
-            ]
+            true: 'Блокирован',
+            false: 'Активен'
           }
         }
       }
