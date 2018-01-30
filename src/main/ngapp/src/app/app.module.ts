@@ -31,13 +31,14 @@ import { SettingsComponent } from './op-chat/app.management';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { NbAuthModule } from './auth/auth.module';
 import { NbEmailPassAuthProvider } from './auth/providers/email-pass-auth.provider';
+import { OrganizationModule } from './organization/organization.module';
 
 
 const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'auth/login'
+    redirectTo: 'login'
   },
   { path: 'login', component: LoginComponent, pathMatch: "full" },
   { path: 'ops-chat', component: ChatComponent, pathMatch: "full" },
@@ -70,6 +71,8 @@ const routes: Routes = [
     NbThemeModule.forRoot({ name: 'default' }),
     InfiniteScrollModule,
     ToasterModule,
+    OrganizationModule,
+
     NbAuthModule.forRoot({
       forms: {
         login: {
