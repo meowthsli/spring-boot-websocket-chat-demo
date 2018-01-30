@@ -70,20 +70,20 @@ export class OrganizationComponent implements OnInit {
         type: 'string',
       },
       disabled: {
-        title: 'Блокирован',
+        title: 'Активен',
         filter: {
           type: 'checkbox',
           config: {
-            true: 'Блокирован',
-            false: 'Активен',
+            true: 'Активен',
+            false: 'Блокирован',
             resetText: 'Показать все',
           },
         },
         editor: {
           type: 'checkbox',
           config: {
-            true: 'Блокирован',
-            false: 'Активен'
+            true: 'Активен',
+            false: 'Блокирован'
           }
         }
       }
