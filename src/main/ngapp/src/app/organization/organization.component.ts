@@ -28,24 +28,14 @@ export class OrganizationComponent implements OnInit {
       columnTitle: 'Действия'
     },
     columns: {
-      username: {
+      name: {
         title: 'Имя',
         type: 'string',
       },
       email: {
         title: 'Email',
         type: 'string',
-      },
-      token: {
-        title: 'Ключ',
-        type: 'string',
-        editor: {
-          type: 'list',
-          config: {
-            list: [{value: '213123123123', title: '213123123123'}, {value: 'aaaaaaaaaaaaaaaa', title: 'aaaaaaaaaaaaa'}],
-          },
-        }
-      },
+      }
     },
   };
 
@@ -65,12 +55,16 @@ export class OrganizationComponent implements OnInit {
       delete: false
     },
     columns: {
+      name: {
+        title: 'Название',
+        type: 'string',
+      },
       token: {
         title: 'Ключ',
         type: 'string',
       },
       disabled: {
-        title: 'Активен',
+        title: 'Статус',
         filter: {
           type: 'checkbox',
           config: {
@@ -96,13 +90,7 @@ export class OrganizationComponent implements OnInit {
 
   constructor(private service: OrganizationService) {
     this.service.getOperators().subscribe(operators => this.operatorSource.load(operators));
-    this.service.getTokens().subscribe(tokens => {
-      this.operatorSettings.columns.token.editor.config.list = tokens.map(token => ({
-        title: token.token,
-        value: token.token
-      }));
-      this.tokenSource.load(tokens);
-    });
+    this.service.getTokens().subscribe(tokens => this.tokenSource.load(tokens));
   }
 
   public ngOnInit() {

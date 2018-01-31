@@ -3,7 +3,8 @@ import { Observable } from 'rxjs/Observable';
 
 export class CompanyToken {
   public readonly token: string;
-  public readonly active: 'Активен' | 'Блокирован';
+  public readonly name: string;
+  public readonly disabled: 'Активен' | 'Блокирован';
 }
 
 export class Operator {
@@ -20,22 +21,22 @@ export class OrganizationService {
   private tokens: CompanyToken[] = [
     {
       token: '111221212121212112',
-      active: 'Активен'
+      name: 'Ключ iOS',
+      disabled: 'Активен'
     } as CompanyToken,
     {
       token: 'aabababababaababab',
-      active: 'Активен'
+      name: 'Ключ Android',
+      disabled: 'Активен'
     } as CompanyToken
   ];
 
   private operators: Operator[] = [
     {
-      token: '111221212121212112',
       email: 'ivan@mail.ru',
       name: 'Иванов Иван'
     } as Operator,
     {
-      token: 'aabababababaababab',
       email: 'petr@mail.ru',
       name: 'Петров Иван'
     } as Operator
