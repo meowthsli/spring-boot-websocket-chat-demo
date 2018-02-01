@@ -75,7 +75,8 @@ export class ChatComponent implements OnInit {
   public $nowLoading: boolean = false;
   public $onScrollUp() {
     this.$nowLoading = true;
-    setTimeout(()=> {this.$nowLoading = false;}, 5000);
+    // setTimeout(()=> {this.$nowLoading = false;}, 5000);
+    this.stomp.loadHistory(this.$currentClientID);
     // show loader div, if no
     // load
     // hide after 10 seconds or after history load
@@ -109,11 +110,21 @@ export class ChatComponent implements OnInit {
           this.scrollDown(uc);
         }
       } else if(msg.type === 'CLI_HISTORY') {
+        this.$nowLoading = false;
         if(!msg.chatItems) return;
         let uc = this.findChat(msg.clientID);
         if(uc) {
-          uc.addHistory(null, msg.chatItems);
-          this.scrollDown(uc);
+          let x = null, y = null;
+          if(uc.$history && uc.$history.length>0) {
+            y = document.getElementById(this.$currentClientID);
+            x = document.getElementById("text_" + uc.$history[0].realId);
+          }
+          uc.merge(null, msg.chatItems);     
+          if(x && y) {            
+            setTimeout(() => {
+              y.scrollTop = (x.offsetTop - 50);
+            }, 0);
+          }          
         }
       } else if (msg.type === 'LOCK_OK') {
         this.onMessage_LOCK_OK(msg);
@@ -229,10 +240,11 @@ export class ChatComponent implements OnInit {
 }
 
 export class ChatItem {
-  public constructor(public id, public username, public text, public opId, public at: moment.Moment) {}
+  public constructor(public id, public username, public text, public opId, public at: moment.Moment, public realId?: number) {}
 }
 
 class UserChat {
+  realId = 1000;
   public $text: string;
 
   public addHistory(opId: string, jsonItems: any): any {
@@ -242,6 +254,26 @@ class UserChat {
       }
     }
   }
+
+  public merge(opId: string, jsonItems: any) : any {
+    for(var ci of jsonItems) {
+      let c = this.$history.find(x => x.id == ci.id);
+      //if(c) {
+      //  continue; // no needs to add
+      // }
+      //
+      var s = '';
+      for(var i = 0; i < 10; ++i) {
+        s = s + "abcdefgh".substr(Math.floor(Math.random()*8), 1);
+      }
+      let newCi = new ChatItem(ci.id, null/*username*/, s, ci.opId, moment(ci.at*1000), this.realId++);      
+      //this.$history.push(newCi);      
+      this.$history.unshift(newCi);
+    }
+    // this.$history.sort((a, b) => (a.id < b.id? -1 : 1));
+  }
+
+
   constructor(public clientID: string, public $history: Array<ChatItem>, public clientDesc: ClientDesc){}
 
   public addItem(id, text: string, opID: string, at: moment.Moment) {

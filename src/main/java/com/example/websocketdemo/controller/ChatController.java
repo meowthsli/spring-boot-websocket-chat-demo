@@ -118,13 +118,15 @@ public class ChatController {
                                SimpMessageHeaderAccessor smha) {
         // generate user id
         setCurrentUserID(smha, this.generateID(p.helloClientReq.userDesc.email));
-        
+
+        throw new RuntimeException("Not implemented");
+        /*
         Chat uc = chats.getChat(getCurrentUserID(smha), p.helloClientReq.userDesc);
         uc.setLastSession(getCurrentSessionID(smha));
         uc.setClientDesc(clientHello.getClientDesc());
 
         // create history
-        Parcel p = Parcel.makeClientHistory(getCurrentUserID(smha), uc.getLastN(20));
+        Parcel p3 = Parcel.makeClientHistory(getCurrentUserID(smha), uc.getLastN(20));
         this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/client", p);     
 
         // say others new client connected (?)
@@ -132,6 +134,7 @@ public class ChatController {
         pp.helloCliOk = new Parcel2.HelloCliOk();
         pp.helloCliOk.clientID = uc.getClientID();
         return pp;
+        */
     }
     
     @MessageMapping("/operator.tryLock")
