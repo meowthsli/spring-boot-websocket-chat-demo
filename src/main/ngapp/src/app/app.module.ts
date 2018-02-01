@@ -29,13 +29,21 @@ import { ProfileComponent } from './op-chat/app.profile';
 import { FioPipeSimple } from './pipes/fio-pipe-simple';
 import { SettingsComponent } from './op-chat/app.management';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { OUChatClientConnector } from './ou-chat-sdk/client-connector';
 
+import { OUChatClientConnector } from './ou-chat-sdk/client-connector';
+import { NbAuthModule } from './auth/auth.module';
+import { NbEmailPassAuthProvider } from './auth/providers/email-pass-auth.provider';
+import { OrganizationModule } from './organization/organization.module';
 
 const routes: Routes = [
-  { path: '', component: LoginComponent, pathMatch: "full" },
+  {
+    path: '',
+    pathMatch: 'full',
+    redirectTo: 'login'
+  },
+  { path: 'login', component: LoginComponent, pathMatch: "full" },
   { path: 'ops-chat', component: ChatComponent, pathMatch: "full" },
-  { path: 'clients-chat', component: ClientChatComponent, pathMatch: "full" },
+  { path: 'clients-chat', component: ClientChatComponent, pathMatch: "full" }
 ];
 
 @NgModule({
@@ -63,7 +71,56 @@ const routes: Routes = [
     NbLayoutModule, NbSidebarModule, NbThemeModule, NbCardModule, NbTabsetModule, NbUserModule, NbActionsModule, NgbModalModule,
     NbThemeModule.forRoot({ name: 'default' }),
     InfiniteScrollModule,
-    ToasterModule
+    ToasterModule,
+    OrganizationModule,
+
+    NbAuthModule.forRoot({
+      forms: {
+        login: {
+          redirectDelay: 3000,
+        },
+      },
+      providers: {
+        //
+        // email: {
+        //   service: NbDummyAuthProvider,
+        //   config: {
+        //     alwaysFail: true,
+        //     delay: 1000,
+        //   },
+        // },
+        email: {
+          service: NbEmailPassAuthProvider,
+          config: {
+            login: {
+              endpoint: 'http://localhost:4400/api/auth/login',
+            },
+            register: {
+              endpoint: 'http://localhost:4400/api/auth/register',
+            },
+            logout: {
+              endpoint: 'http://localhost:4400/api/auth/logout',
+              redirect: {
+                success: '/auth/login',
+                failure: '/auth/login',
+              },
+            },
+            requestPass: {
+              endpoint: 'http://localhost:4400/api/auth/request-pass',
+              redirect: {
+                success: '/auth/reset-password',
+              },
+            },
+            resetPass: {
+              endpoint: 'http://localhost:4400/api/auth/reset-pass',
+              redirect: {
+                success: '/auth/login',
+              },
+            },
+          },
+        },
+      },
+    }),
   ],
   providers: [
     UsercontextService, OUChatClientConnector,

@@ -1,0 +1,35 @@
+<nb-layout>
+
+  <nb-layout-header fixed>Управление компанией</nb-layout-header>
+
+  <nb-layout-column>
+
+    <nb-card>
+      <nb-card-header>
+        Ключи
+      </nb-card-header>
+
+      <nb-card-body>
+        <ng2-smart-table [settings]="tokenSettings" [source]="tokenSource" (deleteConfirm)="onDeleteConfirm($event)">
+        </ng2-smart-table>
+      </nb-card-body>
+    </nb-card>
+
+    <nb-card>
+      <nb-card-header>
+        Сотрудники
+      </nb-card-header>
+
+      <nb-card-body>
+        <ng2-smart-table [settings]="operatorSettings" [source]="operatorSource" (deleteConfirm)="onDeleteConfirm($event)">
+        </ng2-smart-table>
+      </nb-card-body>
+    </nb-card>
+
+  </nb-layout-column>
+
+  <nb-layout-footer fixed>
+    2018
+  </nb-layout-footer>
+
+</nb-layout>
