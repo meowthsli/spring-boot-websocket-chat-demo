@@ -44,8 +44,7 @@ export class ClientChatComponent implements OnInit {
         if(this.$text) {
             let ci = new ChatItem(this.cids--, null, this.$text, moment());
             this.$history.push(ci);
-            // this.stomp.send(ci);
-            this.connector.say(ci.id, ci.text);
+            this.connector.say(ci.id, ci.text, null /*not used*/);
             this.$text = null;
             this.scrollDown();
         }
