@@ -31,7 +31,7 @@ import { NbAuthResult, NbAuthService } from '../../services/auth.service';
 
         <div class="form-group">
           <label for="input-name" class="sr-only">Название компании</label>
-          <input name="fullName" [(ngModel)]="user.fullName" id="input-name" #fullName="ngModel"
+          <input name="name" [(ngModel)]="user.name" id="input-name" #fullName="ngModel"
                  class="form-control" placeholder="Название компании"
                  [class.form-control-danger]="fullName.invalid && fullName.touched"
                  [required]="getConfigValue('forms.validation.fullName.required')"

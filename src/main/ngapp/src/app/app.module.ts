@@ -32,6 +32,8 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { NbAuthModule } from './auth/auth.module';
 import { NbEmailPassAuthProvider } from './auth/providers/email-pass-auth.provider';
 import { OrganizationModule } from './organization/organization.module';
+import { SupervisorModule } from './dashboard/supervisor/supervisor.module';
+import { AdminModule } from './dashboard/admin/admin.module';
 
 
 const routes: Routes = [
@@ -72,6 +74,8 @@ const routes: Routes = [
     InfiniteScrollModule,
     ToasterModule,
     OrganizationModule,
+    SupervisorModule,
+    AdminModule,
 
     NbAuthModule.forRoot({
       forms: {
@@ -92,10 +96,10 @@ const routes: Routes = [
           service: NbEmailPassAuthProvider,
           config: {
             login: {
-              endpoint: 'http://localhost:4400/api/auth/login',
+              endpoint: 'http://localhost:4400/api/auth/login'
             },
             register: {
-              endpoint: 'http://localhost:4400/api/auth/register',
+              endpoint: 'http://localhost:4400/api/auth/register'
             },
             logout: {
               endpoint: 'http://localhost:4400/api/auth/logout',

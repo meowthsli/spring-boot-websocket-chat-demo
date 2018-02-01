@@ -13,7 +13,7 @@ export class NbAuthJWTInterceptor implements HttpInterceptor {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
+debugger;
     return this.authService.getToken()
       .pipe(
         switchMap((token: NbAuthJWTToken) => {

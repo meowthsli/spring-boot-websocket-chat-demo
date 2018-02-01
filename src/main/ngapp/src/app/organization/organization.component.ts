@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
-import { OrganizationService } from './organization.service';
+import { Organization, OrganizationService } from './organization.service';
+import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'app-organization',
@@ -88,7 +90,14 @@ export class OrganizationComponent implements OnInit {
 
   public tokenSource: LocalDataSource = new LocalDataSource();
 
-  constructor(private service: OrganizationService) {
+  public organization: Observable<Organization>;
+
+  constructor(
+    private route: ActivatedRoute,
+    private service: OrganizationService
+  ) {
+    const organizationId: string = this.route.snapshot.paramMap.get('id');
+    this.organization = this.service.getOrganization(organizationId);
     this.service.getOperators().subscribe(operators => this.operatorSource.load(operators));
     this.service.getTokens().subscribe(tokens => this.tokenSource.load(tokens));
   }
@@ -96,7 +105,7 @@ export class OrganizationComponent implements OnInit {
   public ngOnInit() {
   }
 
-  onDeleteConfirm(event): void {
+  public onDeleteConfirm(event): void {
     if (window.confirm('Are you sure you want to delete?')) {
       event.confirm.resolve();
     } else {
