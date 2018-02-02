@@ -74,7 +74,7 @@ export class OUChatClientConnector {
     /**
      * Ask server for history. clientID is ignored
      */
-    public requestHistory(clientID: string) : boolean {
+    public requestHistory(clientID: USER_ID) : boolean {
         if(this.isConnected()) {
             this.stompClient.send("/app/client.histo", {}, JSON.stringify(new Parcel2().setRequestHistory(new RequestHistoryCli())));
             return true;
@@ -93,16 +93,6 @@ export class OUChatClientConnector {
         } 
         return false;
     }
-
-    /**
-     * Request history for this client
-     */
-    public loadHistory(clientID: USER_ID) {
-        if(this.isConnected()) {
-            this.stompClient.send("/app/client.histo", {}, JSON.stringify(new Parcel2().setHistory(new RequestHistoryCli())));
-        }
-    }
-
 
     protected _initialConnect(clientDesc: UserDesc) {
         this.subscription = this.stompClient.subscribe('/user/queue/client', (payload) => this.onStompReceived(payload));

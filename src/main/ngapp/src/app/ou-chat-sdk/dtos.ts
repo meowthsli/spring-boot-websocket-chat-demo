@@ -28,11 +28,6 @@ export class Parcel2 {
         return this;
     }
 
-    public setHistory(hist: RequestHistoryCli) {
-        this.historyReq = hist;
-        return this;
-    }
-
     public setHistoryOp(hist: RequestHistoryOp) {
         this.historyReqOp = hist;
         return this;

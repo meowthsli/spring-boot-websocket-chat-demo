@@ -48,28 +48,40 @@ export class OUChatOperatorConnector extends OUChatClientConnector {
      * Load history of given client
      * @param clientID 
      */
-    public loadHistory(clientID: USER_ID) {
+    public requestHistory(clientID: USER_ID) : boolean {
         if(this.isConnected()) {
             this.stompClient.send("/app/operator.histo", {}, JSON.stringify(new Parcel2().setHistoryOp(new RequestHistoryOp(clientID))));
+            return true;
         }
+        return false;
     }
 
     public tryLock(clientID: USER_ID) {
         if(this.subscription) {
             this.stompClient.send("/app/operator.tryLock", {}, JSON.stringify(new Parcel2().setRequestLock(new RequestLock(clientID))));
+            return true;
         }
+        return false;
     }
 
-    public release(clientID: string) {
+    public release(clientID: USER_ID) {
         if(this.subscription) {
             this.stompClient.send("/app/operator.release", {}, JSON.stringify({clientID: clientID}));
+            return true;
         }
+        return false;
     }
 
-    public getInfo(info: Array<string>) {
+    /**
+     * Load info about clients
+     * @param info 
+     */
+    public getInfo(info: Array<USER_ID>) {
         if(this.subscription) {
             this.stompClient.send("/app/operator.getInfo", {}, JSON.stringify({info: info}));
+            return true;
         }
+        return false;
     }
 
 
