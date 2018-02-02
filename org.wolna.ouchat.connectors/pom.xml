@@ -1,30 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>ru.lanit.emias2</groupId>
-    <artifactId>org.wolna.ouchat.connectors</artifactId>
+    <groupId>org.wolna.ouchat</groupId>
+    <artifactId>ouchat-connectors</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
     </properties>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.jsweet</groupId>
-					<artifactId>jsweet-maven-plugin</artifactId>
-					<version>2.0.0-rc1</version>
-					<configuration>
-						 <sourceMap>true</sourceMap>
-						 <outDir>target/js</outDir>
-						 <targetVersion>ES3</targetVersion>
-						 <!-- bundle your JS automatically -->
-						 <bundle>true</bundle>
-						 <!-- end of bundle configuration -->
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jsweet-plugins-snapshots</id>
+            <name>plugins-snapshot</name>
+            <url>http://repository.jsweet.org/artifactory/plugins-snapshot-local</url>
+        </pluginRepository>
+    </pluginRepositories>
+    
+    <!--
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+    
+    <dependencies>
+        <dependency>
+	    <groupId>com.github.NaikSoftware</groupId>
+	    <artifactId>StompProtocolAndroid</artifactId>
+	    <version>1.4.4</version>
+            <type>aar</type>
+	</dependency>
+    </dependencies>
+    -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jsweet</groupId>
+                <artifactId>jsweet-maven-plugin</artifactId>
+                <version>2.0.1-SNAPSHOT</version>
+                <configuration>
+                    <tsOnly>true</tsOnly>
+                    <outDir>target/js</outDir>
+                    <tsOut>typescript</tsOut>
+                    <targetVersion>ES5</targetVersion>
+                    <!-- bundle your JS automatically -->
+                    <bundle>true</bundle>
+                    <!-- end of bundle configuration -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-js</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>jsweet</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+                        
+    </build>
 </project>
