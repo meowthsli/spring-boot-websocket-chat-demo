@@ -88,7 +88,7 @@ import { NbAuthResult, NbAuthService } from '../../services/auth.service';
         <!--</div>-->
 
         <small class="form-text">
-          У вас нет аккаунта? <a routerLink="../register"><strong>Зарегиститрироваться</strong></a>
+          У вас нет аккаунта? <a routerLink="../register"><strong>Зарегистрировать компанию</strong></a>
         </small>
       </div>
     </nb-auth-block>

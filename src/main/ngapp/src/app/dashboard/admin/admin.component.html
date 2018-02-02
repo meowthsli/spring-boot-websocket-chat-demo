@@ -1,0 +1,26 @@
+<nb-layout>
+
+  <nb-sidebar state="compacted" tab="menu-sidebar">
+    <nb-menu [items]="menuItems"></nb-menu>
+  </nb-sidebar>
+
+  <nb-layout-header fixed>
+
+    <a (click)="toggleSidebar()" href="javascript:;" class="navigation"><i class="nb-menu"></i></a>
+
+    <span>Управление компанией </span>
+    <span *ngIf="organization | async as org">
+      <b>{{ org.name }}</b>
+      ({{ org.email }})
+    </span>
+  </nb-layout-header>
+
+  <nb-layout-column>
+    <router-outlet></router-outlet>
+  </nb-layout-column>
+
+  <nb-layout-footer fixed>
+    2018
+  </nb-layout-footer>
+
+</nb-layout>

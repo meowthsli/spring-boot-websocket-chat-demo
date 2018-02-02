@@ -1,0 +1,19 @@
+<nb-layout>
+
+  <nb-layout-header fixed>
+    <span>Управление компанией </span>
+    <span *ngIf="organization | async as org">
+      <b>{{ org.name }}</b>
+      ({{ org.email }})
+    </span>
+  </nb-layout-header>
+
+  <nb-layout-column>
+    <router-outlet></router-outlet>
+  </nb-layout-column>
+
+  <nb-layout-footer fixed>
+    2018
+  </nb-layout-footer>
+
+</nb-layout>

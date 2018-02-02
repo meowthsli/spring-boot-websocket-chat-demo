@@ -13,6 +13,11 @@ export class Operator {
   public readonly name: string;
 }
 
+export class Organization {
+  public readonly email: string;
+  public readonly name: string;
+}
+
 @Injectable()
 export class OrganizationService {
 
@@ -42,12 +47,31 @@ export class OrganizationService {
     } as Operator
   ];
 
+  private organizations: Organization[] = [
+    {
+      email: 'info@sportmaster.ru',
+      name: 'СпортМастер'
+    } as Organization,
+    {
+      email: 'info@remoto.ru',
+      name: 'Remoto'
+    } as Organization
+  ];
+
   public getOperators(): Observable<Operator[]> {
     return Observable.of(this.operators);
   }
 
   public getTokens(): Observable<CompanyToken[]> {
     return Observable.of(this.tokens);
+  }
+
+  public getOrganizations(): Observable<Organization[]> {
+    return Observable.of(this.organizations);
+  }
+
+  public getOrganization(id: string): Observable<Organization> {
+    return Observable.of(this.organizations.find(organization => organization.email === id));
   }
 
 }
