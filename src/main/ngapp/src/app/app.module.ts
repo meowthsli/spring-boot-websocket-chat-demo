@@ -36,6 +36,7 @@ import { NbEmailPassAuthProvider } from './auth/providers/email-pass-auth.provid
 import { OrganizationModule } from './organization/organization.module';
 import { SupervisorModule } from './dashboard/supervisor/supervisor.module';
 import { AdminModule } from './dashboard/admin/admin.module';
+import { OperatorChatModule } from './operator-chat/operator-chat.module';
 
 const routes: Routes = [
   {
@@ -77,6 +78,7 @@ const routes: Routes = [
     OrganizationModule,
     SupervisorModule,
     AdminModule,
+    OperatorChatModule,
 
     NbAuthModule.forRoot({
       forms: {
