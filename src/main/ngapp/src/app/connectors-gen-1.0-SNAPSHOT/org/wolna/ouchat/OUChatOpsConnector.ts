@@ -8,20 +8,33 @@ namespace org.wolna.ouchat {
     export interface OUChatOpsConnector extends org.wolna.ouchat.OUChatConnection {
         /**
          * Load chat history
-         * @return
+         * @return {number} operation id
          * @param {string} clientID
          * @param {number} lastSeen
-         * @return {org.wolna.ouchat.OUChatOperationResult}
          */
-        loadHistory(clientID : string, lastSeen : number) : org.wolna.ouchat.OUChatOperationResult;
+        loadHistory(clientID : string, lastSeen : number) : number;
 
         /**
-         * 
-         * @param {string} text
-         * @return
-         * @return {org.wolna.ouchat.OUChatOperationResult}
+         * Send message to chat
+         * @param {string} clientID Id of chat/client
+         * @param {string} text Message
+         * @return {number} operation id
          */
-        say(text : string) : org.wolna.ouchat.OUChatOperationResult;
+        say(clientID : string, text : string) : number;
+
+        /**
+         * Try to lock chat
+         * @param {string} clientID
+         * @return {number} operation id
+         */
+        tryAcquireChat(clientID : string) : number;
+
+        /**
+         * Release locked chat
+         * @param {string} clientID
+         * @return {number} operation id
+         */
+        releaseChat(clientID : string) : number;
     }
 }
 

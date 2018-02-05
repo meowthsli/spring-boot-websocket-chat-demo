@@ -13,14 +13,14 @@ public interface OUChatClientConnector extends OUChatConnection {
 
     /**
      * Load chat history
-     * @return
+     * @return Operation id
      */
-    public OUChatOperationResult loadHistory(int lastSeen);
+    public int loadHistory(int lastSeen);
 
     /**
      *
      * @param text
-     * @return
+     * @return Оperation id
      */
-    public OUChatOperationResult say(String text);
+    public int say(String text);
 }

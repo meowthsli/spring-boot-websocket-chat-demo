@@ -8,19 +8,17 @@ namespace org.wolna.ouchat {
     export interface OUChatClientConnector extends org.wolna.ouchat.OUChatConnection {
         /**
          * Load chat history
-         * @return
+         * @return {number} Operation id
          * @param {number} lastSeen
-         * @return {org.wolna.ouchat.OUChatOperationResult}
          */
-        loadHistory(lastSeen : number) : org.wolna.ouchat.OUChatOperationResult;
+        loadHistory(lastSeen : number) : number;
 
         /**
          * 
          * @param {string} text
-         * @return
-         * @return {org.wolna.ouchat.OUChatOperationResult}
+         * @return {number} Оperation id
          */
-        say(text : string) : org.wolna.ouchat.OUChatOperationResult;
+        say(text : string) : number;
     }
 }
 

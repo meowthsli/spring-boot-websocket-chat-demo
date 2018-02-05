@@ -7,14 +7,29 @@ package org.wolna.ouchat;
 public interface OUChatOpsConnector extends OUChatConnection {
     /**
      * Load chat history
-     * @return
+     * @return operation id
      */
-    public OUChatOperationResult loadHistory(String clientID, int lastSeen);
+    public int loadHistory(String clientID, int lastSeen);
 
     /**
-     *
-     * @param text
-     * @return
+     * Send message to chat
+     * @param clientID Id of chat/client
+     * @param text Message
+     * @return operation id
      */
-    public OUChatOperationResult say(String text);
+    public int say(String clientID, String text);
+
+    /**
+     * Try to lock chat
+     * @param clientID
+     * @return operation id
+     */
+    public int tryAcquireChat(String clientID);
+
+    /**
+     * Release locked chat
+     * @param clientID
+     * @return operation id
+     */
+    public int releaseChat(String clientID);
 }

@@ -14,11 +14,11 @@ public interface OUChatConnection {
      * @param password password OR token
      * @return true if success
      */
-    public OUChatOperationResult connect(String uri, String login, String password);
+    public boolean connect(String uri, String login, String password);
     /**
      * Close connection to server
      */
-    public OUChatOperationResult disconnect();
+    public boolean disconnect();
 
      /**
      * Checks connection status
@@ -26,8 +26,15 @@ public interface OUChatConnection {
     public boolean isConnected();
 
     /**
-     * Accepts message handler
+     * Accepts incoming message handler
      * @param x
      */
-    public boolean onMessage(Consumer<Parcel> x);
+    public boolean onResult(Consumer<OUChatOperationResult> handler);
+
+    /**
+     * Accepts error handler
+     * @param handler
+     * @return
+     */
+    public boolean onError(Consumer<OUChatOperationResult> handler);
 }

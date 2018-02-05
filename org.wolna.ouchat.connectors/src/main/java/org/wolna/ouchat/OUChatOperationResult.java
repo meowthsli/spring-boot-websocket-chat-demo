@@ -5,13 +5,37 @@ package org.wolna.ouchat;
  * @author yveretelnikov
  */
 public class OUChatOperationResult {
+
+    /**
+     * Id of operation. Must not be null
+     */
+    public int operationId;
+
+    /**
+     * Message (if any)
+     */
+    public Parcel resultMessage;
+
     /**
      * Error code or 0
      */
-    public long errorCode;
+    public int errorCode;
 
     /**
      * Error description or null
      */
     public String errorDescription;
+
+    /**
+     * When connection is not established
+     */
+    public static final int ERROR_NOT_CONNECTED = 1;
+    /**
+     * When operation in not valid
+     */
+    public static final int ERROR_INVALID_OPERATION = 2;
+    /**
+     * Unknown error
+     */
+    public static final int GENERIC_ERROR = 1000;
 }

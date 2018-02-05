@@ -11,15 +11,15 @@ namespace org.wolna.ouchat {
          * @param {string} uri Url to server [relative]
          * @param {string} login email OR token
          * @param {string} password password OR token
-         * @return {org.wolna.ouchat.OUChatOperationResult} true if success
+         * @return {boolean} true if success
          */
-        connect(uri : string, login : string, password : string) : org.wolna.ouchat.OUChatOperationResult;
+        connect(uri : string, login : string, password : string) : boolean;
 
         /**
          * Close connection to server
-         * @return {org.wolna.ouchat.OUChatOperationResult}
+         * @return {boolean}
          */
-        disconnect() : org.wolna.ouchat.OUChatOperationResult;
+        disconnect() : boolean;
 
         /**
          * Checks connection status
@@ -28,11 +28,20 @@ namespace org.wolna.ouchat {
         isConnected() : boolean;
 
         /**
-         * Accepts message handler
-         * @param {*} x
+         * Accepts incoming message handler
+         * @param x
+         * @param {*} handler
          * @return {boolean}
          */
-        onMessage(x : (p1: org.wolna.ouchat.Parcel) => void) : boolean;
+        onResult(handler : (p1: org.wolna.ouchat.OUChatOperationResult) => void) : boolean;
+
+        /**
+         * Accepts error handler
+         * @param {*} handler
+         * @return
+         * @return {boolean}
+         */
+        onError(handler : (p1: org.wolna.ouchat.OUChatOperationResult) => void) : boolean;
     }
 }
 
