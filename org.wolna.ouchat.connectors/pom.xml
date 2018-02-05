@@ -44,10 +44,10 @@
 				<configuration>
 					<tsOnly>true</tsOnly>
 					<outDir>target/js</outDir>
-					<tsOut>typescript</tsOut>
+					<tsOut>../src/main/ngapp/src/app/connectors-gen-${project.version}/</tsOut>
 					<targetVersion>ES5</targetVersion>
 					<!-- bundle your JS automatically -->
-					<bundle>true</bundle>
+					<bundle>false</bundle>
 					<!-- end of bundle configuration -->
 				</configuration>
 				<executions>
