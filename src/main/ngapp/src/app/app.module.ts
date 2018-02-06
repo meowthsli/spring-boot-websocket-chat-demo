@@ -37,6 +37,7 @@ import { OrganizationModule } from './organization/organization.module';
 import { SupervisorModule } from './dashboard/supervisor/supervisor.module';
 import { AdminModule } from './dashboard/admin/admin.module';
 import { OperatorChatModule } from './operator-chat/operator-chat.module';
+import { PipesModule } from './pipes/pipes.module';
 
 const routes: Routes = [
   {
@@ -58,10 +59,6 @@ const routes: Routes = [
     ClientChatComponent,
     BtoaPipe,
     AtobPipe,
-    CapitalizePipe,
-    TimeformatPipe,
-    ElipsisPipe,
-    FioPipeSimple,
     ProfileComponent,
     SettingsComponent,
   ],
@@ -75,6 +72,7 @@ const routes: Routes = [
     NbThemeModule.forRoot({ name: 'default' }),
     InfiniteScrollModule,
     ToasterModule,
+    PipesModule,
     OrganizationModule,
     SupervisorModule,
     AdminModule,
