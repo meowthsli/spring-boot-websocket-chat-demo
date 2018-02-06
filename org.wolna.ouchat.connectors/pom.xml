@@ -26,41 +26,72 @@
         </repository>
     </repositories>
     
-    <dependencies>
-        <dependency>
-	    <groupId>com.github.NaikSoftware</groupId>
-	    <artifactId>StompProtocolAndroid</artifactId>
-	    <version>1.4.4</version>
-            <type>aar</type>
-	</dependency>
-    </dependencies>
-    -->
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.jsweet</groupId>
-                <artifactId>jsweet-maven-plugin</artifactId>
-                <version>2.0.1-SNAPSHOT</version>
-                <configuration>
-                    <tsOnly>true</tsOnly>
-                    <outDir>target/js</outDir>
-                    <tsOut>typescript</tsOut>
-                    <targetVersion>ES5</targetVersion>
-                    <!-- bundle your JS automatically -->
-                    <bundle>true</bundle>
-                    <!-- end of bundle configuration -->
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>generate-js</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>jsweet</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
+	<dependencies>
+			<dependency>
+		<groupId>com.github.NaikSoftware</groupId>
+		<artifactId>StompProtocolAndroid</artifactId>
+		<version>1.4.4</version>
+					<type>aar</type>
+</dependency>
+	</dependencies>
+	-->
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.jsweet</groupId>
+				<artifactId>jsweet-maven-plugin</artifactId>
+				<version>2.0.1-SNAPSHOT</version>
+				<configuration>
+					<tsOnly>true</tsOnly>
+					<outDir>target/js</outDir>
+					<tsOut>../src/main/ngapp/src/app/connectors-gen-${project.version}/</tsOut>
+					<targetVersion>ES6</targetVersion>
+					<!-- bundle your JS automatically -->
+					<bundle>false</bundle>
+					<!-- end of bundle configuration -->
+				</configuration>
+				<executions>
+					<execution>
+						<id>generate-js</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>jsweet</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.5.2</version>
+				<configuration>
+					<groupId>org.wolna</groupId>
+					<artifactId>ouchat-connectors</artifactId>
+					<version>${project.version}</version>
+					<packaging>jar</packaging>
+					<file>${basedir}/target/${project.build.finalName}.jar</file>
+					<localRepositoryPath>repo</localRepositoryPath>
+					<generatePom>true</generatePom>
+				</configuration>
+				<executions>
+					<execution>
+						<id>install-jar-lib-package</id>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<phase>package</phase>
+					</execution>
+						<execution>
+						<id>install-jar-lib-install</id>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<phase>install</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
                         
-    </build>
+	</build>
 </project>
