@@ -37,6 +37,11 @@ namespace org.wolna.ouchat {
         public static ERROR_INVALID_OPERATION : number = 2;
 
         /**
+         * When disconnected
+         */
+        public static ERROR_DISCONNETED : number = 3;
+
+        /**
          * Unknown error
          */
         public static GENERIC_ERROR : number = 1000;

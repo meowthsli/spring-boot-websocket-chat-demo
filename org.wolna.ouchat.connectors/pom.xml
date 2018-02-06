@@ -45,7 +45,7 @@
 					<tsOnly>true</tsOnly>
 					<outDir>target/js</outDir>
 					<tsOut>../src/main/ngapp/src/app/connectors-gen-${project.version}/</tsOut>
-					<targetVersion>ES5</targetVersion>
+					<targetVersion>ES6</targetVersion>
 					<!-- bundle your JS automatically -->
 					<bundle>false</bundle>
 					<!-- end of bundle configuration -->

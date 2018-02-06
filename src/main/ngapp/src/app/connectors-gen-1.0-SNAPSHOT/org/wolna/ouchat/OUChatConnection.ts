@@ -42,6 +42,14 @@ namespace org.wolna.ouchat {
          * @return {boolean}
          */
         onError(handler : (p1: org.wolna.ouchat.OUChatOperationResult) => void) : boolean;
+
+        /**
+         * Connection event handler
+         * @param {*} handler
+         * @return
+         * @return {boolean}
+         */
+        onConnected(handler : (p1: any) => void) : boolean;
     }
 }
 

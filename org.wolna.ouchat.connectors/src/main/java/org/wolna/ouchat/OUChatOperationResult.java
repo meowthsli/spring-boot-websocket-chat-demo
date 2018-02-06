@@ -30,10 +30,17 @@ public class OUChatOperationResult {
      * When connection is not established
      */
     public static final int ERROR_NOT_CONNECTED = 1;
+
     /**
      * When operation in not valid
      */
     public static final int ERROR_INVALID_OPERATION = 2;
+
+    /**
+     * When disconnected
+     */
+    public static final int ERROR_DISCONNETED = 3;
+    
     /**
      * Unknown error
      */

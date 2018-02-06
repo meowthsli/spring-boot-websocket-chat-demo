@@ -15,6 +15,7 @@ public interface OUChatConnection {
      * @return true if success
      */
     public boolean connect(String uri, String login, String password);
+
     /**
      * Close connection to server
      */
@@ -37,4 +38,11 @@ public interface OUChatConnection {
      * @return
      */
     public boolean onError(Consumer<OUChatOperationResult> handler);
+
+    /**
+     * Connection event handler
+     * @param handler
+     * @return
+     */
+    public boolean onConnected(Consumer<Object> handler);
 }
