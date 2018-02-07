@@ -5,8 +5,20 @@ package org.wolna.ouchat;
  * @author yveretelnikov
  */
 public class Parcel {
+    /**
+     * Client sends when makes connection
+     */
     public static final class ClientHello {
-        public UserDescription desc;
+        public final UserDescription desc;
+
+        public ClientHello(UserDescription desc){
+            assert desc != null : "desc@UserDescription cannot be null";
+            if(desc == null) {
+                throw new IllegalArgumentException("desc cannot be null");
+            }
+
+            this.desc = desc;
+        }
     }
 
     public static final class ClientConnected {
@@ -39,15 +51,23 @@ public class Parcel {
         }
     }
 
+    /**
+     * User description
+     */
     public static class UserDescription {
-        public final String description;
-        public final String userId;
-        public UserDescription(String userId, String desc) {
-            assert desc != null;
-            this.description = desc;
-            this.userId = userId;
+        public final String fio;
+        public final String userLogin;
+        public final String[] tags;
+        public UserDescription(String userLogin, String fio, String[] tags) {
+            assert fio != null;
+            assert tags != null;
+            if(tags == null) {
+                tags = new String[0];
+            }
+
+            this.fio = fio;
+            this.userLogin= userLogin;
+            this.tags = tags;
         }
     }
-
-
 }

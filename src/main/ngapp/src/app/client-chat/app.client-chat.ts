@@ -9,10 +9,13 @@ import { NbSpinnerService } from '@nebular/theme';
 import { ToasterService } from 'angular2-toaster/src/toaster.service';
 import { ToasterConfig } from 'angular2-toaster';
 import { ClientDesc, FIO } from '../stomp/app.stomp';
-import { OUChatClientConnector } from '../ou-chat-sdk/client-connector';
+//import { OUChatClientConnector } from '../ou-chat-sdk/client-connector';
+//import { OUChatClientConnectorImpl } from '../ou-chat-sdk/client-connector';
 import { environment } from '../../environments/environment';
 import { UserDesc, FIO as FIO2 } from '../ou-chat-sdk/dtos';
+import { OUChatClientConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/client-connector';
 
+type CONNECTOR = OUChatClientConnectorImpl;
 /**
  * @title Main app component
  */
@@ -36,7 +39,7 @@ export class ClientChatComponent implements OnInit {
     });
 
     constructor(private router:Router, private uctx: UsercontextService, /*private stomp: ClientStompConnector, */
-        private connector: OUChatClientConnector,
+        private connector: OUChatClientConnectorImpl,
         private spinner: NbSpinnerService, private toaster: ToasterService) {}
     
     // send message
@@ -44,7 +47,8 @@ export class ClientChatComponent implements OnInit {
         if(this.$text) {
             let ci = new ChatItem(this.cids--, null, this.$text, moment());
             this.$history.push(ci);
-            this.connector.say(ci.id, ci.text, null /*not used*/);
+            // this.connector.say(ci.id, ci.text, null /*not used*/);
+            this.connector.say(ci.text);
             this.$text = null;
             this.scrollDown();
         }
@@ -79,7 +83,7 @@ export class ClientChatComponent implements OnInit {
             }
         });
         */
-        this.connector.onMessage.subscribe(msg => {
+        /*this.connector.onMessage.subscribe(msg => {
             if(msg.sayResp) {
                 var item = this.$history.find(ci => ci.id == msg.sayResp.cid);
                 if(item) {
@@ -93,13 +97,14 @@ export class ClientChatComponent implements OnInit {
                 this.scrollDown();
             }
         });
+        */
 
         /*this.stomp.onConnected.subscribe(()=> {
             this.spinner.clear();
             this.$connecting = 2;
         });*/
 
-        this.connector.onConnected.subscribe(()=> {
+        this.connector.onConnected(()=> {
             this.spinner.clear();
             this.$connecting = 2;
         });
@@ -107,7 +112,7 @@ export class ClientChatComponent implements OnInit {
         /*
         this.stomp.onError.subscribe(()=> this.onDisconnect());
         */
-        this.connector.onError.subscribe(()=> this.onDisconnect());
+        this.connector.onError(()=> this.onDisconnect());
 
         
         this.beginConnect();
@@ -129,10 +134,14 @@ export class ClientChatComponent implements OnInit {
         */
 
         let email = `${this.uctx.username}-cli@acme.org`;
-        let fio = new FIO2(this.fn[Math.round(Math.random()*this.fn.length-1)], '',
-            this.ln[Math.round(Math.random()*this.ln.length-1)]);
+        /*let fio = new FIO2(this.fn[Math.round(Math.random()*this.fn.length-1)], '',
+            this.ln[Math.round(Math.random()*this.ln.length-1)]);*/
         
-        this.connector.connect(email, '***', environment.wsAddress, new UserDesc(email, fio, [], '+78988899999', 'Other info'));
+        this.connector.connect("http://localhost:8080/Ws", email, '***', 
+            //environment.wsAddress,
+            null //new org.wolna.ouchat.Parcel.UserDescription(email, "Иван Иваныч", []),
+            //new UserDesc(email, fio, [], '+78988899999', 'Other info')
+        );
     }
 
     private onDisconnect() {

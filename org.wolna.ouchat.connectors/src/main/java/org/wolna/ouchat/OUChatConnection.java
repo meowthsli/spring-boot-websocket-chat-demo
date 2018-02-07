@@ -14,7 +14,7 @@ public interface OUChatConnection {
      * @param password password OR token
      * @return true if success
      */
-    public boolean connect(String uri, String login, String password);
+    public boolean connect(String uri, String login, String password, Parcel.UserDescription description);
 
     /**
      * Close connection to server

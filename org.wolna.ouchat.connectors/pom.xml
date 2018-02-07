@@ -48,6 +48,7 @@
 					<targetVersion>ES6</targetVersion>
 					<!-- bundle your JS automatically -->
 					<bundle>false</bundle>
+					<module>system</module>
 					<!-- end of bundle configuration -->
 				</configuration>
 				<executions>
@@ -81,14 +82,7 @@
 							<goal>install-file</goal>
 						</goals>
 						<phase>package</phase>
-					</execution>
-						<execution>
-						<id>install-jar-lib-install</id>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<phase>install</phase>
-					</execution>
+					</execution>						
 				</executions>
 			</plugin>
 		</plugins>

@@ -19,7 +19,7 @@ public class OUChatOperationResult {
     /**
      * Error code or 0
      */
-    public int errorCode;
+    public int errorCode = 0;
 
     /**
      * Error description or null

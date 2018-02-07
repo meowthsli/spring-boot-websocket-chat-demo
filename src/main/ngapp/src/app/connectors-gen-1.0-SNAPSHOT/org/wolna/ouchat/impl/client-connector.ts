@@ -2,20 +2,30 @@ import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
+import { Parcel } from '../Parcel';
+import { OUChatClientConnector } from '../OUChatClientConnector';
+import { OUChatOperationResult } from '../OUChatOperationResult';
 
 type USER_ID = string;
+
 
 /**
  * Client connector
  */
-export class OUChatClientConnectorImpl implements org.wolna.ouchat.OUChatClientConnector {
+export class OUChatClientConnectorImpl implements OUChatClientConnector {
     
     /**
      * Requests history from server
      * @param lastSeen 
      */
     loadHistory(lastSeen: number): number {
-        throw new Error("Method not implemented.");
+        if(this.isConnected()) {
+            var p = new Parcel();
+            
+            this.stompClient.send("/app/client.histo", {}, JSON.stringify(null));
+            return this.operationId++;
+        } 
+        return -1;
     }
     
     /**
@@ -25,7 +35,7 @@ export class OUChatClientConnectorImpl implements org.wolna.ouchat.OUChatClientC
      * @param uri endpoint uri
      * @param clientDesc client description
      */
-    public connect(login: string, passcode: string, uri: string/*, clientDesc: UserDesc*/) : boolean {
+    public connect(login: string, passcode: string, uri: string, clientDesc: Parcel.UserDescription) : boolean {
         this.disconnect(); // ignore return
         
         // Recreate socket
@@ -36,14 +46,22 @@ export class OUChatClientConnectorImpl implements org.wolna.ouchat.OUChatClientC
         this.stompClient.connect(login, passcode, 
             () => {
                 // subscribe
-                // this.onConnected.next();
-
-                // this._initialConnect(clientDesc); 
+                this.subscription = this.stompClient.subscribe('/user/queue/client', (payload) => this.onStompReceived(payload));
+                if(this.subscription) {                
+                    this.stompClient.send("/app/client.hello", {}, 
+                        JSON.stringify(
+                            new Parcel.ClientHello(clientDesc)
+                        )
+                    );
+                } // in case of error an error frame will arrive from server
+                this._onConnected.next(); // signal caller we succeeded
             },
             () => { // error 
-                // TODO: event;
-                this.disconnect();
-                // this.onError.next("Error while communication");
+                this.disconnect(); // ignore returns
+                var res = new OUChatOperationResult();
+                res.errorCode = OUChatOperationResult.GENERIC_ERROR;
+                res.errorDescription = "Unknown error";
+                this._onError.next(res);
             }
         );
         return true;
@@ -61,23 +79,12 @@ export class OUChatClientConnectorImpl implements org.wolna.ouchat.OUChatClientC
             this.subscription = null;
             this.stompClient = null;
             this.socket = null;
-            var err = new org.wolna.ouchat.OUChatOperationResult();
-            err.errorCode = org.wolna.ouchat.OUChatOperationResult.ERROR_DISCONNETED;
+            var err = new OUChatOperationResult();
+            err.errorCode = OUChatOperationResult.ERROR_DISCONNETED;
             err.errorDescription = "Disconnected by user";
             this._onError.next(err);
             return true;
         }
-        return false;
-    }
-
-    /**
-     * Ask server for history. clientID is ignored
-     */
-    public requestHistory(clientID: USER_ID) : boolean {
-        if(this.isConnected()) {
-            // this.stompClient.send("/app/client.histo", {}, JSON.stringify(new Parcel2().setRequestHistory(new RequestHistoryCli())));
-            return true;
-        } 
         return false;
     }
 
@@ -95,11 +102,6 @@ export class OUChatClientConnectorImpl implements org.wolna.ouchat.OUChatClientC
         }       
     }
 
-    /*protected _initialConnect(clientDesc: UserDesc) {
-        this.subscription = this.stompClient.subscribe('/user/queue/client', (payload) => this.onStompReceived(payload));
-        this.stompClient.send("/app/client.hello", {}, JSON.stringify(new Parcel2().setHelloClient(new HelloClient(clientDesc))));
-    }*/
-
     /**
      * When message arrives
      * @param payload message
@@ -107,7 +109,7 @@ export class OUChatClientConnectorImpl implements org.wolna.ouchat.OUChatClientC
     protected onStompReceived(payload) {
         var message = JSON.parse(payload.body);
         // this.onMessage.next(message);
-        var res = new org.wolna.ouchat.OUChatOperationResult();
+        var res = new OUChatOperationResult();
         res.errorCode = 0;
         res.operationId = payload.operationId;
         res.resultMessage = payload.body;
@@ -123,7 +125,7 @@ export class OUChatClientConnectorImpl implements org.wolna.ouchat.OUChatClientC
      * Subscribe to messages
      * @param handler 
      */
-    public onResult(handler : (p1: org.wolna.ouchat.OUChatOperationResult) => void) : boolean {
+    public onResult(handler : (p1: OUChatOperationResult) => void) : boolean {
         /*if(this._onResultSubscription) {
             this._onResultSubscription.unsubscribe();
             this._onResultSubscription = null;
@@ -141,7 +143,7 @@ export class OUChatClientConnectorImpl implements org.wolna.ouchat.OUChatClientC
          * @return {boolean}
          */
     public onConnected(handler : (p1: any) => void) : boolean {
-        this._onConnected.unsubscribe();
+        //  this._onConnected.unsubscribe();
         this._onConnected.subscribe(handler);
         return true;
     }
@@ -152,8 +154,8 @@ export class OUChatClientConnectorImpl implements org.wolna.ouchat.OUChatClientC
          * @return
          * @return {boolean}
          */
-    public onError(handler : (p1: org.wolna.ouchat.OUChatOperationResult) => void) : boolean {
-        this._onError.unsubscribe();
+    public onError(handler : (p1: OUChatOperationResult) => void) : boolean {
+        // this._onError.unsubscribe();
         this._onError.subscribe(handler);
         return true;
     }
@@ -174,11 +176,12 @@ export class OUChatClientConnectorImpl implements org.wolna.ouchat.OUChatClientC
     /**
      * Incoming message
      */
-    protected _onMessage = new Subject<org.wolna.ouchat.OUChatOperationResult>();
+    protected _onMessage = new Subject<OUChatOperationResult>();
     /**
      * Communication error
      */
-    protected _onError = new Subject<org.wolna.ouchat.OUChatOperationResult>();
+    protected _onError = new Subject<OUChatOperationResult>();
 
     // Operation part    
+    protected operationId: number = 1;
 }
