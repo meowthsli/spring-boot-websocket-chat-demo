@@ -10,6 +10,10 @@ type USER_ID = string;
  */
 export class OUChatClientConnectorImpl implements org.wolna.ouchat.OUChatClientConnector {
     
+    /**
+     * Requests history from server
+     * @param lastSeen 
+     */
     loadHistory(lastSeen: number): number {
         throw new Error("Method not implemented.");
     }
@@ -22,7 +26,7 @@ export class OUChatClientConnectorImpl implements org.wolna.ouchat.OUChatClientC
      * @param clientDesc client description
      */
     public connect(login: string, passcode: string, uri: string/*, clientDesc: UserDesc*/) : boolean {
-        this.disconnect(); // ignore result
+        this.disconnect(); // ignore return
         
         // Recreate socket
         this.socket = new SockJS(uri);

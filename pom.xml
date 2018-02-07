@@ -28,13 +28,13 @@
 		<repository>
 			<id>local-connectors</id>
 			<name>local connectors repo</name>
-			<url>org.wolna.ouchat.connectors/repo</url>
+			<url>file://${project.basedir}/org.wolna.ouchat.connectors/repo/</url>
 		</repository>
 	</repositories>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.wolna.ouchat</groupId>
+			<groupId>org.wolna</groupId>
 			<artifactId>ouchat-connectors</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
