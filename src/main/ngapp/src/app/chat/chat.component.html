@@ -13,9 +13,9 @@
           <span *ngIf="$connecting == 2"><span class="name">Соединено с оператором</span></span>
 
         </div>
-        <div class="chat">
+        <div class="chat" id="chat-lines">
           <div class="conversation-start">
-            <span>Monday, 1:27 PM</span>
+            <span>{{ now | date:'d MMMM yyyy' }}</span>
           </div>
           <div class="bubble"
                [ngClass]="{'you': ci.opId, 'me': !ci.opId}"

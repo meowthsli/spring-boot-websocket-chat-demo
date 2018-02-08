@@ -19,6 +19,7 @@ import { UserDesc, FIO as FIO2 } from '../ou-chat-sdk/dtos';
 })
 export class ChatComponent implements OnInit {
 
+  public readonly now: Date = new Date();
 
   $text: string;
   $history: Array<ChatItem> = new Array();
