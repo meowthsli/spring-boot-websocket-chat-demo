@@ -1,0 +1,41 @@
+<div class="chat-container">
+
+  <toaster-container [toasterconfig]="$toasterconfig"></toaster-container>
+
+  <div class="wrapper">
+    <div class="container">
+      <div class="right">
+        <div class="top">
+
+          <img *ngIf="$connecting == 1" style="width:1rem; height:1rem; float:left;" src="/assets/loading4.gif" />
+          <span *ngIf="$connecting == 1" style="margin-left: 0.5rem;">Соединяемся..</span>
+          <span *ngIf="$connecting == 0"><span class="name">Отсоединено</span></span>
+          <span *ngIf="$connecting == 2"><span class="name">Соединено с оператором</span></span>
+
+        </div>
+        <div class="chat">
+          <div class="conversation-start">
+            <span>Monday, 1:27 PM</span>
+          </div>
+          <div class="bubble"
+               [ngClass]="{'you': ci.opId, 'me': !ci.opId}"
+               *ngFor="let ci of $history" [class.chat-line-fromclient]="!ci.opId" [class.noack]="ci.id == null || ci.id &lt; 0">
+            <span *ngIf="ci.opId" class="chat-line-avatar-op"></span>
+            {{ ci.text }}
+            <span class="chat-line-time">{{ ci.at | timeformat }}</span>
+          </div>
+        </div>
+
+        <div class="write">
+          <a href="javascript:;" class="write-link attach"></a>
+          <input type="text" placeholder="Введите текст" rows="2" (keydown.enter)="$onSendClick();false" [(ngModel)]="$text">
+          <!--<a href="javascript:;" class="write-link smiley"></a>-->
+          <a href="javascript:;"
+             class="write-link send"
+             [class.disabled]="$connecting != 2"
+             (click)="$onSendClick()"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

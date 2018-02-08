@@ -18,8 +18,10 @@
                             <input name="enterprise" class="form-control" disabled="true" value="1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX"/>
                         </div>
                         <div class="pushout">
-                            <button class="btn btn-danger" type="submit" (click)='$onClientClick()'>Клиент</button>
-                            <button class="btn btn-primary" type="submit" (click)='$onLogonClick()'>Оператор</button>
+                          <button class="btn btn-danger" type="submit" (click)='$onClientClick()'>Клиент</button>
+                          <button class="btn btn-danger" type="submit" (click)='onStartAsClient()'>Клиент<sup>2</sup></button>
+                          <button class="btn btn-primary" type="submit" (click)='onStartAsOperator()'>Оператор<sup>2</sup></button>
+                          <button class="btn btn-primary" type="submit" (click)='$onLogonClick()'>Оператор</button>
                         </div>
                     </form>
                 </nb-card-body>

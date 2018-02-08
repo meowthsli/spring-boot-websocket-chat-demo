@@ -38,6 +38,7 @@ import { SupervisorModule } from './dashboard/supervisor/supervisor.module';
 import { AdminModule } from './dashboard/admin/admin.module';
 import { OperatorChatModule } from './operator-chat/operator-chat.module';
 import { PipesModule } from './pipes/pipes.module';
+import { ChatModule } from './chat/chat.module';
 
 const routes: Routes = [
   {
@@ -76,6 +77,7 @@ const routes: Routes = [
     OrganizationModule,
     SupervisorModule,
     AdminModule,
+    ChatModule,
     OperatorChatModule,
 
     NbAuthModule.forRoot({
