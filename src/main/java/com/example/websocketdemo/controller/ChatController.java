@@ -13,6 +13,9 @@ import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
+import org.wolna.ouchat.Envelope;
+import org.wolna.ouchat.Envelope.ClientHello;
+import org.wolna.ouchat.Envelope.ClientHelloOk;
 
 /**
  * Created by  on 24/07/17.
@@ -114,12 +117,14 @@ public class ChatController {
      */
     @MessageMapping("/client.hello")
     @SendTo("/broadcast/all-ops")
-    public Parcel2 clientHello(@Payload Parcel2 p,
+    public ClientHello clientHello(@Payload ClientHello hello,
                                SimpMessageHeaderAccessor smha) {
         // generate user id
-        setCurrentUserID(smha, this.generateID(p.helloClientReq.userDesc.email));
+        setCurrentUserID(smha, this.generateID(hello.desc.userLogin));
 
-        throw new RuntimeException("Not implemented");
+        this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/client", new ClientHelloOk()); // example of send to client back
+
+        return hello;
         /*
         Chat uc = chats.getChat(getCurrentUserID(smha), p.helloClientReq.userDesc);
         uc.setLastSession(getCurrentSessionID(smha));
@@ -205,7 +210,13 @@ public class ChatController {
     private String getCurrentUserID(SimpMessageHeaderAccessor smha) {
         return (String)smha.getSessionAttributes().get("userID");
     }
-    
+
+    /**
+     * Fills current websocket session attribute with given id (sorta conversation context)
+     * Using it later when any message arrives to know who sends this message
+     * @param smha
+     * @param id
+     */
     private void setCurrentUserID(SimpMessageHeaderAccessor smha, String id) {
         smha.getSessionAttributes().put("userID", id);
     }

@@ -1,6 +1,5 @@
 /* Generated from Java with JSweet 2.0.1-SNAPSHOT - http://www.jsweet.org */
-import { Parcel } from './Parcel';
-import { OUChatOperationResult } from './OUChatOperationResult';
+import { Envelope } from './Envelope';
 
 /**
  * 
@@ -14,9 +13,9 @@ export interface OUChatConnection {
      * @param {string} login email OR token
      * @param {string} password password OR token
      * @return {boolean} true if success
-     * @param {Parcel.UserDescription} description
+     * @param {Envelope.UserDescription} description
      */
-    connect(uri : string, login : string, password : string, description : Parcel.UserDescription) : boolean;
+    connect(uri : string, login : string, password : string, description : Envelope.UserDescription) : boolean;
 
     /**
      * Close connection to server
@@ -36,7 +35,7 @@ export interface OUChatConnection {
      * @param {*} handler
      * @return {boolean}
      */
-    onResult(handler : (p1: OUChatOperationResult) => void) : boolean;
+    onResult(handler : (p1: Envelope) => void) : boolean;
 
     /**
      * Accepts error handler
@@ -44,7 +43,7 @@ export interface OUChatConnection {
      * @return
      * @return {boolean}
      */
-    onError(handler : (p1: OUChatOperationResult) => void) : boolean;
+    onError(handler : (p1: Envelope) => void) : boolean;
 
     /**
      * Connection event handler

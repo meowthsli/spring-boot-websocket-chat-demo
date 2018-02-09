@@ -14,7 +14,7 @@ public interface OUChatConnection {
      * @param password password OR token
      * @return true if success
      */
-    public boolean connect(String uri, String login, String password, Parcel.UserDescription description);
+    public boolean connect(String uri, String login, String password, Envelope.UserDescription description);
 
     /**
      * Close connection to server
@@ -30,14 +30,14 @@ public interface OUChatConnection {
      * Accepts incoming message handler
      * @param x
      */
-    public boolean onResult(Consumer<OUChatOperationResult> handler);
+    public boolean onResult(Consumer<Envelope> handler);
 
     /**
      * Accepts error handler
      * @param handler
      * @return
      */
-    public boolean onError(Consumer<OUChatOperationResult> handler);
+    public boolean onError(Consumer<Envelope> handler);
 
     /**
      * Connection event handler

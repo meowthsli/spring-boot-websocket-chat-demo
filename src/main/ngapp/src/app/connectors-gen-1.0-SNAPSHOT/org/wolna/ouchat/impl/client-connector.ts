@@ -2,9 +2,8 @@ import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
-import { Parcel } from '../Parcel';
 import { OUChatClientConnector } from '../OUChatClientConnector';
-import { OUChatOperationResult } from '../OUChatOperationResult';
+import { Envelope } from '../Envelope';
 
 type USER_ID = string;
 
@@ -20,10 +19,10 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
      */
     loadHistory(lastSeen: number): number {
         if(this.isConnected()) {
-            var p = new Parcel();
+            var p = new Envelope();
             
-            this.stompClient.send("/app/client.histo", {}, JSON.stringify(null));
-            return this.operationId++;
+            //this.stompClient.send("/app/client.histo", {}, JSON.stringify(null));
+            return 0;
         } 
         return -1;
     }
@@ -35,7 +34,7 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
      * @param uri endpoint uri
      * @param clientDesc client description
      */
-    public connect(login: string, passcode: string, uri: string, clientDesc: Parcel.UserDescription) : boolean {
+    public connect(login: string, passcode: string, uri: string, clientDesc: Envelope.UserDescription) : boolean {
         this.disconnect(); // ignore return
         
         // Recreate socket
@@ -47,19 +46,15 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
             () => {
                 // subscribe
                 this.subscription = this.stompClient.subscribe('/user/queue/client', (payload) => this.onStompReceived(payload));
-                if(this.subscription) {                
-                    this.stompClient.send("/app/client.hello", {}, 
-                        JSON.stringify(
-                            new Parcel.ClientHello(clientDesc)
-                        )
-                    );
+                if(this.subscription) {                                    ;
+                    this.stompClient.send("/app/client.hello", {}, JSON.stringify(new Envelope.ClientHello(clientDesc)));
                 } // in case of error an error frame will arrive from server
                 this._onConnected.next(); // signal caller we succeeded
             },
             () => { // error 
                 this.disconnect(); // ignore returns
-                var res = new OUChatOperationResult();
-                res.errorCode = OUChatOperationResult.GENERIC_ERROR;
+                var res = new Envelope.Response();
+                res.errorCode = Envelope.Response.GENERIC_ERROR;
                 res.errorDescription = "Unknown error";
                 this._onError.next(res);
             }
@@ -79,8 +74,8 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
             this.subscription = null;
             this.stompClient = null;
             this.socket = null;
-            var err = new OUChatOperationResult();
-            err.errorCode = OUChatOperationResult.ERROR_DISCONNETED;
+            var err = new Envelope.Response();
+            err.errorCode = Envelope.Response.ERROR_DISCONNECTED;
             err.errorDescription = "Disconnected by user";
             this._onError.next(err);
             return true;
@@ -93,13 +88,17 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
      * @param text 
      */
     public say(text: string) : number {
-        if(this.isConnected()) {
-            // this.stompClient.send("/app/client.say", {}, JSON.stringify(new Parcel2().setSay(new Say(cid, text))));
-            
-        } else {
-            // this.onError.next();
+        if(!this.isConnected()) {
+            var env = new Envelope.Response();
+            env.errorCode = Envelope.Response.ERROR_NOT_CONNECTED;
+            env.errorDescription = "Not connected";
+            this._onError.next(env);
             return 0;
-        }       
+        }   
+        var env2 = new Envelope();
+        env2.messageToServer = new Envelope.MessageToServer(text, ++this.messageTempId);
+        this.stompClient.send("/app/client.say", {}, JSON.stringify(env2));
+        return this.messageTempId;
     }
 
     /**
@@ -107,17 +106,12 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
      * @param payload message
      */
     protected onStompReceived(payload) {
-        var message = JSON.parse(payload.body);
-        // this.onMessage.next(message);
-        var res = new OUChatOperationResult();
-        res.errorCode = 0;
-        res.operationId = payload.operationId;
-        res.resultMessage = payload.body;
-        this._onMessage.next()
+        var message = JSON.parse(payload.body); // Envelope
+        this._onMessage.next(message)
     }
 
     public isConnected() : boolean {
-        return this.subscription;
+        return !(!this.subscription);
     }
 
    
@@ -125,23 +119,18 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
      * Subscribe to messages
      * @param handler 
      */
-    public onResult(handler : (p1: OUChatOperationResult) => void) : boolean {
-        /*if(this._onResultSubscription) {
-            this._onResultSubscription.unsubscribe();
-            this._onResultSubscription = null;
-        }*/
-
+    public onResult(handler : (p1: Envelope.Response) => void) : boolean {      
         this._onMessage.unsubscribe();
         /*this._onResultSubscription = */this._onMessage.subscribe(x => handler(x));
         return true;
     }
 
     /**
-         * Connection event handler
-         * @param {*} handler
-         * @return
-         * @return {boolean}
-         */
+     * Subscribe to connection
+     * @param {*} handler
+     * @return
+     * @return {boolean}
+     */
     public onConnected(handler : (p1: any) => void) : boolean {
         //  this._onConnected.unsubscribe();
         this._onConnected.subscribe(handler);
@@ -154,7 +143,7 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
          * @return
          * @return {boolean}
          */
-    public onError(handler : (p1: OUChatOperationResult) => void) : boolean {
+    public onError(handler : (p1: Envelope.Response) => void) : boolean {
         // this._onError.unsubscribe();
         this._onError.subscribe(handler);
         return true;
@@ -176,12 +165,12 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
     /**
      * Incoming message
      */
-    protected _onMessage = new Subject<OUChatOperationResult>();
+    protected _onMessage = new Subject<Envelope.Response>();
     /**
      * Communication error
      */
-    protected _onError = new Subject<OUChatOperationResult>();
+    protected _onError = new Subject<Envelope.Response>();
 
     // Operation part    
-    protected operationId: number = 1;
+    protected messageTempId: number = 1;
 }

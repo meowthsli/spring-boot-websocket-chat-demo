@@ -14,6 +14,7 @@ import { ClientDesc, FIO } from '../stomp/app.stomp';
 import { environment } from '../../environments/environment';
 import { UserDesc, FIO as FIO2 } from '../ou-chat-sdk/dtos';
 import { OUChatClientConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/client-connector';
+import { Envelope } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/Envelope';
 
 type CONNECTOR = OUChatClientConnectorImpl;
 /**
@@ -137,10 +138,8 @@ export class ClientChatComponent implements OnInit {
         /*let fio = new FIO2(this.fn[Math.round(Math.random()*this.fn.length-1)], '',
             this.ln[Math.round(Math.random()*this.ln.length-1)]);*/
         
-        this.connector.connect("http://localhost:8080/Ws", email, '***', 
-            //environment.wsAddress,
-            null //new org.wolna.ouchat.Parcel.UserDescription(email, "Иван Иваныч", []),
-            //new UserDesc(email, fio, [], '+78988899999', 'Other info')
+        this.connector.connect(email, email, "http://localhost:8080/Ws",
+            new Envelope.UserDescription("login1", "fio fio", [])
         );
     }
 
