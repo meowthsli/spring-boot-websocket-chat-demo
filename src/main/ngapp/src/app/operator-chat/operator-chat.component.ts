@@ -67,6 +67,13 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Отпустить клиента
+   */
+  public onRelease(): void {
+    this.chat = null; // TODO: Отпустить клиента
+  }
+
+  /**
    * Прокрутка списка сообщений
    */
   public onScrollDown(): void {
