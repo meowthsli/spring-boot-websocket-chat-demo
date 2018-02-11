@@ -15,7 +15,7 @@
         </div>
         <div class="chat" id="chat-lines">
           <div class="conversation-start">
-            <span>{{ now | date:'d MMMM yyyy' }}</span>
+            <span>{{ fromNow }}</span>
           </div>
           <div class="bubble"
                [ngClass]="{'you': ci.opId, 'me': !ci.opId}"
@@ -28,7 +28,7 @@
 
         <div class="write">
           <a href="javascript:;" class="write-link attach"></a>
-          <input type="text" placeholder="Введите текст" rows="2" (keydown.enter)="$onSendClick();false" [(ngModel)]="$text">
+          <input type="text" placeholder="Введите сообщение" rows="2" (keydown.enter)="$onSendClick();false" [(ngModel)]="$text">
           <!--<a href="javascript:;" class="write-link smiley"></a>-->
           <a href="javascript:;"
              class="write-link send"

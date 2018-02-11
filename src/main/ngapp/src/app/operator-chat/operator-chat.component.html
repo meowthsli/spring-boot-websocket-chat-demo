@@ -7,46 +7,49 @@
           <a href="javascript:;" class="search"></a>
         </div>
 
-        <app-client-queue ($clientOpen)="$startClientChat($event)"></app-client-queue>
+        <app-client-queue [queue]="freeChats | async"
+                          [currentChat]="chat"
+                          (onSelectChat)="onSelectChat($event)"></app-client-queue>
 
       </div>
       <div class="right">
         <div class="top">
-          <span>
-            To:
+          <span *ngIf="chat">
+            Клиент:
             <span class="name">
-              Dog Woofson
+              {{ chat.author.fullname }}
             </span>
           </span>
         </div>
-        <div class="chat" style="display: block">
+
+        <div class="chat"
+             style="display: block"
+             *ngIf="chat"
+             #messagesContainer>
           <div class="conversation-start">
-            <span>Monday, 1:27 PM</span>
+            <span>{{ chat.messages[0].datetime.format('dddd, MMMM YYYY') }}</span>
           </div>
-          <!--<div class="bubble"-->
-               <!--[ngClass]="{'you': ci.opId, 'me': !ci.opId}"-->
-               <!--*ngFor="let ci of discussion.$history">-->
-            <!--So, how's your new phone?-->
-          <!--</div>-->
-          <div class="bubble you">
-            You finally have a smartphone :D
-          </div>
-          <div class="bubble me">
-            Drake?
-          </div>
-          <div class="bubble me">
-            Why aren't you answering?
-          </div>
-          <div class="bubble you">
-            howdoyoudoaspace
+          <div class="bubble"
+               [ngClass]="{'you': message.author.operatorId, 'me': !message.author.operatorId}"
+               *ngFor="let message of chat.messages">
+            {{ message.text }}
+            <span class="chat-line-time">{{ message.datetime | date:'hh:mm' }}</span>
           </div>
         </div>
 
         <div class="write">
           <a href="javascript:;" class="write-link attach"></a>
-          <input type="text" />
-          <a href="javascript:;" class="write-link smiley"></a>
-          <a href="javascript:;" class="write-link send"></a>
+          <input type="text"
+                 #text
+                 placeholder="Введите сообщение"
+                 rows="2"
+                 (keydown.enter)="onSendMessage(text.value);text.value = '';false"
+                 [disabled]="!chat">
+          <!--<a href="javascript:;" class="write-link smiley"></a>-->
+          <a href="javascript:;"
+             class="write-link send"
+             [class.disabled]="!chat"
+             (click)="onSendMessage(text.value);text.value = ''"></a>
         </div>
       </div>
       <div class="left" style="border-left: none">
@@ -54,7 +57,9 @@
           Текущие диалоги
         </div>
 
-        <app-client-queue ($clientOpen)="$startClientChat($event)"></app-client-queue>
+        <app-client-queue [queue]="myChats | async"
+                          [currentChat]="chat"
+                          (onSelectChat)="onSelectChat($event)"></app-client-queue>
 
       </div>
     </div>

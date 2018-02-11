@@ -10,6 +10,7 @@ import { FioPipeSimple } from '../pipes/fio-pipe-simple';
 import { PipesModule } from '../pipes/pipes.module';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { FormsModule } from '@angular/forms';
+import { ChatService } from './services/chat.service';
 
 @NgModule({
   imports: [
@@ -28,6 +29,9 @@ import { FormsModule } from '@angular/forms';
   declarations: [
     OperatorChatComponent,
     ClientQueueComponent
+  ],
+  providers: [
+    ChatService
   ]
 })
 export class OperatorChatModule { }

@@ -1,14 +1,15 @@
 <ul class="people">
   <li class="person"
-      *ngFor="let qi of $queue"
-      (click)="$clientOpen.emit(qi.clientID)">
-    <img src="https://s3.postimg.org/yf86x7z1r/img2.jpg" alt="" />
-    <div class="name">{{ qi.author || 'Иванов Иван' }}</div>
-    <span class="time">15:44</span>
-    <span class="preview">{{ qi.text || 'Лыжи есть?' }}</span>
-    <div *ngIf="qi.lost &amp;&amp; qi.lost > 0"
+      [class.active]="currentChat && chat.id == currentChat.id"
+      *ngFor="let chat of queue.chats"
+      (click)="onSelectChat.emit(chat)">
+    <img src="https://s3.postimg.org/yf86x7z1r/img2.jpg" alt="">
+    <div class="name">{{ chat.author.fullname }}</div>
+    <span class="time">{{ chat.lastMessage.datetime | date:'hh:mm' }}</span>
+    <span class="preview">{{ chat.lastMessage.text }}</span>
+    <div *ngIf="chat.newMessagesLength > 0"
          class="bage">
-      {{ qi.lost }}
+      {{ chat.newMessagesLength }}
     </div>
   </li>
 </ul>

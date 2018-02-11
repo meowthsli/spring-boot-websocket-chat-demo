@@ -1,6 +1,6 @@
 <nb-layout>
     <nb-layout-header fixed>
-        <toaster-container [toasterconfig]="$toasterconfig"></toaster-container>        
+        <toaster-container [toasterconfig]="$toasterconfig"></toaster-container>
         <div id="op-header">
             <div>
                 LOGO
@@ -19,7 +19,7 @@
                     <span>Выйти</span>
                 </button>
             </div>
-        </div>        
+        </div>
     </nb-layout-header>
     <nb-layout-column>
         <div class="row">
@@ -42,7 +42,7 @@
             <div class="col-lg-6" *ngIf="$discussions.length > 0">
                 <nb-card>
                     <nb-tabset>
-                        <nb-tab *ngFor="let d of $discussions" [tabTitle]="d.clientDesc.fio | fioPipeSimple" style="padding: 0 1.25rem;">
+                        <nb-tab *ngFor="let d of $discussions" [tabTitle]="d.clientDesc?.fio | fioPipeSimple" style="padding: 0 1.25rem;">
                             <ul class="chat-lines" id="{{d.clientID}}" infiniteScroll debounce [scrollWindow]="false"
                                 [infiniteScrollUpDistance]="0.5" [infiniteScrollThrottle]="1000" (scrolledUp)="$onScrollUp()">
                                 <li id="chat-loading" *ngIf="$nowLoading">Loading...</li>
@@ -56,9 +56,9 @@
                                         <footer class="blockquot-footer" style="color: lightgray; font-style: italic; font-size:0.7rem; text-align: right" >{{ci.at | timeformat }}</footer>
                                     </blockquote>
                                 </li>
-                            </ul> 
+                            </ul>
                             <div class="form-group">
-                                <textarea class="form-control" placeholder="Введите текст" rows="2" 
+                                <textarea class="form-control" placeholder="Введите текст" rows="2"
                                     (keydown.enter)="$onSendClick(d);false" [(ngModel)]="d.$text"></textarea>
                             </div>
                             <div class="form-group pushout">
@@ -81,7 +81,7 @@
                                 {{$clientDescCache[$currentClientID].fio.sn}}
                                 </div>
                                 <div>
-                                    {{$clientDescCache[$currentClientID].fio.ln}}                                
+                                    {{$clientDescCache[$currentClientID].fio.ln}}
                                 </div>
                                 <div>
                                     {{$clientDescCache[$currentClientID].email}}
