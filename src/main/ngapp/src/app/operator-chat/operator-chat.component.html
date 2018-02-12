@@ -4,12 +4,18 @@
       <div class="left">
         <div class="top">
           <input type="text"
-                 placeholder="поиск клиента"
+                 placeholder="Поиск клиента"
                  [formControl]="freeChatsSearchQuery">
           <a href="javascript:;"
              class="search"
              (click)="freeChatsSearchQuery.reset()"></a>
         </div>
+
+        <p *ngIf="freeChatsSearchQuery.value && (freeChats | async).chats.length < 1"
+           class="info-text">
+          По заданному поисковому запросу чатов не найдено.
+          Измените поисковый запрос.
+        </p>
 
         <app-client-queue [queue]="freeChats | async"
                           [currentChat]="chat"
