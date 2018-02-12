@@ -11,13 +11,13 @@
              (click)="freeChatsSearchQuery.reset()"></a>
         </div>
 
-        <p *ngIf="freeChatsSearchQuery.value && (freeChats | async).chats.length < 1"
+        <p *ngIf="freeChatsSearchQuery.value && freeChats?.chats.length < 1"
            class="info-text">
           По заданному поисковому запросу чатов не найдено.
           Измените поисковый запрос.
         </p>
 
-        <app-client-queue [queue]="freeChats | async"
+        <app-client-queue [queue]="freeChats"
                           [currentChat]="chat"
                           (onSelectChat)="onSelectChat($event)"></app-client-queue>
 
@@ -30,7 +30,9 @@
               {{ chat.author.fullname }}
             </span>
 
-            <button class="button" (click)="onRelease()">Отпустить клиента</button>
+            <button class="button"
+                    *ngIf="canReleaseClent(chat)"
+                    (click)="onRelease()">Отпустить клиента</button>
 
           </span>
         </div>
@@ -71,7 +73,7 @@
           Текущие диалоги
         </div>
 
-        <app-client-queue [queue]="myChats | async"
+        <app-client-queue [queue]="myChats"
                           [currentChat]="chat"
                           (onSelectChat)="onSelectChat($event)"></app-client-queue>
 

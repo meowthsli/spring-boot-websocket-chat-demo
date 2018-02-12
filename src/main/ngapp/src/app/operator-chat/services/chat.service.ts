@@ -22,6 +22,7 @@ export class ChatService {
       chats: [
         new Chat({
           id: '1',
+          operatorId: null,
           messages: [
             new Message({
               author: new Author({
@@ -59,6 +60,7 @@ export class ChatService {
         }),
         new Chat({
           id: '2',
+          operatorId: null,
           messages: [
             new Message({
               author: new Author({
@@ -108,6 +110,7 @@ export class ChatService {
       chats: [
         new Chat({
           id: '3',
+          operatorId: '1',
           messages: [
             new Message({
               author: new Author({
@@ -145,6 +148,7 @@ export class ChatService {
         }),
         new Chat({
           id: '4',
+          operatorId: '1',
           messages: [
             new Message({
               author: new Author({

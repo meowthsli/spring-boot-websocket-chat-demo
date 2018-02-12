@@ -21,12 +21,15 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
 
   public freeChatsSearchQuery: FormControl = new FormControl('');
 
-  public freeChats: Observable<Queue> = combineLatest(
+  public freeChatsStream: Observable<Queue> = combineLatest(
     this.chatter.syncFreeChats(),
     this.freeChatsSearchQuery.valueChanges.startWith(''),
-    (queue: Queue, query: string) => queue.filterChats(query));
+    (queue: Queue, query: string) => queue.filterChats(query)
+  );
+  public freeChats: Queue = null;
 
-  public myChats: Observable<Queue> = this.chatter.syncMyChats();
+  public myChatsStream: Observable<Queue> = this.chatter.syncMyChats();
+  public myChats: Queue = null;
 
   public chat: Chat = null;
   public selectedChat: BehaviorSubject<Chat> = new BehaviorSubject(null);
@@ -47,6 +50,9 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
           this.onScrollDown();
         }
       });
+
+    this.freeChatsStream.subscribe(queue => this.freeChats = queue);
+    this.myChatsStream.subscribe(queue => this.myChats = queue);
   }
 
   public ngOnDestroy(): void {
@@ -70,6 +76,10 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
   public onSendMessage(text: string): void {
     if (text && text.trim()) {
       this.chat.appendMessage(text.trim());
+      if ( ! this.chat.operatorId) {
+        this.myChats.prependChat(this.chat.assignOperator('1'));
+        this.freeChats.removeChat(this.chat);
+      }
       this.onScrollDown();
     }
   }
@@ -78,7 +88,18 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
    * Отпустить клиента
    */
   public onRelease(): void {
+    this.myChats.removeChat(this.chat);
     this.chat = null; // TODO: Отпустить клиента
+  }
+
+  /**
+   * Проверка доступности кнопки "Отпустить клиента"
+   *
+   * @param {Chat} chat
+   * @returns {boolean}
+   */
+  public canReleaseClent(chat: Chat): boolean {
+    return chat.operatorId === '1';
   }
 
   /**

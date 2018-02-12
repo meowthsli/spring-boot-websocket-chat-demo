@@ -25,4 +25,26 @@ export class Queue {
     });
   }
 
+  /**
+   * Прикрепить чат
+   *
+   * @param {Chat} chat
+   * @returns {Queue}
+   */
+  public prependChat(chat: Chat): Queue {
+    this.chats.unshift(chat);
+    return this;
+  }
+
+  /**
+   * Исключить чат
+   *
+   * @param {Chat} chat
+   * @returns {Queue}
+   */
+  public removeChat(chat: Chat): Queue {
+    this.chats = this.chats.filter(c => c.id !== chat.id);
+    return this;
+  }
+
 }
