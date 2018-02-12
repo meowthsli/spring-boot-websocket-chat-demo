@@ -6,6 +6,8 @@ import { Chat } from './models/chat.model';
 import { Subscription } from 'rxjs/Subscription';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/switchMap';
+import { FormControl } from '@angular/forms';
+import { combineLatest } from 'rxjs/observable/combineLatest';
 
 @Component({
   selector: 'app-operator-chat',
@@ -17,8 +19,14 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
   @ViewChild('messagesContainer')
   public messagesContainer: ElementRef;
 
+  public freeChatsSearchQuery: FormControl = new FormControl('');
+
+  public freeChats: Observable<Queue> = combineLatest(
+    this.chatter.syncFreeChats(),
+    this.freeChatsSearchQuery.valueChanges.startWith(''),
+    (queue: Queue, query: string) => queue.filterChats(query));
+
   public myChats: Observable<Queue> = this.chatter.syncMyChats();
-  public freeChats: Observable<Queue> = this.chatter.syncFreeChats();
 
   public chat: Chat = null;
   public selectedChat: BehaviorSubject<Chat> = new BehaviorSubject(null);

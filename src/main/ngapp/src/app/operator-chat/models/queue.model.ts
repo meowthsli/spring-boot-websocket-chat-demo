@@ -12,4 +12,17 @@ export class Queue {
     this.chats = data.chats;
   }
 
+  /**
+   * Chat filter
+   *
+   * @param {string} query
+   * @returns {Queue}
+   */
+  public filterChats(query: string): Queue {
+    const term: string = (query || '').trim().toLowerCase();
+    return new Queue({
+      chats: this.chats.filter(chat => chat.author.fullname.toLowerCase().search(term) > -1)
+    });
+  }
+
 }
