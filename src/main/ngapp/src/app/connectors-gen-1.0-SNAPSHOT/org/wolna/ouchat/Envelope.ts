@@ -96,6 +96,7 @@ export namespace Envelope {
      * Message delivering confirmation. Has to be sent from server to client
      * @param {number} messageTemporaryId
      * @param {number} messageId
+     * @param {Date} when
      * @class
      */
     export class MessageAccepted {
@@ -103,11 +104,15 @@ export namespace Envelope {
 
         public messageTemporaryId : number;
 
-        public constructor(messageTemporaryId : number, messageId : number) {
+        public when : Date;
+
+        public constructor(messageTemporaryId : number, messageId : number, when : Date) {
             if(this.messageId===undefined) this.messageId = 0;
             if(this.messageTemporaryId===undefined) this.messageTemporaryId = 0;
+            if(this.when===undefined) this.when = null;
             this.messageTemporaryId = messageTemporaryId;
             this.messageId = messageId;
+            this.when = when;
         }
     }
     MessageAccepted["__class"] = "org.wolna.ouchat.Envelope.MessageAccepted";

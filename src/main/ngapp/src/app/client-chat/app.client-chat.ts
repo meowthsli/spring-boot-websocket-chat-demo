@@ -110,11 +110,14 @@ export class ClientChatComponent implements OnInit {
             this.$connecting = 2;
         });
 
-        /*
-        this.stomp.onError.subscribe(()=> this.onDisconnect());
-        */
+        
+        // this.stomp.onError.subscribe(()=> this.onDisconnect());
+        
         this.connector.onError(()=> this.onDisconnect());
 
+        this.connector.onResult( r => {
+            
+        });
         
         this.beginConnect();
     }

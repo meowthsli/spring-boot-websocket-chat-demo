@@ -4,6 +4,8 @@ import com.example.websocketdemo.model.Parcel;
 import com.example.websocketdemo.model.Parcel2;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -29,10 +31,16 @@ public class ChatController {
     @Autowired
     SimpMessagingTemplate sender;
 
+    static volatile AtomicLong messageId = new AtomicLong(1);
     @MessageMapping("/client.say")
     @SendTo("/broadcast/all-ops")
-    public Parcel clientSay(@Payload Parcel chatMessage, SimpMessageHeaderAccessor smha) {
-        Chat uc = chats.getChat(getCurrentUserID(smha));
+    public Envelope.MessageToServer clientSay(@Payload Envelope.MessageToServer chatMessage, SimpMessageHeaderAccessor smha) {
+        String clientId = getCurrentUserID(smha);
+        long id = messageId.incrementAndGet();
+        this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/client", new Envelope.MessageAccepted(chatMessage.temporaryId, id, Date.from(Instant.now())));
+
+        return new Envelope.MessageToServer(chatMessage.text, id);
+        /*Chat uc = chats.getChat(getCurrentUserID(smha));
         
         Chat.Item item = uc
             .appendText(chatMessage.getText(), null);
@@ -46,6 +54,8 @@ public class ChatController {
             return null;
         }
         return answer;
+
+        */
     }
     
     @MessageMapping("/operator.say")

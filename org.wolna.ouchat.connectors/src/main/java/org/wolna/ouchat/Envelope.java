@@ -1,5 +1,7 @@
 package org.wolna.ouchat;
 
+import java.util.Date;
+
 /**
  * Envelope for transport messages
  * @author yveretelnikov
@@ -59,9 +61,11 @@ public class Envelope {
     public static final class MessageAccepted {
         public long messageId;
         public long messageTemporaryId;
-        public MessageAccepted(long messageTemporaryId, long messageId) {
+        public Date when;
+        public MessageAccepted(long messageTemporaryId, long messageId, Date when) {
             this.messageTemporaryId = messageTemporaryId;
             this.messageId = messageId;
+            this.when = when;
         }
     }
 

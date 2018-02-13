@@ -120,7 +120,7 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
      * @param handler 
      */
     public onResult(handler : (p1: Envelope.Response) => void) : boolean {      
-        this._onMessage.unsubscribe();
+        // this._onMessage.unsubscribe();
         /*this._onResultSubscription = */this._onMessage.subscribe(x => handler(x));
         return true;
     }
