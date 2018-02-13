@@ -95,9 +95,7 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
             this._onError.next(env);
             return 0;
         }   
-        var env2 = new Envelope();
-        env2.messageToServer = new Envelope.MessageToServer(text, ++this.messageTempId);
-        this.stompClient.send("/app/client.say", {}, JSON.stringify(env2));
+        this.stompClient.send("/app/client.say", {}, JSON.stringify(new Envelope.MessageToServer(text, ++this.messageTempId)));
         return this.messageTempId;
     }
 

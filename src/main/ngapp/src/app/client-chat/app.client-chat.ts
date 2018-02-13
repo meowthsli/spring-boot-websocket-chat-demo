@@ -116,7 +116,9 @@ export class ClientChatComponent implements OnInit {
         this.connector.onError(()=> this.onDisconnect());
 
         this.connector.onResult( r => {
-            
+            if(r.messageAccepted) {
+                console.log("acceptance!");
+            }
         });
         
         this.beginConnect();

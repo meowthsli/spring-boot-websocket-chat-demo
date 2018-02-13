@@ -52,7 +52,14 @@ public class Envelope {
             }
             this.text = text;
             this.temporaryId = temporaryId;
-        }        
+        }
+
+        /**
+         * Internal. Do not use
+         */
+        protected MessageToServer() {
+
+        }
     }
 
     /**

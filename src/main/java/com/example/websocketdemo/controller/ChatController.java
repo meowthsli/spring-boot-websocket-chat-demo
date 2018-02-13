@@ -37,7 +37,9 @@ public class ChatController {
     public Envelope.MessageToServer clientSay(@Payload Envelope.MessageToServer chatMessage, SimpMessageHeaderAccessor smha) {
         String clientId = getCurrentUserID(smha);
         long id = messageId.incrementAndGet();
-        this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/client", new Envelope.MessageAccepted(chatMessage.temporaryId, id, Date.from(Instant.now())));
+        Envelope e = new Envelope();
+        e.messageAccepted = new Envelope.MessageAccepted(chatMessage.temporaryId, id, Date.from(Instant.now()));
+        this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/client", e);
 
         return new Envelope.MessageToServer(chatMessage.text, id);
         /*Chat uc = chats.getChat(getCurrentUserID(smha));
