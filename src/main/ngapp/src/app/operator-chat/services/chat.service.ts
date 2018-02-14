@@ -25,6 +25,7 @@ export class ChatService {
           operatorId: null,
           messages: [
             new Message({
+              id: '1',
               author: new Author({
                 id: '1',
                 operatorId: '1',
@@ -34,6 +35,7 @@ export class ChatService {
               datetime: moment()
             }),
             new Message({
+              id: '1',
               author: new Author({
                 id: '1',
                 operatorId: null,
@@ -43,6 +45,7 @@ export class ChatService {
               datetime: moment()
             }),
             new Message({
+              id: '1',
               author: new Author({
                 id: '1',
                 operatorId: '1',
@@ -63,6 +66,7 @@ export class ChatService {
           operatorId: null,
           messages: [
             new Message({
+              id: '1',
               author: new Author({
                 id: '1',
                 operatorId: '1',
@@ -72,6 +76,7 @@ export class ChatService {
               datetime: moment()
             }),
             new Message({
+              id: '1',
               author: new Author({
                 id: '1',
                 operatorId: null,
@@ -81,6 +86,7 @@ export class ChatService {
               datetime: moment()
             }),
             new Message({
+              id: '1',
               author: new Author({
                 id: '1',
                 operatorId: '1',
@@ -113,6 +119,7 @@ export class ChatService {
           operatorId: '1',
           messages: [
             new Message({
+              id: '1',
               author: new Author({
                 id: '1',
                 operatorId: '1',
@@ -122,6 +129,7 @@ export class ChatService {
               datetime: moment()
             }),
             new Message({
+              id: '1',
               author: new Author({
                 id: '1',
                 operatorId: null,
@@ -131,6 +139,7 @@ export class ChatService {
               datetime: moment()
             }),
             new Message({
+              id: '1',
               author: new Author({
                 id: '1',
                 operatorId: '1',
@@ -151,6 +160,7 @@ export class ChatService {
           operatorId: '1',
           messages: [
             new Message({
+              id: '1',
               author: new Author({
                 id: '1',
                 operatorId: '1',
@@ -160,6 +170,7 @@ export class ChatService {
               datetime: moment()
             }),
             new Message({
+              id: '1',
               author: new Author({
                 id: '1',
                 operatorId: null,
@@ -169,6 +180,7 @@ export class ChatService {
               datetime: moment()
             }),
             new Message({
+              id: '1',
               author: new Author({
                 id: '1',
                 operatorId: '1',

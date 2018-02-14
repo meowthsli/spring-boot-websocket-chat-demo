@@ -45,7 +45,7 @@
             <span>{{ chat.messages[0].datetime.format('dddd, MMMM YYYY') }}</span>
           </div>
           <div class="bubble"
-               [ngClass]="{'you': message.author.operatorId, 'me': !message.author.operatorId}"
+               [ngClass]="{'you': !message.author.operatorId, 'me': message.author.operatorId, 'alpha': !message.id}"
                *ngFor="let message of chat.messages">
             {{ message.text }}
             <span class="chat-line-time">{{ message.datetime | date:'hh:mm' }}</span>
