@@ -79,14 +79,27 @@ export namespace Envelope {
 
         public temporaryId : number;
 
-        public constructor(text : string, temporaryId : number) {
-            if(this.text===undefined) this.text = null;
-            if(this.temporaryId===undefined) this.temporaryId = 0;
-            if(text == null) {
-                throw Object.defineProperty(new Error("text cannot be null"), '__classes', { configurable: true, value: ['java.lang.Throwable','java.lang.Object','java.lang.RuntimeException','java.lang.IllegalArgumentException','java.lang.Exception'] });
-            }
-            this.text = text;
-            this.temporaryId = temporaryId;
+        public constructor(text? : any, temporaryId? : any) {
+            if(((typeof text === 'string') || text === null) && ((typeof temporaryId === 'number') || temporaryId === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.text===undefined) this.text = null;
+                if(this.temporaryId===undefined) this.temporaryId = 0;
+                if(this.text===undefined) this.text = null;
+                if(this.temporaryId===undefined) this.temporaryId = 0;
+                (() => {
+                    if(text == null) {
+                        throw Object.defineProperty(new Error("text cannot be null"), '__classes', { configurable: true, value: ['java.lang.Throwable','java.lang.Object','java.lang.RuntimeException','java.lang.IllegalArgumentException','java.lang.Exception'] });
+                    }
+                    this.text = text;
+                    this.temporaryId = temporaryId;
+                })();
+            } else if(text === undefined && temporaryId === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.text===undefined) this.text = null;
+                if(this.temporaryId===undefined) this.temporaryId = 0;
+                if(this.text===undefined) this.text = null;
+                if(this.temporaryId===undefined) this.temporaryId = 0;
+            } else throw new Error('invalid overload');
         }
     }
     MessageToServer["__class"] = "org.wolna.ouchat.Envelope.MessageToServer";
