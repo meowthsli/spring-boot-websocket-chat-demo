@@ -12,21 +12,7 @@ type USER_ID = string;
  * Client connector
  */
 export class OUChatClientConnectorImpl implements OUChatClientConnector {
-    
-    /**
-     * Requests history from server
-     * @param lastSeen 
-     */
-    loadHistory(lastSeen: number): number {
-        if(this.isConnected()) {
-            var p = new Envelope();
-            
-            //this.stompClient.send("/app/client.histo", {}, JSON.stringify(null));
-            return 0;
-        } 
-        return -1;
-    }
-    
+
     /**
      * Set up connection
      * @param login User login. Use ENTERPRISE KEY for client, or email for operator/supervisor
@@ -46,7 +32,7 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
             () => {
                 // subscribe
                 this.subscription = this.stompClient.subscribe('/user/queue/client', (payload) => this.onStompReceived(payload));
-                if(this.subscription) {                                    ;
+                if(this.subscription) { 
                     this.stompClient.send("/app/client.hello", {}, JSON.stringify(new Envelope.ClientHello(clientDesc)));
                 } // in case of error an error frame will arrive from server
                 this._onConnected.next(); // signal caller we succeeded
@@ -81,6 +67,20 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Requests history from server
+     * @param lastSeen 
+     */
+    public loadHistory(lastSeen: number): number {
+        if(this.isConnected()) {
+            var p = new Envelope();
+            
+            this.stompClient.send("/app/client.histo", {}, JSON.stringify(new Envelope.LoadClientHistory(lastSeen)));
+            return 0;
+        } 
+        return Envelope.Response.GENERIC_ERROR;
     }
 
     /**

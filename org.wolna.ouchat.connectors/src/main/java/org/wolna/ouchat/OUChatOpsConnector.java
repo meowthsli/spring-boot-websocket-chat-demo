@@ -9,7 +9,7 @@ public interface OUChatOpsConnector extends OUChatConnection {
      * Load chat history
      * @return operation id
      */
-    public int loadHistory(String clientID, int lastSeen);
+    public long loadHistory(String clientID, int lastSeen);
 
     /**
      * Send message to chat
@@ -17,19 +17,19 @@ public interface OUChatOpsConnector extends OUChatConnection {
      * @param text Message
      * @return operation id
      */
-    public int say(String clientID, String text);
+    public long say(String clientID, String text);
 
     /**
      * Try to lock chat
      * @param clientID
      * @return operation id
      */
-    public int tryAcquireChat(String clientID);
+    public long tryAcquireChat(String clientID);
 
     /**
      * Release locked chat
      * @param clientID
      * @return operation id
      */
-    public int releaseChat(String clientID);
+    public long releaseChat(String clientID);
 }

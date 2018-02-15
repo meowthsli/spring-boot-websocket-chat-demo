@@ -8,10 +8,10 @@ import java.util.Date;
  */
 public class Envelope {
 
-    public ClientHello clientHello;
     public MessageToServer messageToServer;
     public MessageAccepted messageAccepted;
     public ClientHelloOk clientHelloOk;
+    public LoadClientHistoryResp loadClientHistoryResp;
 
     /**
      * Client sends when makes connection
@@ -96,6 +96,31 @@ public class Envelope {
         }
 
         protected UserDescription() {}
+    }
+    
+    /**
+     * Message to load client history from server
+     */
+    public static class LoadClientHistory {
+        public long lastSeenMessage;
+        public LoadClientHistory(long lastSeenMessage) {
+            this.lastSeenMessage = lastSeenMessage;
+        }
+        
+        /**
+         * Internal. Do not use
+         */
+        protected LoadClientHistory() {}
+    }
+    
+    /**
+     * History messages
+     */
+    public static class LoadClientHistoryResp {
+        public String[] messages;
+        public LoadClientHistoryResp(String[] messages) {
+            this.messages = messages;
+        }
     }
 
     public static class Response extends Envelope {

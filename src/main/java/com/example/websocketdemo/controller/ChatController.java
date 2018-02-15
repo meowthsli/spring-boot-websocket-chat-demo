@@ -60,6 +60,13 @@ public class ChatController {
         */
     }
     
+    @MessageMapping("/client.histo")
+    public void clientHistory(@Payload Envelope.LoadClientHistory getHisto, SimpMessageHeaderAccessor smha) {
+        Envelope e = new Envelope();
+        e.loadClientHistoryResp = new Envelope.LoadClientHistoryResp(new String[]{"HELLO"});
+        this.convertAndSendToSession(getCurrentSessionID(smha), "/queue/client", e);
+    }
+    
     @MessageMapping("/operator.say")
     @SendTo("/broadcast/all-ops")
     public Parcel operatorSay(@Payload Parcel opMessage, SimpMessageHeaderAccessor smha) {
@@ -97,7 +104,8 @@ public class ChatController {
     @SendTo("/broadcast/all-ops")
     public Parcel operatorHello(@Payload Parcel opHello,
                                SimpMessageHeaderAccessor smha) {
-        opHello.setOpID(this.generateID(opHello.getClientDesc().email));
+        throw new UnsupportedOperationException("Not implemented");
+        /*opHello.setOpID(this.generateID(opHello.getClientDesc().email));
         
         setCurrentUserID(smha, opHello.getOpID());
         
@@ -108,17 +116,19 @@ public class ChatController {
         }
         
         return Parcel.helloOp(getCurrentUserID(smha));
+        */
     }
     
     @MessageMapping("/operator.histo")
     @SendToUser("/queue/op")
     public Parcel operatorHisto(@Payload Parcel opHisto,
                                SimpMessageHeaderAccessor smha) {
-
+        throw new UnsupportedOperationException("Not implemented");
+        /*
         Chat uc = chats.getChat(opHisto.getClientID());
         Parcel p = Parcel.makeHisto(uc.getClientID(), uc.history.toArray(new Chat.Item[0]));
         
-        return p;
+        return p;*/
     }
     
     /**

@@ -5,19 +5,19 @@
  * @class
  */
 export class Envelope {
-    public clientHello : Envelope.ClientHello;
-
     public messageToServer : Envelope.MessageToServer;
 
     public messageAccepted : Envelope.MessageAccepted;
 
     public clientHelloOk : Envelope.ClientHelloOk;
 
+    public loadClientHistoryResp : Envelope.LoadClientHistoryResp;
+
     constructor() {
-        if(this.clientHello===undefined) this.clientHello = null;
         if(this.messageToServer===undefined) this.messageToServer = null;
         if(this.messageAccepted===undefined) this.messageAccepted = null;
         if(this.clientHelloOk===undefined) this.clientHelloOk = null;
+        if(this.loadClientHistoryResp===undefined) this.loadClientHistoryResp = null;
     }
 }
 Envelope["__class"] = "org.wolna.ouchat.Envelope";
@@ -174,6 +174,48 @@ export namespace Envelope {
         }
     }
     UserDescription["__class"] = "org.wolna.ouchat.Envelope.UserDescription";
+
+
+    /**
+     * Message to load client history from server
+     * @param {number} lastSeenMessage
+     * @class
+     */
+    export class LoadClientHistory {
+        public lastSeenMessage : number;
+
+        public constructor(lastSeenMessage? : any) {
+            if(((typeof lastSeenMessage === 'number') || lastSeenMessage === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+                (() => {
+                    this.lastSeenMessage = lastSeenMessage;
+                })();
+            } else if(lastSeenMessage === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+            } else throw new Error('invalid overload');
+        }
+    }
+    LoadClientHistory["__class"] = "org.wolna.ouchat.Envelope.LoadClientHistory";
+
+
+    /**
+     * History messages
+     * @param {Array} messages
+     * @class
+     */
+    export class LoadClientHistoryResp {
+        public messages : string[];
+
+        public constructor(messages : string[]) {
+            if(this.messages===undefined) this.messages = null;
+            this.messages = messages;
+        }
+    }
+    LoadClientHistoryResp["__class"] = "org.wolna.ouchat.Envelope.LoadClientHistoryResp";
 
 
     export class Response extends Envelope {

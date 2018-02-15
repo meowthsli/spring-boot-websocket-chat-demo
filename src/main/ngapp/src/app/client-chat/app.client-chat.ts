@@ -63,11 +63,12 @@ export class ClientChatComponent implements OnInit {
         this.connector.onConnected(()=> {
             this.spinner.clear();
             this.$connectionPhase = 2; // connection succeeded
+            this.connector.loadHistory(0);
         });
         this.connector.onError(()=> this.onDisconnect());
         this.connector.onResult( r => {
             if(r.messageAccepted) {   
-                var mm = r.messageAccepted;             
+                var mm = r.messageAccepted;
                 var item = this.$history.find(ci => ci.id == mm.messageTemporaryId);
                 if(item) {
                     item.id == mm.messageId;
@@ -90,7 +91,7 @@ export class ClientChatComponent implements OnInit {
         this.$connectionPhase = 1; // connecting..
         this.spinner.load();
         
-        let email = `${this.uctx.username}-cli@acme.org`;  // TODO: use actual email       
+        let email = `${this.uctx.username}-cli@acme.org`;  // TODO: use actual email
         this.connector.connect(email, email, environment.wsAddress
             /*"http://localhost:8080/Ws"*/,
             new Envelope.UserDescription("login1", "fio fio", [])
@@ -118,9 +119,6 @@ export class ClientChatComponent implements OnInit {
             element.scrollTop = element.scrollHeight ;
         }, 0);
     }
-
-    private fn = ['Михаил', 'Петр', 'Максим', 'Андрей', 'Федор'];
-    private ln = ['Иванов', 'Петров', 'Крамер', 'Сидоров', 'Фёдоров', 'Маслов'];
 }
 
 /**
