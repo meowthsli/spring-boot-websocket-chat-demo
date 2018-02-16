@@ -10,8 +10,8 @@ public class Envelope {
 
     public MessageToServer messageToServer;
     public MessageAccepted messageAccepted;
-    public ClientHelloOk clientHelloOk;
-    public LoadClientHistoryResp loadClientHistoryResp;
+    public HelloOk clientHelloOk;
+    public LoadHistoryResp loadClientHistoryResp;
 
     /**
      * Client sends when makes connection
@@ -34,8 +34,8 @@ public class Envelope {
     /**
      * Response from server to client hello
      */
-    public static final class ClientHelloOk {
-        public long id;
+    public static final class HelloOk {
+        public long id = 1;
     }
     
     /**
@@ -76,6 +76,53 @@ public class Envelope {
         }
     }
 
+    // Op messages
+
+    public static final class OpHello {
+        public UserDescription desc;
+
+        public OpHello(UserDescription desc){
+            assert desc != null : "desc@UserDescription cannot be null";
+            if(desc == null) {
+                throw new IllegalArgumentException("desc cannot be null");
+            }
+
+            this.desc = desc;
+        }
+
+        protected OpHello() {}
+    }
+
+    /**
+     * Message sent to server with temp id and client target
+     */
+    public static final class MessageToServerOp {
+        public String text;
+        public long temporaryId;
+        public String clientID;
+
+        public MessageToServerOp(String clientID, String text, long temporaryId) {
+            assert text != null && clientID != null;
+            if(text == null) {
+                throw new IllegalArgumentException("@text cannot be null");
+            }
+
+            if(clientID == null) {
+                throw new IllegalArgumentException("@clientID cannot be null");
+            }
+            this.text = text;
+            this.temporaryId = temporaryId;
+            this.clientID = clientID;
+        }
+
+        /**
+         * Internal. Do not use
+         */
+        protected MessageToServerOp() {
+
+        }
+    }
+
     /**
      * User description
      */
@@ -101,26 +148,43 @@ public class Envelope {
     /**
      * Message to load client history from server
      */
-    public static class LoadClientHistory {
+    public static class LoadHistory {
         public long lastSeenMessage;
-        public LoadClientHistory(long lastSeenMessage) {
+        public LoadHistory(long lastSeenMessage) {
             this.lastSeenMessage = lastSeenMessage;
         }
         
         /**
          * Internal. Do not use
          */
-        protected LoadClientHistory() {}
+        protected LoadHistory() {}
     }
     
     /**
      * History messages
      */
-    public static class LoadClientHistoryResp {
+    public static class LoadHistoryResp {
         public String[] messages;
-        public LoadClientHistoryResp(String[] messages) {
+        public LoadHistoryResp(String[] messages) {
             this.messages = messages;
         }
+    }
+
+    /**
+     * Message to load client history from server
+     */
+    public static class LoadHistoryOp {
+        public long lastSeenMessage;
+        public String clientID;
+        public LoadHistoryOp(String clientID, long lastSeenMessage) {
+            this.lastSeenMessage = lastSeenMessage;
+            this.clientID = clientID;
+        }
+
+        /**
+         * Internal. Do not use
+         */
+        protected LoadHistoryOp() {}
     }
 
     public static class Response extends Envelope {

@@ -9,9 +9,9 @@ export class Envelope {
 
     public messageAccepted : Envelope.MessageAccepted;
 
-    public clientHelloOk : Envelope.ClientHelloOk;
+    public clientHelloOk : Envelope.HelloOk;
 
-    public loadClientHistoryResp : Envelope.LoadClientHistoryResp;
+    public loadClientHistoryResp : Envelope.LoadHistoryResp;
 
     constructor() {
         if(this.messageToServer===undefined) this.messageToServer = null;
@@ -58,14 +58,13 @@ export namespace Envelope {
      * Response from server to client hello
      * @class
      */
-    export class ClientHelloOk {
-        public id : number;
+    export class HelloOk {
+        public id : number = 1;
 
         constructor() {
-            if(this.id===undefined) this.id = 0;
         }
     }
-    ClientHelloOk["__class"] = "org.wolna.ouchat.Envelope.ClientHelloOk";
+    HelloOk["__class"] = "org.wolna.ouchat.Envelope.HelloOk";
 
 
     /**
@@ -131,6 +130,78 @@ export namespace Envelope {
     MessageAccepted["__class"] = "org.wolna.ouchat.Envelope.MessageAccepted";
 
 
+    export class OpHello {
+        public desc : Envelope.UserDescription;
+
+        public constructor(desc? : any) {
+            if(((desc != null && desc instanceof <any>Envelope.UserDescription) || desc === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.desc===undefined) this.desc = null;
+                if(this.desc===undefined) this.desc = null;
+                (() => {
+                    if(desc == null) {
+                        throw Object.defineProperty(new Error("desc cannot be null"), '__classes', { configurable: true, value: ['java.lang.Throwable','java.lang.Object','java.lang.RuntimeException','java.lang.IllegalArgumentException','java.lang.Exception'] });
+                    }
+                    this.desc = desc;
+                })();
+            } else if(desc === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.desc===undefined) this.desc = null;
+                if(this.desc===undefined) this.desc = null;
+            } else throw new Error('invalid overload');
+        }
+    }
+    OpHello["__class"] = "org.wolna.ouchat.Envelope.OpHello";
+
+
+    /**
+     * Message sent to server with temp id and client target
+     * @param {string} clientID
+     * @param {string} text
+     * @param {number} temporaryId
+     * @class
+     */
+    export class MessageToServerOp {
+        public text : string;
+
+        public temporaryId : number;
+
+        public clientID : string;
+
+        public constructor(clientID? : any, text? : any, temporaryId? : any) {
+            if(((typeof clientID === 'string') || clientID === null) && ((typeof text === 'string') || text === null) && ((typeof temporaryId === 'number') || temporaryId === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.text===undefined) this.text = null;
+                if(this.temporaryId===undefined) this.temporaryId = 0;
+                if(this.clientID===undefined) this.clientID = null;
+                if(this.text===undefined) this.text = null;
+                if(this.temporaryId===undefined) this.temporaryId = 0;
+                if(this.clientID===undefined) this.clientID = null;
+                (() => {
+                    if(text == null) {
+                        throw Object.defineProperty(new Error("@text cannot be null"), '__classes', { configurable: true, value: ['java.lang.Throwable','java.lang.Object','java.lang.RuntimeException','java.lang.IllegalArgumentException','java.lang.Exception'] });
+                    }
+                    if(clientID == null) {
+                        throw Object.defineProperty(new Error("@clientID cannot be null"), '__classes', { configurable: true, value: ['java.lang.Throwable','java.lang.Object','java.lang.RuntimeException','java.lang.IllegalArgumentException','java.lang.Exception'] });
+                    }
+                    this.text = text;
+                    this.temporaryId = temporaryId;
+                    this.clientID = clientID;
+                })();
+            } else if(clientID === undefined && text === undefined && temporaryId === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.text===undefined) this.text = null;
+                if(this.temporaryId===undefined) this.temporaryId = 0;
+                if(this.clientID===undefined) this.clientID = null;
+                if(this.text===undefined) this.text = null;
+                if(this.temporaryId===undefined) this.temporaryId = 0;
+                if(this.clientID===undefined) this.clientID = null;
+            } else throw new Error('invalid overload');
+        }
+    }
+    MessageToServerOp["__class"] = "org.wolna.ouchat.Envelope.MessageToServerOp";
+
+
     /**
      * User description
      * @param {string} userLogin
@@ -181,7 +252,7 @@ export namespace Envelope {
      * @param {number} lastSeenMessage
      * @class
      */
-    export class LoadClientHistory {
+    export class LoadHistory {
         public lastSeenMessage : number;
 
         public constructor(lastSeenMessage? : any) {
@@ -199,7 +270,7 @@ export namespace Envelope {
             } else throw new Error('invalid overload');
         }
     }
-    LoadClientHistory["__class"] = "org.wolna.ouchat.Envelope.LoadClientHistory";
+    LoadHistory["__class"] = "org.wolna.ouchat.Envelope.LoadHistory";
 
 
     /**
@@ -207,7 +278,7 @@ export namespace Envelope {
      * @param {Array} messages
      * @class
      */
-    export class LoadClientHistoryResp {
+    export class LoadHistoryResp {
         public messages : string[];
 
         public constructor(messages : string[]) {
@@ -215,7 +286,41 @@ export namespace Envelope {
             this.messages = messages;
         }
     }
-    LoadClientHistoryResp["__class"] = "org.wolna.ouchat.Envelope.LoadClientHistoryResp";
+    LoadHistoryResp["__class"] = "org.wolna.ouchat.Envelope.LoadHistoryResp";
+
+
+    /**
+     * Message to load client history from server
+     * @param {string} clientID
+     * @param {number} lastSeenMessage
+     * @class
+     */
+    export class LoadHistoryOp {
+        public lastSeenMessage : number;
+
+        public clientID : string;
+
+        public constructor(clientID? : any, lastSeenMessage? : any) {
+            if(((typeof clientID === 'string') || clientID === null) && ((typeof lastSeenMessage === 'number') || lastSeenMessage === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+                if(this.clientID===undefined) this.clientID = null;
+                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+                if(this.clientID===undefined) this.clientID = null;
+                (() => {
+                    this.lastSeenMessage = lastSeenMessage;
+                    this.clientID = clientID;
+                })();
+            } else if(clientID === undefined && lastSeenMessage === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+                if(this.clientID===undefined) this.clientID = null;
+                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+                if(this.clientID===undefined) this.clientID = null;
+            } else throw new Error('invalid overload');
+        }
+    }
+    LoadHistoryOp["__class"] = "org.wolna.ouchat.Envelope.LoadHistoryOp";
 
 
     export class Response extends Envelope {
