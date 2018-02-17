@@ -7,7 +7,8 @@ package org.wolna.ouchat;
 public interface OUChatOpsConnector extends OUChatConnection {
     /**
      * Load chat history
-     * @return operation id
+     * @param clientID client id
+     * @param lastSeen id of last seen message
      */
     public long loadHistory(String clientID, int lastSeen);
 

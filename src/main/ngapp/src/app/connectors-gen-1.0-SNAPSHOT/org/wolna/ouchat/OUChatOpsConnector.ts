@@ -9,9 +9,9 @@ import { OUChatConnection } from './OUChatConnection';
 export interface OUChatOpsConnector extends OUChatConnection {
     /**
      * Load chat history
-     * @return {number} operation id
-     * @param {string} clientID
-     * @param {number} lastSeen
+     * @param {string} clientID client id
+     * @param {number} lastSeen id of last seen message
+     * @return {number}
      */
     loadHistory(clientID : string, lastSeen : number) : number;
 

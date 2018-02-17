@@ -2,7 +2,6 @@ import * as Stomp from 'stompjs';
 import * as SockJS from 'sockjs-client';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
-import { OUChatClientConnector } from '../OUChatClientConnector';
 import { Envelope } from '../Envelope';
 import { OUChatOpsConnector } from '../OUChatOpsConnector';
 
@@ -12,13 +11,30 @@ type USER_ID = string;
 /**
  * Client connector
  */
-export class OUChatOpsConnectorImpl implements OUChatOpsConnector {
+export class OUChatOpConnectorImpl implements OUChatOpsConnector {
     
-    tryAcquireChat(clientID: string): number {
-        throw new Error("Method not implemented.");
+    /**
+     * Try to lock chat to speak
+     * @param clientID client
+     */
+    public tryAcquireChat(clientID: string): number {
+        if(!this.isConnected()) {
+            return Envelope.Response.ERROR_NOT_CONNECTED;
+        }
+        this.stompClient.send("/app/op.tryLock", {}, JSON.stringify(new Envelope.TryLockChat(clientID)));
+        return 0;
     }
-    releaseChat(clientID: string): number {
-        throw new Error("Method not implemented.");
+
+    /**
+     * Release locked chat
+     * @param clientID client
+     */
+    public releaseChat(clientID: string): number {
+        if(!this.isConnected()) {
+            return Envelope.Response.ERROR_NOT_CONNECTED;
+        }
+        this.stompClient.send("/app/op.release", {}, JSON.stringify(new Envelope.ReleaseChat(clientID)));
+        return 0;
     }
 
     /**
@@ -89,12 +105,10 @@ export class OUChatOpsConnectorImpl implements OUChatOpsConnector {
      */
     public loadHistory(clientID: string, lastSeen: number): number {
         if(this.isConnected()) {
-            var p = new Envelope();
-            
             this.stompClient.send("/app/op.histo", {}, JSON.stringify(new Envelope.LoadHistoryOp(clientID, lastSeen)));
             return 0;
         } 
-        return Envelope.Response.GENERIC_ERROR;
+        return Envelope.Response.ERROR_NOT_CONNECTED;
     }
 
     /**

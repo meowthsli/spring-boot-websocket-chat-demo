@@ -1,6 +1,5 @@
 package com.example.websocketdemo.controller;
 
-import com.example.websocketdemo.model.Parcel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

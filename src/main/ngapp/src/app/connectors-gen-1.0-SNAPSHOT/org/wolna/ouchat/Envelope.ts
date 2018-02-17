@@ -5,19 +5,22 @@
  * @class
  */
 export class Envelope {
-    public messageToServer : Envelope.MessageToServer;
-
     public messageAccepted : Envelope.MessageAccepted;
 
-    public clientHelloOk : Envelope.HelloOk;
+    public helloOk : Envelope.HelloOk;
 
-    public loadClientHistoryResp : Envelope.LoadHistoryResp;
+    public loadHistoryResp : Envelope.LoadHistoryResp;
+
+    public tryLockChat : Envelope.OkTryLockChat;
+
+    public releaseChat : Envelope.OkReleaseChat;
 
     constructor() {
-        if(this.messageToServer===undefined) this.messageToServer = null;
         if(this.messageAccepted===undefined) this.messageAccepted = null;
-        if(this.clientHelloOk===undefined) this.clientHelloOk = null;
-        if(this.loadClientHistoryResp===undefined) this.loadClientHistoryResp = null;
+        if(this.helloOk===undefined) this.helloOk = null;
+        if(this.loadHistoryResp===undefined) this.loadHistoryResp = null;
+        if(this.tryLockChat===undefined) this.tryLockChat = null;
+        if(this.releaseChat===undefined) this.releaseChat = null;
     }
 }
 Envelope["__class"] = "org.wolna.ouchat.Envelope";
@@ -276,14 +279,19 @@ export namespace Envelope {
     /**
      * History messages
      * @param {Array} messages
+     * @param {string} userLogin
      * @class
      */
     export class LoadHistoryResp {
         public messages : string[];
 
-        public constructor(messages : string[]) {
+        public userLogin : string;
+
+        public constructor(messages : string[], userLogin : string) {
             if(this.messages===undefined) this.messages = null;
+            if(this.userLogin===undefined) this.userLogin = null;
             this.messages = messages;
+            this.userLogin = userLogin;
         }
     }
     LoadHistoryResp["__class"] = "org.wolna.ouchat.Envelope.LoadHistoryResp";
@@ -323,6 +331,102 @@ export namespace Envelope {
     LoadHistoryOp["__class"] = "org.wolna.ouchat.Envelope.LoadHistoryOp";
 
 
+    export class TryLockChat {
+        public clientID : string;
+
+        public constructor(clientID? : any) {
+            if(((typeof clientID === 'string') || clientID === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.clientID===undefined) this.clientID = null;
+                if(this.clientID===undefined) this.clientID = null;
+                (() => {
+                    if(clientID == null) {
+                        throw Object.defineProperty(new Error("@clientID can not be null"), '__classes', { configurable: true, value: ['java.lang.Throwable','java.lang.Object','java.lang.RuntimeException','java.lang.IllegalArgumentException','java.lang.Exception'] });
+                    }
+                    this.clientID = clientID;
+                })();
+            } else if(clientID === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.clientID===undefined) this.clientID = null;
+                if(this.clientID===undefined) this.clientID = null;
+            } else throw new Error('invalid overload');
+        }
+    }
+    TryLockChat["__class"] = "org.wolna.ouchat.Envelope.TryLockChat";
+
+
+    export class OkTryLockChat {
+        public clientID : string;
+
+        public constructor(clientID? : any) {
+            if(((typeof clientID === 'string') || clientID === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.clientID===undefined) this.clientID = null;
+                if(this.clientID===undefined) this.clientID = null;
+                (() => {
+                    if(clientID == null) {
+                        throw Object.defineProperty(new Error("@clientID can not be null"), '__classes', { configurable: true, value: ['java.lang.Throwable','java.lang.Object','java.lang.RuntimeException','java.lang.IllegalArgumentException','java.lang.Exception'] });
+                    }
+                    this.clientID = clientID;
+                })();
+            } else if(clientID === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.clientID===undefined) this.clientID = null;
+                if(this.clientID===undefined) this.clientID = null;
+            } else throw new Error('invalid overload');
+        }
+    }
+    OkTryLockChat["__class"] = "org.wolna.ouchat.Envelope.OkTryLockChat";
+
+
+    export class ReleaseChat {
+        public clientID : string;
+
+        public constructor(clientID? : any) {
+            if(((typeof clientID === 'string') || clientID === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.clientID===undefined) this.clientID = null;
+                if(this.clientID===undefined) this.clientID = null;
+                (() => {
+                    if(clientID == null) {
+                        throw Object.defineProperty(new Error("@clientID can not be null"), '__classes', { configurable: true, value: ['java.lang.Throwable','java.lang.Object','java.lang.RuntimeException','java.lang.IllegalArgumentException','java.lang.Exception'] });
+                    }
+                    this.clientID = clientID;
+                })();
+            } else if(clientID === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.clientID===undefined) this.clientID = null;
+                if(this.clientID===undefined) this.clientID = null;
+            } else throw new Error('invalid overload');
+        }
+    }
+    ReleaseChat["__class"] = "org.wolna.ouchat.Envelope.ReleaseChat";
+
+
+    export class OkReleaseChat {
+        public clientID : string;
+
+        public constructor(clientID? : any) {
+            if(((typeof clientID === 'string') || clientID === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.clientID===undefined) this.clientID = null;
+                if(this.clientID===undefined) this.clientID = null;
+                (() => {
+                    if(clientID == null) {
+                        throw Object.defineProperty(new Error("@clientID can not be null"), '__classes', { configurable: true, value: ['java.lang.Throwable','java.lang.Object','java.lang.RuntimeException','java.lang.IllegalArgumentException','java.lang.Exception'] });
+                    }
+                    this.clientID = clientID;
+                })();
+            } else if(clientID === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.clientID===undefined) this.clientID = null;
+                if(this.clientID===undefined) this.clientID = null;
+            } else throw new Error('invalid overload');
+        }
+    }
+    OkReleaseChat["__class"] = "org.wolna.ouchat.Envelope.OkReleaseChat";
+
+
     export class Response extends Envelope {
         /**
          * Error code. 0 for success
@@ -343,6 +447,11 @@ export namespace Envelope {
          * When disconnected
          */
         public static ERROR_DISCONNECTED : number = 3;
+
+        /**
+         * When command cant be ran due to wrong state
+         */
+        public static ERROR_WRONG_STATE : number = 4;
 
         /**
          * Unknown error

@@ -8,10 +8,12 @@ import java.util.Date;
  */
 public class Envelope {
 
-    public MessageToServer messageToServer;
+    // Answers to client
     public MessageAccepted messageAccepted;
-    public HelloOk clientHelloOk;
-    public LoadHistoryResp loadClientHistoryResp;
+    public HelloOk helloOk;
+    public LoadHistoryResp loadHistoryResp;
+    public OkTryLockChat tryLockChat;
+    public OkReleaseChat releaseChat;
 
     /**
      * Client sends when makes connection
@@ -165,8 +167,10 @@ public class Envelope {
      */
     public static class LoadHistoryResp {
         public String[] messages;
-        public LoadHistoryResp(String[] messages) {
+        public String userLogin;
+        public LoadHistoryResp(String[] messages, String userLogin) {
             this.messages = messages;
+            this.userLogin = userLogin;
         }
     }
 
@@ -186,6 +190,74 @@ public class Envelope {
          */
         protected LoadHistoryOp() {}
     }
+    
+    public static class TryLockChat {
+        
+        public String clientID;
+        public TryLockChat(String clientID) {
+            assert clientID != null;
+            if(clientID == null) {
+                throw new IllegalArgumentException("@clientID can not be null");
+            }
+            this.clientID = clientID;
+        }
+
+        /**
+         * Internal. Do not use
+         */
+        protected TryLockChat() {}
+    }
+    
+    public static class OkTryLockChat {
+        
+        public String clientID;
+        public OkTryLockChat(String clientID) {
+            assert clientID != null;
+            if(clientID == null) {
+                throw new IllegalArgumentException("@clientID can not be null");
+            }
+            this.clientID = clientID;
+        }
+
+        /**
+         * Internal. Do not use
+         */
+        protected OkTryLockChat() {}
+    }
+    
+    public static class ReleaseChat {
+        
+        public String clientID;
+        public ReleaseChat(String clientID) {
+            assert clientID != null;
+            if(clientID == null) {
+                throw new IllegalArgumentException("@clientID can not be null");
+            }
+            this.clientID = clientID;
+        }
+
+        /**
+         * Internal. Do not use
+         */
+        protected ReleaseChat() {}
+    }
+    
+    public static class OkReleaseChat {
+        
+        public String clientID;
+        public OkReleaseChat(String clientID) {
+            assert clientID != null;
+            if(clientID == null) {
+                throw new IllegalArgumentException("@clientID can not be null");
+            }
+            this.clientID = clientID;
+        }
+
+        /**
+         * Internal. Do not use
+         */
+        protected OkReleaseChat() {}
+    }
 
     public static class Response extends Envelope {
         /**
@@ -198,6 +270,8 @@ public class Envelope {
         public static final int ERROR_INVALID_OPERATION = 2;
         /** When disconnected */
         public static final int ERROR_DISCONNECTED = 3;
+        /** When command cant be ran due to wrong state */
+        public static final int ERROR_WRONG_STATE = 4;
         /**Unknown error */
         public static final int GENERIC_ERROR = 1000;
         /**
