@@ -1,4 +1,4 @@
-package com.example.websocketdemo.controller;
+package org.wolna.ouchatserver.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

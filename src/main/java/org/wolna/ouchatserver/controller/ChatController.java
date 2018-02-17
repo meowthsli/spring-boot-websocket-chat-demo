@@ -1,4 +1,4 @@
-package com.example.websocketdemo.controller;
+package org.wolna.ouchatserver.controller;
 
 import java.time.Instant;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package com.example.websocketdemo;
+package org.wolna.ouchatserver;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
