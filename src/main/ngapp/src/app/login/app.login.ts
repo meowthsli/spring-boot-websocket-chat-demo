@@ -17,8 +17,8 @@ export class LoginComponent {
   $emailFormControl = new FormControl('', [
     Validators.required
   ]);
-  
-  constructor(private router:Router, private uctx: UsercontextService) {}  
+
+  constructor(private router:Router, private uctx: UsercontextService) {}
 
   public $onLogonClick() {
     if(!this.$username) {
@@ -36,5 +36,23 @@ export class LoginComponent {
 
     this.uctx.username = this.$username;
     this.router.navigateByUrl('/clients-chat'), {skipLocationChange: true};
+  }
+
+  public onStartAsOperator() {
+    if ( ! this.$username) {
+      return;
+    }
+
+    this.uctx.username = this.$username;
+    this.router.navigateByUrl('/chat/operator'), {skipLocationChange: false};
+  }
+
+  public onStartAsClient() {
+    if ( ! this.$username) {
+      return;
+    }
+
+    this.uctx.username = this.$username;
+    this.router.navigateByUrl('/chat/client'), {skipLocationChange: false};
   }
 }

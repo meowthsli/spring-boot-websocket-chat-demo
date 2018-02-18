@@ -39,6 +39,7 @@ import { AdminModule } from './dashboard/admin/admin.module';
 import { OperatorChatModule } from './operator-chat/operator-chat.module';
 import { PipesModule } from './pipes/pipes.module';
 import { OUChatClientConnectorImpl } from './connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/client-connector';
+import { ChatModule } from './chat/chat.module';
 
 const routes: Routes = [
   {
@@ -77,6 +78,7 @@ const routes: Routes = [
     OrganizationModule,
     SupervisorModule,
     AdminModule,
+    ChatModule,
     OperatorChatModule,
 
     NbAuthModule.forRoot({

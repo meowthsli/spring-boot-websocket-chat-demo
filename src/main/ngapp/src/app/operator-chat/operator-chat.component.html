@@ -3,289 +3,81 @@
     <div class="container">
       <div class="left">
         <div class="top">
-          <input type="text" />
-          <a href="javascript:;" class="search"></a>
+          <input type="text"
+                 placeholder="Поиск клиента"
+                 [formControl]="freeChatsSearchQuery">
+          <a href="javascript:;"
+             class="search"
+             (click)="freeChatsSearchQuery.reset()"></a>
         </div>
-        <ul class="people">
-          <li class="person" data-chat="person1">
-            <img src="https://s13.postimg.org/ih41k9tqr/img1.jpg" alt="" />
-            <span class="name">Thomas Bangalter</span>
-            <span class="time">2:09 PM</span>
-            <span class="preview">I was wondering...</span>
-          </li>
-          <li class="person" data-chat="person2">
-            <img src="https://s3.postimg.org/yf86x7z1r/img2.jpg" alt="" />
-            <span class="name">Dog Woofson</span>
-            <span class="time">1:44 PM</span>
-            <span class="preview">I've forgotten how it felt before</span>
-          </li>
-          <li class="person" data-chat="person3">
-            <img src="https://s3.postimg.org/h9q4sm433/img3.jpg" alt="" />
-            <span class="name">Louis CK</span>
-            <span class="time">2:09 PM</span>
-            <span class="preview">But we’re probably gonna need a new carpet.</span>
-          </li>
-          <li class="person" data-chat="person4">
-            <img src="https://s3.postimg.org/quect8isv/img4.jpg" alt="" />
-            <span class="name">Bo Jackson</span>
-            <span class="time">2:09 PM</span>
-            <span class="preview">It’s not that bad...</span>
-          </li>
-          <li class="person" data-chat="person5">
-            <img src="https://s16.postimg.org/ete1l89z5/img5.jpg" alt="" />
-            <span class="name">Michael Jordan</span>
-            <span class="time">2:09 PM</span>
-            <span class="preview">Wasup for the third time like is
-you bling bitch</span>
-          </li>
-          <li class="person" data-chat="person6">
-            <img src="https://s30.postimg.org/kwi7e42rh/img6.jpg" alt="" />
-            <span class="name">Drake</span>
-            <span class="time">2:09 PM</span>
-            <span class="preview">howdoyoudoaspace</span>
-          </li>
-        </ul>
+
+        <p *ngIf="freeChatsSearchQuery.value && freeChats?.chats.length < 1"
+           class="info-text">
+          По заданному поисковому запросу чатов не найдено.
+          Измените поисковый запрос.
+        </p>
+
+        <app-client-queue [queue]="freeChats"
+                          [currentChat]="chat"
+                          (onSelectChat)="onSelectChat($event)"></app-client-queue>
+
       </div>
       <div class="right">
-        <div class="top"><span>To: <span class="name">Dog Woofson</span></span></div>
-        <div class="chat" data-chat="person1">
-          <div class="conversation-start">
-            <span>Today, 6:48 AM</span>
-          </div>
-          <div class="bubble you">
-            Hello,
-          </div>
-          <div class="bubble you">
-            it's me.
-          </div>
-          <div class="bubble you">
-            I was wondering...
-          </div>
-        </div>
-        <div class="chat" data-chat="person2">
-          <div class="conversation-start">
-            <span>Today, 5:38 PM</span>
-          </div>
-          <div class="bubble you">
-            Hello, can you hear me?
-          </div>
-          <div class="bubble you">
-            I'm in California dreaming
-          </div>
-          <div class="bubble me">
-            ... about who we used to be.
-          </div>
-          <div class="bubble me">
-            Are you serious?
-          </div>
-          <div class="bubble you">
-            When we were younger and free...
-          </div>
-          <div class="bubble you">
-            I've forgotten how it felt before
-          </div>
-        </div>
-        <div class="chat" data-chat="person3">
-          <div class="conversation-start">
-            <span>Today, 3:38 AM</span>
-          </div>
-          <div class="bubble you">
-            Hey human!
-          </div>
-          <div class="bubble you">
-            Umm... Someone took a shit in the hallway.
-          </div>
-          <div class="bubble me">
-            ... what.
-          </div>
-          <div class="bubble me">
-            Are you serious?
-          </div>
-          <div class="bubble you">
-            I mean...
-          </div>
-          <div class="bubble you">
-            It’s not that bad...
-          </div>
-          <div class="bubble you">
-            But we’re probably gonna need a new carpet.
-          </div>
-        </div>
-        <div class="chat" data-chat="person4">
-          <div class="conversation-start">
-            <span>Yesterday, 4:20 PM</span>
-          </div>
-          <div class="bubble me">
-            Hey human!
-          </div>
-          <div class="bubble me">
-            Umm... Someone took a shit in the hallway.
-          </div>
-          <div class="bubble you">
-            ... what.
-          </div>
-          <div class="bubble you">
-            Are you serious?
-          </div>
-          <div class="bubble me">
-            I mean...
-          </div>
-          <div class="bubble me">
-            It’s not that bad...
-          </div>
-        </div>
-        <div class="chat" data-chat="person5">
-          <div class="conversation-start">
-            <span>Today, 6:28 AM</span>
-          </div>
-          <div class="bubble you">
-            Wasup
-          </div>
-          <div class="bubble you">
-            Wasup
-          </div>
-          <div class="bubble you">
-            Wasup for the third time like is <br />you blind bitch
-          </div>
+        <div class="top">
+          <span *ngIf="chat">
+            Клиент:
+            <span class="name">
+              {{ chat.author.fullname }}
+            </span>
 
+            <button class="button"
+                    *ngIf="canReleaseClent(chat)"
+                    (click)="onRelease()">Отпустить клиента</button>
+
+          </span>
         </div>
-        <div class="chat" data-chat="person6" style="display: block">
+
+        <div class="chat"
+             style="display: block"
+             *ngIf="chat"
+             #messagesContainer>
           <div class="conversation-start">
-            <span>Monday, 1:27 PM</span>
+            <span>{{ chat.messages[0].datetime.format('dddd, MMMM YYYY') }}</span>
           </div>
-          <div class="bubble you">
-            So, how's your new phone?
-          </div>
-          <div class="bubble you">
-            You finally have a smartphone :D
-          </div>
-          <div class="bubble me">
-            Drake?
-          </div>
-          <div class="bubble me">
-            Why aren't you answering?
-          </div>
-          <div class="bubble you">
-            howdoyoudoaspace
+          <div class="bubble"
+               [ngClass]="{'you': !message.author.operatorId, 'me': message.author.operatorId, 'alpha': !message.id}"
+               *ngFor="let message of chat.messages">
+            {{ message.text }}
+            <span class="chat-line-time">{{ message.datetime | date:'hh:mm' }}</span>
           </div>
         </div>
+
         <div class="write">
           <a href="javascript:;" class="write-link attach"></a>
-          <input type="text" />
-          <a href="javascript:;" class="write-link smiley"></a>
-          <a href="javascript:;" class="write-link send"></a>
+          <input type="text"
+                 #text
+                 placeholder="Введите сообщение"
+                 rows="2"
+                 (keydown.enter)="onSendMessage(text.value);text.value = '';false"
+                 [disabled]="!chat">
+          <!--<a href="javascript:;" class="write-link smiley"></a>-->
+          <a href="javascript:;"
+             class="write-link send"
+             [class.disabled]="!chat"
+             (click)="onSendMessage(text.value);text.value = ''"></a>
         </div>
+
+      </div>
+      <div class="left" style="border-left: none">
+        <div class="top">
+          Текущие диалоги
+        </div>
+
+        <app-client-queue [queue]="myChats"
+                          [currentChat]="chat"
+                          (onSelectChat)="onSelectChat($event)"></app-client-queue>
+
       </div>
     </div>
   </div>
 </div>
-
-
-
-
-
-
-
-<nb-layout>
-  <nb-layout-header fixed>
-    <toaster-container [toasterconfig]="$toasterconfig"></toaster-container>
-    <div id="op-header">
-      <div>
-        LOGO
-      </div>
-      <div id="op-header-exit">
-        <nb-actions size="large">
-          <nb-action (click)='$profileClick()'>
-            <i class="nb-email"></i><span class="icontext">Профиль</span>
-          </nb-action>
-          <nb-action (click)='$settingsClick()'>
-            <i class="fa fa-cogs"></i><span class="icontext">Управление</span>
-          </nb-action>
-        </nb-actions>
-        <button class="btn btn-outline-danger btn-with-icon" type="submit" (click)='$logout()'>
-          <i class="fa fa-sign-out"></i>
-          <span>Выйти</span>
-        </button>
-      </div>
-    </div>
-  </nb-layout-header>
-  <nb-layout-column>
-    <div class="row">
-      <div class="col-lg-3">
-        <nb-card>
-          <app-client-queue ($clientOpen)="$startClientChat($event)"></app-client-queue>
-          <nb-card-footer></nb-card-footer>
-        </nb-card>
-      </div>
-      <div class="col-lg-6" *ngIf="$discussions.length == 0">
-        <nb-card>
-          <nb-card-header>
-            <span *ngIf="$connecting == 0" style="margin-left: 0.5rem;">Отсоединено</span>
-            <img *ngIf="$connecting == 1" style="width:1rem; height:1rem; float:left;" src="/assets/loading4.gif" />
-            <span *ngIf="$connecting == 1" style="margin-left: 0.5rem;">Соединяемся..</span>
-          </nb-card-header>
-          <nb-card-body>Выберите клиента из очереди. Тут появится чат</nb-card-body>
-        </nb-card>
-      </div>
-      <div class="col-lg-6" *ngIf="$discussions.length > 0">
-        <nb-card>
-          <nb-tabset>
-            <nb-tab *ngFor="let d of $discussions" [tabTitle]="d.clientDesc.fio | fioPipeSimple" style="padding: 0 1.25rem;">
-              <ul class="chat-lines" id="{{d.clientID}}" infiniteScroll debounce [scrollWindow]="false"
-                  [infiniteScrollUpDistance]="0.5" [infiniteScrollThrottle]="1000" (scrolledUp)="$onScrollUp()">
-                <li id="chat-loading" *ngIf="$nowLoading">Loading...</li>
-                <li *ngFor="let ci of d.$history" [ngStyle]="{'text-align': (ci.opId ? 'right':'') }">
-                  <blockquote id="text_{{ci.realId}}" [class.blockquote-reverse]="ci.opId" class="font-w-light"
-                              [ngStyle]="{'border-left-color': (ci.opId ? '':'var(--chat-client)'), 'border-right-color': (ci.opId ? 'var(--chat-op)':'')}"
-                              style="border-width: 0.15rem; display: inline-block; border-radius: 0.45rem; padding: 0.5rem 0.9rem; max-width: 80%"
-                              [class.noack]="ci.id == null || ci.id &lt; 0"
-                              [class.blockquote]="!ci.opId">
-                    <p class="mb-0" style="text-align:left">{{ci.text | capitalize }}</p>
-                    <footer class="blockquot-footer" style="color: lightgray; font-style: italic; font-size:0.7rem; text-align: right" >{{ci.at | timeformat }}</footer>
-                  </blockquote>
-                </li>
-              </ul>
-              <div class="form-group">
-                                <textarea class="form-control" placeholder="Введите текст" rows="2"
-                                          (keydown.enter)="$onSendClick(d);false" [(ngModel)]="d.$text"></textarea>
-              </div>
-              <div class="form-group pushout">
-                <button class="btn btn-outline-warning" type="submit" (click)='$release(d)' [disabled]="$connecting != 2">Отпустить клиента</button>
-                <button class="btn btn-outline-primary" type="submit" (click)='$onSendClick(d)' [disabled]="$connecting != 2">Отправить</button>
-              </div>
-            </nb-tab>
-          </nb-tabset>
-        </nb-card>
-      </div>
-      <div class="col-lg-3">
-        <nb-card>
-          <nb-card-header>О клиенте</nb-card-header>
-          <nb-card-body>
-            <div *ngIf="$currentClientID">
-              <div>
-                {{$clientDescCache[$currentClientID].fio.fn}}
-              </div>
-              <div>
-                {{$clientDescCache[$currentClientID].fio.sn}}
-              </div>
-              <div>
-                {{$clientDescCache[$currentClientID].fio.ln}}
-              </div>
-              <div>
-                {{$clientDescCache[$currentClientID].email}}
-              </div>
-              <div>
-                {{$clientDescCache[$currentClientID].phone}}
-              </div>
-              <div>
-                                    <span *ngFor="let tag of $clientDescCache[$currentClientID].tags">
-                                        #{{tag}}
-                                    </span>
-              </div>
-            </div>
-          </nb-card-body>
-        </nb-card>
-      </div>
-    </div>
-  </nb-layout-column>
-</nb-layout>

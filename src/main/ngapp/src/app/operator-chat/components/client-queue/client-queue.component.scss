@@ -1,21 +1,122 @@
-.contact {
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+@import '~compass-mixins';
+@import '~compass-mixins/lib/animate';
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600);
+@mixin font-bold {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 600;
+}
+@mixin font {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 400;
+}
+@mixin placeholder {
+  &::-webkit-input-placeholder {
+    @content;
+  }
+  &:-moz-placeholder {
+    @content;
+  }
+  &::-moz-placeholder {
+    @content;
+  }
+  &:-ms-input-placeholder {
+    @content;
+  }
 }
 
-.queue {
-  min-height: 30rem;
-  height: 30rem;
-  overflow-x: auto;
+*, *:before, *:after {
+  box-sizing: border-box;
 }
+$white: #fff;
+$black: #000;
+$bg: #f8f8f8;
+$grey: #999;
+$dark: #1a1a1a;
+$light: #e6e6e6;
+$wrapper: 100%;
+$blue: #00b0ff;
 
-/*
-div.user-title {
-    text-overflow: ellipsis;
-    max-width: 10rem;
-    white-space: nowrap;
-    overflow: hidden;
+.people {
+  margin-left: -1px;
+  padding: 0;
+  list-style: none;
+  border-right: 1px solid $light;
+  border-left: 1px solid $light;
+  width: calc(100% + 2px);
+  .person {
+    position: relative;
+    width: 100%;
+    padding: 12px 10% 16px;
+    cursor: pointer;
+    background-color: $white;
+    &:after {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      display: block;
+      width: 80%;
+      height: 1px;
+      content: '';
+      background-color: $light;
+      transform: translate(-50%, 0);
+    }
+    img {
+      float: left;
+      width: 40px;
+      height: 40px;
+      margin-right: 12px;
+      border-radius: 50%;
+    }
+    .name {
+      font-size: 14px;
+      line-height: 22px;
+      color: $dark;
+      @include font-bold;
+    }
+    .time {
+      font-size: 14px;
+      position: absolute;
+      top: 16px;
+      right: 10%;
+      padding: 0 0 5px 5px;
+      color: $grey;
+      background-color: $white;
+    }
+    .preview {
+      font-size: 14px;
+      display: inline-block;
+      overflow: hidden !important;
+      width: 70%;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: $grey;
+    }
+    .bage {
+      position: absolute;
+      top: 6px;
+      left: 52px;
+      min-width: 1.5em;
+      line-height: 1.5em;
+      background-color: #999999;
+      border-radius: 50%;
+      text-align: center;
+      color: white
+    }
+    &.active,&:hover {
+      margin-top: -1px;
+      margin-left: -1px;
+      padding-top: 13px;
+      border: 0;
+      background-color: $blue;
+      width: calc(100% + 2px);
+      padding-left: calc(10% + 1px);
+      span {
+        color: $white;
+        background: transparent;
+      }
+      &:after {
+        display: none;
+      }
+    }
+  }
 }
-*/
