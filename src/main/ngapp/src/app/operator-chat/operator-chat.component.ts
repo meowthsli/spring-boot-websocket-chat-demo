@@ -1,285 +1,114 @@
-import { Component, Inject, Input, ViewChild } from '@angular/core';
-import { NgModel } from '@angular/forms';
-import { Router } from '@angular/router';
-
-import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
-import { UsercontextService } from '../app.usercontext';
-import { StompConnector, ClientDesc, FIO } from '../stomp/app.stomp';
-
-import { NbTabsetComponent } from '@nebular/theme/components/tabset/tabset.component';
-
-import * as moment from 'moment';
-import { ToasterService } from 'angular2-toaster/src/toaster.service';
-import { ToasterConfig } from 'angular2-toaster';
-
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ProfileComponent } from '../op-chat/app.profile';
-import { SettingsComponent } from '../op-chat/app.management';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { ChatService } from './services/chat.service';
+import { Observable } from 'rxjs/Observable';
+import { Queue } from './models/queue.model';
+import { Chat } from './models/chat.model';
+import { Subscription } from 'rxjs/Subscription';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import 'rxjs/add/operator/switchMap';
+import { FormControl } from '@angular/forms';
+import { combineLatest } from 'rxjs/observable/combineLatest';
 
 @Component({
   selector: 'app-operator-chat',
   templateUrl: './operator-chat.component.html',
   styleUrls: ['./operator-chat.component.scss']
 })
-export class OperatorChatComponent implements OnInit {
+export class OperatorChatComponent implements OnInit, OnDestroy {
 
+  @ViewChild('messagesContainer')
+  public messagesContainer: ElementRef;
 
-  @ViewChild(NbTabsetComponent) public $tabs : NbTabsetComponent;
-  $discussions: Array<UserChat> = new Array();
+  public freeChatsSearchQuery: FormControl = new FormControl('');
 
-  $connecting: number = 0;
-  $toasterconfig = new ToasterConfig({
-    showCloseButton: false,
-    tapToDismiss: true,
-    timeout: 0,
-    limit: 1,
-  });
+  public freeChatsStream: Observable<Queue> = combineLatest(
+    this.chatter.syncFreeChats(),
+    this.freeChatsSearchQuery.valueChanges.startWith(''),
+    (queue: Queue, query: string) => queue.filterChats(query)
+  );
+  public freeChats: Queue = null;
 
-  $clientDescCache = {};
-  $currentClientID: string = null;
+  public myChatsStream: Observable<Queue> = this.chatter.syncMyChats();
+  public myChats: Queue = null;
+
+  public chat: Chat = null;
+  public selectedChat: BehaviorSubject<Chat> = new BehaviorSubject(null);
+  public subscription: Subscription = null;
+
+  constructor(
+    private chatter: ChatService
+  ) {
+
+  }
+
+  public ngOnInit(): void {
+    this.subscription = this.selectedChat.asObservable()
+      .switchMap(selectedChat => this.chatter.syncChat(selectedChat && selectedChat.id))
+      .subscribe(chat => {
+        this.chat = chat;
+        if (this.chat) {
+          this.onScrollDown();
+        }
+      });
+
+    this.freeChatsStream.subscribe(queue => this.freeChats = queue);
+    this.myChatsStream.subscribe(queue => this.myChats = queue);
+  }
+
+  public ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
 
   /**
-   * Click on client
+   * Выбор текущего чата
+   *
+   * @param {Chat} chat
    */
-  public $startClientChat(clientID: string) {
-    this.stomp.tryLock(clientID); // we maybe will have for LOCK_OK after that
+  public onSelectChat(chat: Chat): void {
+    this.selectedChat.next(chat);
   }
 
-  public $profileClick() {
-    const activeModal = this.modal.open(ProfileComponent, { size: 'lg', container: 'nb-layout' });
-    activeModal.componentInstance.$modalHeader = 'Профиль пользователя (демо режим)';
-    activeModal.componentInstance.$email = this.uctx.username + '-op.acme.org';
-  }
-
-  public $settingsClick() {
-    const activeModal = this.modal.open(SettingsComponent, { size: 'lg', container: 'nb-layout' });
-    activeModal.componentInstance.$modalHeader = 'Панель управления (демо режим)';
-    activeModal.componentInstance.$email = this.uctx.username + '-op.acme.org';
-  }
-
-  public $logout() {
-    for(let d of this.$discussions) {
-      this.stomp.release(d.clientID);
-    }
-    this.stomp.disconnect();
-    this.router.navigateByUrl('', {skipLocationChange: false});
-  }
-
-  public $nowLoading: boolean = false;
-  public $onScrollUp() {
-    this.$nowLoading = true;
-    // setTimeout(()=> {this.$nowLoading = false;}, 5000);
-    this.stomp.loadHistory(this.$currentClientID);
-    // show loader div, if no
-    // load
-    // hide after 10 seconds or after history load
-  }
-
-  constructor(private router:Router, private uctx: UsercontextService, private stomp: StompConnector,
-              private toaster: ToasterService, private modal: NgbModal) {
-
-  }
-
-  private findChat(userid: string) : UserChat {
-    return this.$discussions.find(uc => uc.clientID == userid);
-  }
-
-  ngOnInit(): void {
-    if(!this.uctx.username ){
-      this.router.navigateByUrl(''), {skipLocationChange: false};
-      return;
-    }
-
-    this.stomp.incomingMessage.subscribe(msg => {
-      if(msg.type === 'MSG_ACK') { // acknowledge of message
-        let uc = this.findChat(msg.clientID);
-        if(uc) {
-          uc.ack(msg.cid, msg.ack);
-        }
-      } else if(msg.type === 'CHAT') {
-        let uc = this.findChat(msg.clientID);
-        if(uc) {
-          uc.addHistory(this.opID, msg.chatItems);
-          this.scrollDown(uc);
-        }
-      } else if(msg.type === 'CLI_HISTORY') {
-        this.$nowLoading = false;
-        if(!msg.chatItems) return;
-        let uc = this.findChat(msg.clientID);
-        if(uc) {
-          let x = null, y = null;
-          if(uc.$history && uc.$history.length>0) {
-            y = document.getElementById(this.$currentClientID);
-            x = document.getElementById("text_" + uc.$history[0].realId);
-          }
-          uc.merge(null, msg.chatItems);
-          if(x && y) {
-            setTimeout(() => {
-              y.scrollTop = (x.offsetTop - 50);
-            }, 0);
-          }
-        }
-      } else if (msg.type === 'LOCK_OK') {
-        this.onMessage_LOCK_OK(msg);
-      } else if (msg.type === 'OP_HELLO') {
-        this.opID = msg.opID;
+  /**
+   * Отправка сообщения
+   *
+   * @param {string} text
+   */
+  public onSendMessage(text: string): void {
+    if (text && text.trim()) {
+      this.chat.appendMessage(text.trim());
+      if ( ! this.chat.operatorId) {
+        this.myChats.prependChat(this.chat.assignOperator('1'));
+        this.freeChats.removeChat(this.chat);
       }
-    });
-
-    this.stomp.onConnected.subscribe(()=> this.onConnect());
-    this.stomp.onError.subscribe(()=> this.onError());
-
-    setInterval(() => {
-      if(this.subscribed || !this.$tabs) return;
-      this.subscribed = true;
-      this.$tabs.changeTab.subscribe(() => {
-        if(this.$tabs) {
-          let activeIndex = this.$tabs.tabs.toArray().findIndex(x => x.active);
-          if(activeIndex >= 0) {
-            this.$currentClientID = this.$discussions[activeIndex].clientID;
-          }
-        }
-      })
-
-    }, 1000);
-
-
-
-    this.beginConnect();
-  }
-
-  subscribed = false;
-
-  private onError() {
-    this.$connecting = 0;
-    let toast = this.toaster.pop("warning", "Нет связи с сервером", "Кликните, чтобы соединиться");
-    toast.clickHandler = (toast, button) => {
-      this.toaster.clear();
-      this.beginConnect();
-      return true;
-    };
-  }
-
-  private onConnect() {
-    this.$connecting = 2;
-  }
-
-  private beginConnect() {
-    this.$connecting = 1;
-    this.stomp.connect(new ClientDesc(this.uctx.username + '-op.acme.org',
-      new FIO(this.uctx.username, '', 'Ops'),
-      [],
-      null ));
-  }
-
-  private onMessage_LOCK_OK(msg) {
-    if(msg.opID != this.opID) { //   maybe it's not us
-      return;
-    }
-    let clientID = msg.clientID;
-    this.$clientDescCache[clientID] = msg.clientDesc;
-
-    let uc = this.findChat(clientID);
-    if(!uc) { // try to find such chat; if found, switch to
-      uc = new UserChat(clientID, new Array(), this.$clientDescCache[clientID]);
-      this.$discussions.push(uc); // create chat
-      this.stomp.loadHistory(clientID); // ask for history items
-      setTimeout(() => {
-        this.$tabs.selectTab(this.$tabs.tabs.last);
-      }, 0);
-    } else {
-      let ucidx = this.$discussions.findIndex(c => c == uc);
-      this.$tabs.selectTab(this.$tabs.tabs.toArray()[ucidx]);
+      this.onScrollDown();
     }
   }
 
-  public $onSendClick(chat: UserChat) {
-    if(chat.$text && chat.$text != '') {
-      let ci = chat.addItem(this.cids--, chat.$text, this.opID, moment());
-      this.stomp.send(chat.clientID, ci);
-      chat.$text = null;
-      this.scrollDown(chat);
-    }
+  /**
+   * Отпустить клиента
+   */
+  public onRelease(): void {
+    this.myChats.removeChat(this.chat);
+    this.chat = null; // TODO: Отпустить клиента
   }
 
-  public $release(chat: UserChat) {
-    let activeIndex = this.$tabs.tabs.toArray().findIndex(x => x.active);
-    if(chat) {
-      this.stomp.release(chat.clientID);
-      let i = this.$discussions.findIndex(c => c == chat);
-      if(i >= 0) {
-        this.$discussions.splice(i, 1);
-      }
-      if(this.$discussions.length > 0) {
-        this.$tabs.selectTab(this.$tabs.tabs.toArray()[i-1]);
-      }
-    }
-
-    // select previous tab
-    if(this.$discussions.length > 0) {
-      this.$currentClientID = this.$discussions[Math.max(activeIndex-1,0)].clientID;
-    }
+  /**
+   * Проверка доступности кнопки "Отпустить клиента"
+   *
+   * @param {Chat} chat
+   * @returns {boolean}
+   */
+  public canReleaseClent(chat: Chat): boolean {
+    return chat.operatorId === '1';
   }
 
-  private scrollDown(d: UserChat) {
+  /**
+   * Прокрутка списка сообщений
+   */
+  public onScrollDown(): void {
     setTimeout(() =>  {
-      let element = document.getElementById(d.clientID);
-      element.scrollTop = element.scrollHeight ;
+      this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
     }, 0);
-  }
-
-  private cids : number = -1;
-  private opID: string;
-}
-
-export class ChatItem {
-  public constructor(public id, public username, public text, public opId, public at: moment.Moment, public realId?: number) {}
-}
-
-class UserChat {
-  realId = 1000;
-  public $text: string;
-
-  public addHistory(opId: string, jsonItems: any): any {
-    for(var ci of jsonItems) {
-      if(!opId || opId != ci.opId ) { // skip our
-        this.$history.push(new ChatItem(ci.id, null, ci.text, ci.opId, moment(ci.at*1000)));
-      }
-    }
-  }
-
-  public merge(opId: string, jsonItems: any) : any {
-    for(var ci of jsonItems) {
-      let c = this.$history.find(x => x.id == ci.id);
-      //if(c) {
-      //  continue; // no needs to add
-      // }
-      //
-      var s = '';
-      for(var i = 0; i < 10; ++i) {
-        s = s + "abcdefgh".substr(Math.floor(Math.random()*8), 1);
-      }
-      let newCi = new ChatItem(ci.id, null/*username*/, s, ci.opId, moment(ci.at*1000), this.realId++);
-      //this.$history.push(newCi);
-      this.$history.unshift(newCi);
-    }
-    // this.$history.sort((a, b) => (a.id < b.id? -1 : 1));
-  }
-
-
-  constructor(public clientID: string, public $history: Array<ChatItem>, public clientDesc: ClientDesc){}
-
-  public addItem(id, text: string, opID: string, at: moment.Moment) {
-    let ci = new ChatItem(id, this.clientID, text, opID, at)
-    this.$history.push(ci);
-    return ci;
-  }
-
-  public ack(cid: number, ack: number) {
-    var item = this.$history.find(ci => ci.id == cid); // find by candidate id
-    if(item) {
-      item.id = ack;
-    }
   }
 
 }

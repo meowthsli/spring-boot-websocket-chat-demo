@@ -1,15 +1,16 @@
-<nb-tabset>
-  <nb-tab tabTitle="Очередь" class="queue">
-    <div class="contact" *ngFor="let qi of $queue" style="cursor: pointer" (click)="$clientOpen.emit(qi.clientID)">
-      <nb-user size="large" [name]="qi.author" [title]="qi.text | elipsis:30 | capitalize"></nb-user>
-      <div>
-        <div *ngIf="qi.lost &amp;&amp; qi.lost > 0"
-             style="float: right; background-color: var(--chat-client); padding: 5px; border-radius: 50%; width: 30px; text-align: center; color: white">
-          {{qi.lost}}
-        </div>
-      </div>
+<ul class="people"
+    *ngIf="queue">
+  <li class="person"
+      [class.active]="currentChat && chat.id == currentChat.id"
+      *ngFor="let chat of queue.chats"
+      (click)="onSelectChat.emit(chat)">
+    <img src="https://s3.postimg.org/yf86x7z1r/img2.jpg" alt="">
+    <div class="name">{{ chat.author.fullname }}</div>
+    <span class="time">{{ chat.lastMessage.datetime | date:'hh:mm' }}</span>
+    <span class="preview">{{ chat.lastMessage.text }}</span>
+    <div *ngIf="chat.newMessagesLength > 0"
+         class="bage">
+      {{ chat.newMessagesLength }}
     </div>
-  </nb-tab>
-  <nb-tab tabTitle="Поиск">
-  </nb-tab>
-</nb-tabset>
+  </li>
+</ul>

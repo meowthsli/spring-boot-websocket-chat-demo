@@ -9,13 +9,15 @@ import { ClientQueueComponent } from './components/client-queue/client-queue.com
 import { FioPipeSimple } from '../pipes/fio-pipe-simple';
 import { PipesModule } from '../pipes/pipes.module';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ChatService } from './services/chat.service';
 
 @NgModule({
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
     FormsModule,
+    ReactiveFormsModule,
     ToasterModule,
     NbActionsModule,
     NbLayoutModule,
@@ -28,6 +30,9 @@ import { FormsModule } from '@angular/forms';
   declarations: [
     OperatorChatComponent,
     ClientQueueComponent
+  ],
+  providers: [
+    ChatService
   ]
 })
 export class OperatorChatModule { }
