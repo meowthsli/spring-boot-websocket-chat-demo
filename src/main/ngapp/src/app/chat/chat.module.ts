@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { routes } from './chat.routes';
 import { PipesModule } from '../pipes/pipes.module';
 import { FormsModule } from '@angular/forms';
+import { OUChatClientConnector } from '../ou-chat-sdk/client-connector';
 
 @NgModule({
   imports: [
@@ -18,6 +19,9 @@ import { FormsModule } from '@angular/forms';
     ToasterModule,
     PipesModule
   ],
-  declarations: [ChatComponent]
+  declarations: [ChatComponent],
+  providers: [
+    OUChatClientConnector
+  ]
 })
 export class ChatModule { }

@@ -100,26 +100,26 @@ const routes: Routes = [
           service: NbEmailPassAuthProvider,
           config: {
             login: {
-              endpoint: 'http://localhost:4400/api/auth/login'
+              endpoint: 'http://localhost:8080/api/login'
             },
             register: {
-              endpoint: 'http://localhost:4400/api/auth/register'
+              endpoint: 'http://localhost:8080/api/register'
             },
             logout: {
-              endpoint: 'http://localhost:4400/api/auth/logout',
+              endpoint: 'http://localhost:8080/api/logout',
               redirect: {
                 success: '/auth/login',
                 failure: '/auth/login',
               },
             },
             requestPass: {
-              endpoint: 'http://localhost:4400/api/auth/request-pass',
+              endpoint: 'http://localhost:8080/api/request-pass',
               redirect: {
                 success: '/auth/reset-password',
               },
             },
             resetPass: {
-              endpoint: 'http://localhost:4400/api/auth/reset-pass',
+              endpoint: 'http://localhost:8080/api/reset-pass',
               redirect: {
                 success: '/auth/login',
               },
