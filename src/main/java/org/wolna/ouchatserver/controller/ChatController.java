@@ -3,6 +3,8 @@ package org.wolna.ouchatserver.controller;
 import java.time.Instant;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -21,9 +23,10 @@ import org.wolna.ouchat.Envelope.HelloOk;
  */
 @Controller
 public class ChatController {
+    static Log LOG = LogFactory.getLog(ChatController.class);
     
     @Autowired
-    SimpMessagingTemplate sender;
+    private SimpMessagingTemplate sender;
     
     static volatile AtomicLong messageId = new AtomicLong(1);
     

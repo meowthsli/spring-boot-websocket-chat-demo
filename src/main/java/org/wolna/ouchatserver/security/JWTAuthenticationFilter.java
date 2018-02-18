@@ -26,7 +26,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.wolna.ouchatserver.controller.ChatController;
 
 import static org.wolna.ouchatserver.security.SecurityConstants.EXPIRATION_TIME;
 import static org.wolna.ouchatserver.security.SecurityConstants.HEADER_STRING;
@@ -35,6 +38,8 @@ import static org.wolna.ouchatserver.security.SecurityConstants.SIGN_UP_URL;
 import static org.wolna.ouchatserver.security.SecurityConstants.TOKEN_PREFIX;
 
 public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+    static Log LOG = LogFactory.getLog(ChatController.class);
+    
     private AuthenticationManager authenticationManager;
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
@@ -65,12 +70,12 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
-
         String token = Jwts.builder()
                 .setSubject(((User) auth.getPrincipal()).getUsername())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
                 .compact();
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        LOG.info("Auth successful for user " + ((User) auth.getPrincipal()).getUsername());
     }
 }
