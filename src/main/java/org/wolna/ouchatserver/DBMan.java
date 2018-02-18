@@ -22,6 +22,11 @@ public class DBMan {
     @Value("${spring.datasource.url}")
     String dbUrl;
     
+    public DBMan() {
+        // if we are instantiated, profile is loaded
+        System.setProperty("java.awt.headless", Boolean.toString(false));
+    }
+    
     @Bean
     @Lazy(false)
     public Object getDbManager() {

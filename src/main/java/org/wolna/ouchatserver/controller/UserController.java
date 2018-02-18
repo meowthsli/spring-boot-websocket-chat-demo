@@ -5,11 +5,15 @@
  */
 package org.wolna.ouchatserver.controller;
 
+import java.util.Collections;
+import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.wolna.ouchatserver.model.Company;
 import org.wolna.ouchatserver.model.CompanyRepository;
@@ -33,19 +37,15 @@ public class UserController {
     
     @Autowired
     BCryptPasswordEncoder encoder;
-    
-    @PostMapping("/login")
-    public void login(@RequestBody Credentials user) {
-        //user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        //applicationUserRepository.save(user);
-    }
 
-    @PostMapping("/register") 
-    public void registerCompany(@RequestBody CompanyRegistration data) {
+    @RequestMapping(path = "/register", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public Object registerCompany(@RequestBody CompanyRegistration data) {
         Company c = new Company();
         compRepo.save(c);
         
         User u = registerOpUser(c, data);
+        return Collections.EMPTY_MAP;
     }
 
     private User registerOpUser(Company c, CompanyRegistration data) {
@@ -53,11 +53,10 @@ public class UserController {
         if(!data.getPassword().equals(data.getConfirmPassword())) {
             throw new RuntimeException("password doesnt match");
         }
-        User u = new User();
+        User u = new User(c);
         u.isSupervisor = true;
         u.email = data.getEmail();
         u.encodedPassword = encoder.encode(data.getPassword());
-        u.setCompany(c);
         userRepo.save(u);
         return u;
     }

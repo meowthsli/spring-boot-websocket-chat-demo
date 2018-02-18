@@ -20,6 +20,13 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "`User`")
 public class User {
+    
+    public User(Company c) {
+        if(!c.users.contains(this)) {
+            c.users.add(this);
+        }
+        this.company = c;
+    }
     public String email;
     public String encodedPassword;
     @Id
@@ -37,7 +44,7 @@ public class User {
         this.id = id;
     }
 
-    public void setCompany(Company c) {
+    protected void setCompany(Company c) {
         this.company = c;
     }
 }

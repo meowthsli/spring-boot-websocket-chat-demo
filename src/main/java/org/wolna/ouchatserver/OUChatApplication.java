@@ -15,8 +15,6 @@ import org.wolna.ouchatserver.security.UserDetailsServiceImpl;
 public class OUChatApplication {
 
     public static void main(String[] args) {
-        System.setProperty("java.awt.headless",Boolean.toString(false));
-        
         SpringApplication.run(OUChatApplication.class, args);
     }
 

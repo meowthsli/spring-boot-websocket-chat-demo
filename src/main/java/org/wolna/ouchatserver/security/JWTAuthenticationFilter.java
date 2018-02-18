@@ -26,8 +26,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.http.MediaType;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.wolna.ouchatserver.controller.ChatController;
 
@@ -37,14 +40,17 @@ import static org.wolna.ouchatserver.security.SecurityConstants.SECRET;
 import static org.wolna.ouchatserver.security.SecurityConstants.SIGN_UP_URL;
 import static org.wolna.ouchatserver.security.SecurityConstants.TOKEN_PREFIX;
 
-public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     static Log LOG = LogFactory.getLog(ChatController.class);
     
     private AuthenticationManager authenticationManager;
+    private final ObjectMapper mapper;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
-        super(SIGN_UP_URL);
+    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper mapper) {
+        super();
+        super.setFilterProcessesUrl(SIGN_UP_URL);
         this.authenticationManager = authenticationManager;
+        this.mapper = mapper;
     }
 
     @Override
@@ -76,6 +82,11 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
                 .signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
                 .compact();
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        Map<String, String> tokenMap = new HashMap<>();
+        tokenMap.put("token", token);
+        res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        mapper.writeValue(res.getWriter(), tokenMap);
+        
         LOG.info("Auth successful for user " + ((User) auth.getPrincipal()).getUsername());
     }
 }
