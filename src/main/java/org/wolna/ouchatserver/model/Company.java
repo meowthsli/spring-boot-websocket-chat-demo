@@ -8,6 +8,7 @@ package org.wolna.ouchatserver.model;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Generated;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -42,6 +43,6 @@ public class Company {
         this.name = name;
     }
 
-    @OneToMany
+    @OneToMany(mappedBy = "company", cascade = {CascadeType.PERSIST, CascadeType.DETACH})
     Set<User> users = new HashSet<>();
 }

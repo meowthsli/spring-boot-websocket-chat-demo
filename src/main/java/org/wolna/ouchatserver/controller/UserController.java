@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,24 +41,24 @@ public class UserController {
 
     @RequestMapping(path = "/register", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
+    @Transactional
     public Object registerCompany(@RequestBody CompanyRegistration data) {
         Company c = new Company();
-        compRepo.save(c);
-        
+        c.setName(data.getName());
         User u = registerOpUser(c, data);
+        compRepo.save(c);
         return Collections.EMPTY_MAP;
     }
 
     private User registerOpUser(Company c, CompanyRegistration data) {
         
         if(!data.getPassword().equals(data.getConfirmPassword())) {
-            throw new RuntimeException("password doesnt match");
+            throw new RuntimeException("Password doesn't match");
         }
         User u = new User(c);
         u.isSupervisor = true;
         u.email = data.getEmail();
         u.encodedPassword = encoder.encode(data.getPassword());
-        userRepo.save(u);
         return u;
     }
 }

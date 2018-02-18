@@ -7,6 +7,7 @@ package org.wolna.ouchatserver.model;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  *
@@ -14,6 +15,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  */
 @Configuration
 @EnableJpaRepositories
+@EnableTransactionManagement
 public class StorageConfig {
     
 }
