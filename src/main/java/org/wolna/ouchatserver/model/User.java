@@ -5,14 +5,39 @@
  */
 package org.wolna.ouchatserver.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 /**
  *
  * @author yurij
  */
+@Entity
+@Table(name = "`User`")
 public class User {
     public String email;
     public String encodedPassword;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     public Long id;
     public boolean isSupervisor;
+    @ManyToOne
     public Company company;
+
+    public Long getId() {
+        return id;
+    }
+
+    protected void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setCompany(Company c) {
+        this.company = c;
+    }
 }

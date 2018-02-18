@@ -6,14 +6,14 @@
 package org.wolna.ouchatserver.model;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.map.repository.config.EnableMapRepositories;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
  *
  * @author yurij
  */
 @Configuration
-@EnableMapRepositories
+@EnableJpaRepositories
 public class StorageConfig {
     
 }

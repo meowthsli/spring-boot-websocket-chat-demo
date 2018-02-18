@@ -5,22 +5,34 @@
  */
 package org.wolna.ouchatserver.model;
 
+import java.util.HashSet;
+import java.util.Set;
+import javax.annotation.Generated;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
 /**
  *
  * @author yurij
  */
+@Entity
 public class Company {
     
     public Long getId() {
         return this.id;
     }
     
-    public void setId(Long id) {
+    protected void setId(Long id) {
         this.id = id;
     }
-    private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    protected Long id;
     
-    private String name;
+    protected String name;
 
     public String getName() {
         return name;
@@ -30,5 +42,6 @@ public class Company {
         this.name = name;
     }
 
-    
+    @OneToMany
+    Set<User> users = new HashSet<>();
 }

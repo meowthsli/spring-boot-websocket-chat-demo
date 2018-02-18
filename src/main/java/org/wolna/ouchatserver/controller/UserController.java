@@ -57,7 +57,7 @@ public class UserController {
         u.isSupervisor = true;
         u.email = data.getEmail();
         u.encodedPassword = encoder.encode(data.getPassword());
-        u.company = c;
+        u.setCompany(c);
         userRepo.save(u);
         return u;
     }
