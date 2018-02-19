@@ -7,6 +7,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SupervisorComponent implements OnInit {
 
+  public readonly userMenu = [
+    {
+      title: 'Выйти',
+      link: '/auth/logout'
+    }
+  ];
+
   constructor() { }
 
   ngOnInit() {

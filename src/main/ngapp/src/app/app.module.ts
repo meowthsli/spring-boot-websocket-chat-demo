@@ -40,6 +40,7 @@ import { OperatorChatModule } from './operator-chat/operator-chat.module';
 import { PipesModule } from './pipes/pipes.module';
 import { OUChatClientConnectorImpl } from './connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/client-connector';
 import { ChatModule } from './chat/chat.module';
+import { AppGuardService } from './app.guard.service';
 
 const routes: Routes = [
   {
@@ -99,11 +100,20 @@ const routes: Routes = [
         email: {
           service: NbEmailPassAuthProvider,
           config: {
+            token: {
+              key: 'token'
+            },
             login: {
-              endpoint: 'http://localhost:8080/api/login'
+              endpoint: 'http://localhost:8080/api/login',
+              redirect: {
+                success: '/dashboard/admin/organizations'
+              }
             },
             register: {
-              endpoint: 'http://localhost:8080/api/register'
+              endpoint: 'http://localhost:8080/api/register',
+              redirect: {
+                success: '/auth/login'
+              },
             },
             logout: {
               endpoint: 'http://localhost:8080/api/logout',
@@ -136,7 +146,8 @@ const routes: Routes = [
     NbSidebarService,
     NbSpinnerService,
     ToasterService,
-    NgbModalStack
+    NgbModalStack,
+    AppGuardService
   ],
   bootstrap: [
     AppComponent
