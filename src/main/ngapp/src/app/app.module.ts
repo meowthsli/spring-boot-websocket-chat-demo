@@ -40,6 +40,7 @@ import { OperatorChatModule } from './operator-chat/operator-chat.module';
 import { PipesModule } from './pipes/pipes.module';
 import { OUChatClientConnectorImpl } from './connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/client-connector';
 import { ChatModule } from './chat/chat.module';
+import { AppGuardService } from './app.guard.service';
 
 const routes: Routes = [
   {
@@ -105,7 +106,7 @@ const routes: Routes = [
             login: {
               endpoint: 'http://localhost:8080/api/login',
               redirect: {
-                success: '/dashboard/supervisor'
+                success: '/dashboard/admin/organizations'
               }
             },
             register: {
@@ -145,7 +146,8 @@ const routes: Routes = [
     NbSidebarService,
     NbSpinnerService,
     ToasterService,
-    NgbModalStack
+    NgbModalStack,
+    AppGuardService
   ],
   bootstrap: [
     AppComponent

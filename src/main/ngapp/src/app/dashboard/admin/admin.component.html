@@ -13,6 +13,13 @@
       <b>{{ org.name }}</b>
       ({{ org.email }})
     </span>
+
+    <nb-actions class="header-container right" size="medium">
+      <nb-action>
+        <nb-user [menu]="userMenu" name="UserName"></nb-user>
+      </nb-action>
+    </nb-actions>
+
   </nb-layout-header>
 
   <nb-layout-column>

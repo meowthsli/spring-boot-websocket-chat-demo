@@ -16,6 +16,13 @@ export class AdminComponent implements OnInit {
     }
   ];
 
+  public readonly userMenu = [
+      {
+        title: 'Выйти',
+        link: '/auth/logout'
+      }
+    ];
+
   constructor(
     private sidebarService: NbSidebarService
   ) { }

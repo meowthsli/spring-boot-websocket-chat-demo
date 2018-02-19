@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AdminComponent } from './admin.component';
 import { RouterModule } from '@angular/router';
 import { routes } from './admin.routes';
-import { NbLayoutModule, NbMenuModule, NbSidebarModule } from '@nebular/theme';
+import { NbActionsModule, NbLayoutModule, NbMenuModule, NbSidebarModule, NbUserModule } from '@nebular/theme';
 import { OrganizationModule } from '../../organization/organization.module';
 
 @NgModule({
@@ -13,6 +13,8 @@ import { OrganizationModule } from '../../organization/organization.module';
     NbSidebarModule,
     NbMenuModule.forRoot(),
     NbLayoutModule,
+    NbActionsModule,
+    NbUserModule,
     OrganizationModule
   ],
   declarations: [
