@@ -5,13 +5,11 @@
  */
 package org.wolna.ouchatserver.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -21,21 +19,40 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "`User`")
 public class User {
+
+    public static User makeSupervisor(Company c, String email, String encodedPass) {
+        User u = new User(c, email, encodedPass);
+        u.isSupervisor = true;
+        return u;
+    }
     
-    public User(Company c) {
+    public User(Company c, String email, String encodedPassword) {
         if(!c.users.contains(this)) {
             c.users.add(this);
         }
         this.company = c;
+        this.email = email;
+        this.encodedPassword = encodedPassword;
     }
-    public String email;
-    public String encodedPassword;
+    String email;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getEncodedPassword() {
+        return encodedPassword;
+    }
+    String encodedPassword;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long id;
-    public boolean isSupervisor;
+    Long id;
+    boolean isSupervisor;
    
-    public boolean isVerified;
+    boolean isVerified;
+    boolean isLocked;
+    
     @ManyToOne
     public Company company;
 
@@ -50,4 +67,14 @@ public class User {
     protected void setCompany(Company c) {
         this.company = c;
     }
+    
+    public boolean isLocked() {
+        return this.isLocked;
+    }
+    
+    public void toggleLock() {
+        this.isLocked = !this.isLocked;
+    }
+    
+    protected User() {}
 }

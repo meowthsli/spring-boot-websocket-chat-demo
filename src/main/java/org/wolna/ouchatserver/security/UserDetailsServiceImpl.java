@@ -31,12 +31,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new IllegalArgumentException("username cannot be null");
         }
         
-        if(true/*username.toLowerCase().startsWith("a")*/) {
-            return new User(username, encoder.encode("password"), Collections.EMPTY_LIST);
-            // org.wolna.ouchatserver.model.User uu = userRepo.findByEmail(username);
-            // if(uu != null) {
-            //    return new User(uu.email, uu.encodedPassword, Collections.EMPTY_LIST);
-            //}
+        org.wolna.ouchatserver.model.User uu = userRepo.findByEmail(username);
+        if(uu != null) {
+            return new User(uu.getEmail(), uu.getEncodedPassword(), Collections.EMPTY_LIST);
         }
         
         throw new UsernameNotFoundException("User not found");

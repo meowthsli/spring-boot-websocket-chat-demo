@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.wolna.ouchatserver.model.Company;
 import org.wolna.ouchatserver.model.CompanyRepository;
+import org.wolna.ouchatserver.model.InvalidOperationException;
 import org.wolna.ouchatserver.model.User;
 import org.wolna.ouchatserver.model.UserRepository;
 import org.wolna.ouchatserver.security.Credentials;
@@ -43,22 +44,20 @@ public class UserController {
     @ResponseBody
     @Transactional
     public Object registerCompany(@RequestBody CompanyRegistration data) {
-        Company c = new Company();
-        c.setName(data.getName());
+        Company c = new Company(data.getName());    
         User u = registerOpUser(c, data);
         compRepo.save(c);
         return Collections.EMPTY_MAP;
     }
 
     private User registerOpUser(Company c, CompanyRegistration data) {
-        
         if(!data.getPassword().equals(data.getConfirmPassword())) {
-            throw new RuntimeException("Password doesn't match");
+            throw new InvalidOperationException("Password doesn't match");
         }
-        User u = new User(c);
-        u.isSupervisor = true;
-        u.email = data.getEmail();
-        u.encodedPassword = encoder.encode(data.getPassword());
+        if(userRepo.findByEmail(data.getEmail()) != null) {
+            throw new InvalidOperationException("User already exists");
+        }
+        User u = User.makeSupervisor(c, data.getEmail(), encoder.encode(data.getPassword())); 
         return u;
     }
 }

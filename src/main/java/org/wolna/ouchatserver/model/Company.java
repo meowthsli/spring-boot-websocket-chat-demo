@@ -21,6 +21,9 @@ import javax.persistence.OneToMany;
  */
 @Entity
 public class Company {
+    public Company(String name) {
+        this.name = name;
+    }
     
     public Long getId() {
         return this.id;
@@ -32,17 +35,29 @@ public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected Long id;
-    
-    protected String name;
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    protected void setName(String name) {
         this.name = name;
+    }
+    protected String name;
+    
+    public Set<AccessToken> getTokens() {
+        return new HashSet<>(this.tokens);
+    }
+    
+    public Set<User> getUsers() {
+        return new HashSet<>(this.users);
     }
 
     @OneToMany(mappedBy = "company", cascade = {CascadeType.PERSIST, CascadeType.DETACH})
     Set<User> users = new HashSet<>();
+    
+    @OneToMany(mappedBy = "company", cascade = {CascadeType.ALL})
+    Set<AccessToken> tokens = new HashSet<>();
+    
+    protected Company() {}
 }
