@@ -246,7 +246,7 @@ export class NbEmailPassAuthProvider extends NbAbstractAuthProvider {
 
           return res;
         }),
-        this.validateToken('register'),
+        // this.validateToken('register'),
         map((res) => {
           return new NbAuthResult(
             true,

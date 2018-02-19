@@ -99,11 +99,20 @@ const routes: Routes = [
         email: {
           service: NbEmailPassAuthProvider,
           config: {
+            token: {
+              key: 'token'
+            },
             login: {
-              endpoint: 'http://localhost:8080/api/login'
+              endpoint: 'http://localhost:8080/api/login',
+              redirect: {
+                success: '/dashboard/supervisor'
+              }
             },
             register: {
-              endpoint: 'http://localhost:8080/api/register'
+              endpoint: 'http://localhost:8080/api/register',
+              redirect: {
+                success: '/auth/login'
+              },
             },
             logout: {
               endpoint: 'http://localhost:8080/api/logout',
