@@ -5,6 +5,7 @@
  */
 package org.wolna.ouchatserver.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -54,6 +55,7 @@ public class User {
     boolean isLocked;
     
     @ManyToOne
+    @JsonBackReference
     public Company company;
 
     public Long getId() {

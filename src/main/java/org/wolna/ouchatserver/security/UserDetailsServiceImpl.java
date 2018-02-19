@@ -5,15 +5,20 @@
  */
 package org.wolna.ouchatserver.security;
 
+import java.util.Collection;
 import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.wolna.ouchatserver.model.UserRepository;
 
+//@Transactional(propagation = Propagation.MANDATORY)
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     BCryptPasswordEncoder encoder;
@@ -33,9 +38,23 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         
         org.wolna.ouchatserver.model.User uu = userRepo.findByEmail(username);
         if(uu != null) {
-            return new User(uu.getEmail(), uu.getEncodedPassword(), Collections.EMPTY_LIST);
+            return new SecurityUser(uu);
         }
         
         throw new UsernameNotFoundException("User not found");
+    }
+    
+    public static class SecurityUser extends User {
+
+        private final org.wolna.ouchatserver.model.User uu;
+        
+        public SecurityUser(org.wolna.ouchatserver.model.User uu) {
+            super(uu.getEmail(), uu.getEncodedPassword(), Collections.EMPTY_SET);
+            this.uu = uu;
+        }
+        
+        public org.wolna.ouchatserver.model.User getUser() {
+            return this.uu;
+        }
     }
 }

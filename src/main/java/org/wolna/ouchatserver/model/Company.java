@@ -5,6 +5,7 @@
  */
 package org.wolna.ouchatserver.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Generated;
@@ -54,10 +55,22 @@ public class Company {
     }
 
     @OneToMany(mappedBy = "company", cascade = {CascadeType.PERSIST, CascadeType.DETACH})
+    @JsonManagedReference
     Set<User> users = new HashSet<>();
     
     @OneToMany(mappedBy = "company", cascade = {CascadeType.ALL})
+    @JsonManagedReference
     Set<AccessToken> tokens = new HashSet<>();
     
     protected Company() {}
+
+    /**
+     * Creates new token
+     * @return 
+     */
+    public AccessToken addToken() {
+        AccessToken at = AccessToken.make();
+        tokens.add(at);
+        return at;
+    }
 }

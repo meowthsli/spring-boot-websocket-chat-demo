@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @Configuration
 @EnableJpaRepositories
-@EnableTransactionManagement
+@EnableTransactionManagement(order = 0)
 public class StorageConfig {
     
 }

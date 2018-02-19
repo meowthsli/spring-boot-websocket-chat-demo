@@ -6,6 +6,7 @@
 package org.wolna.ouchatserver.model;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  *

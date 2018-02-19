@@ -5,6 +5,8 @@
  */
 package org.wolna.ouchatserver.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,6 +34,8 @@ public class AccessToken {
     boolean isBlocked;
     
     @ManyToOne
+    @JsonBackReference
+    @JsonIgnore
     Company company;
     
     public Long getId() {
