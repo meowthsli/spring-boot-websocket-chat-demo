@@ -1,5 +1,4 @@
 import * as Stomp from 'stompjs';
-import * as SockJS from 'sockjs-client';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 import { OUChatClientConnector } from '../OUChatClientConnector';
@@ -20,15 +19,15 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
      * @param uri endpoint uri
      * @param clientDesc client description
      */
-    public connect(login: string, passcode: string, uri: string, clientDesc: Envelope.UserDescription) : boolean {
+    public connect(uri: string, key: string, clientDesc: Envelope.UserDescription) : boolean {
         this.disconnect(); // ignore return
         
         // Recreate socket
-        this.socket = new SockJS(uri);
-        this.stompClient = Stomp.over(this.socket);
+        // this.socket = new SockJS(uri);
+        this.stompClient = Stomp.client(uri + "?api_key=" + key);
 
         // Open socket again
-        this.stompClient.connect(login, passcode, 
+        this.stompClient.connect("", "", 
             () => {
                 // subscribe
                 this.subscription = this.stompClient.subscribe('/user/queue/client', (payload) => this.onStompReceived(payload));
@@ -38,7 +37,7 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
                 this._onConnected.next(); // signal caller we succeeded
             },
             () => { // error 
-                this.disconnect(); // ignore returns
+                // this.disconnect(); // ignore returns
                 var res = new Envelope.Response();
                 res.errorCode = Envelope.Response.GENERIC_ERROR;
                 res.errorDescription = "Unknown error";

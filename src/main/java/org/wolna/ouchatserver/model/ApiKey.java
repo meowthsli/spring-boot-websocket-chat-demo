@@ -19,10 +19,10 @@ import javax.persistence.ManyToOne;
  * @author yurij
  */
 @Entity
-public class AccessToken {
+public class ApiKey {
 
-    public static AccessToken make() {
-        AccessToken t = new AccessToken();
+    public static ApiKey make() {
+        ApiKey t = new ApiKey();
         t.value = UUID.randomUUID().toString();
         return t;
     }
@@ -54,7 +54,7 @@ public class AccessToken {
         this.isBlocked = !this.isBlocked;
     }
     
-    protected AccessToken() {
+    protected ApiKey() {
         
     }
 }

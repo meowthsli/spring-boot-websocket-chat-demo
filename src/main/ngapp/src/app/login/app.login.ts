@@ -14,6 +14,8 @@ import { UsercontextService } from '../app.usercontext';
 export class LoginComponent {
 
   $username: string;
+  $apiKey: string = "1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX";
+
   $emailFormControl = new FormControl('', [
     Validators.required
   ]);
@@ -35,6 +37,7 @@ export class LoginComponent {
     }
 
     this.uctx.username = this.$username;
+    this.uctx.apiKey = this.$apiKey;
     this.router.navigateByUrl('/clients-chat'), {skipLocationChange: true};
   }
 
@@ -53,6 +56,7 @@ export class LoginComponent {
     }
 
     this.uctx.username = this.$username;
+    this.uctx.apiKey = this.$apiKey;
     this.router.navigateByUrl('/chat/client'), {skipLocationChange: false};
   }
 }

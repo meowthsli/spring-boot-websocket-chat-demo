@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.wolna.ouchatserver.model.AccessToken;
+import org.wolna.ouchatserver.model.ApiKey;
 import org.wolna.ouchatserver.model.Company;
 import org.wolna.ouchatserver.model.CompanyRepository;
 import org.wolna.ouchatserver.model.User;
@@ -46,11 +46,11 @@ public class Data {
         return cc;
     }
     
-    @RequestMapping(path = "/token", method = {RequestMethod.POST, RequestMethod.PUT},
+    @RequestMapping(path = "/key", method = {RequestMethod.POST, RequestMethod.PUT},
             produces = "application/json")
     @ResponseBody
     @Transactional
-    public AccessToken makeToken(Authentication au) {
+    public ApiKey makeToken(Authentication au) {
         User cu = ((SecurityUser)au.getPrincipal()).getUser();
         return cu.company.addToken();
     }

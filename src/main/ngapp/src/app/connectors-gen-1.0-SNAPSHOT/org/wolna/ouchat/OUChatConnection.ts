@@ -10,12 +10,11 @@ export interface OUChatConnection {
     /**
      * Open connection to server.
      * @param {string} uri Url to server [relative]
-     * @param {string} login email OR token
-     * @param {string} password password OR token
+     * @param {string} key api key OR jwt token
      * @return {boolean} true if success
      * @param {Envelope.UserDescription} description
      */
-    connect(uri : string, login : string, password : string, description : Envelope.UserDescription) : boolean;
+    connect(uri : string, key : string, description : Envelope.UserDescription) : boolean;
 
     /**
      * Close connection to server

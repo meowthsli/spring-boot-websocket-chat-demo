@@ -14,8 +14,8 @@
                             <input name="password" class="form-control" type="password" placeholder=""/>
                         </div>
                         <div class="form-group">
-                            <label for="enterprise" style="color:#a4abb3">Ключ доступа</label>
-                            <input name="enterprise" class="form-control" disabled="true" value="1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX"/>
+                            <label for="enterprise">Ключ доступа</label>
+                            <input name="enterprise" class="form-control" [(ngModel)]="$apiKey" />
                         </div>
                         <div class="pushout">
                           <button class="btn btn-danger" type="submit" (click)='$onClientClick()'>Клиент</button>

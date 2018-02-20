@@ -10,11 +10,10 @@ public interface OUChatConnection {
        /**
      * Open connection to server.
      * @param uri Url to server [relative]
-     * @param login email OR token
-     * @param password password OR token
+     * @param key api key OR jwt token
      * @return true if success
      */
-    public boolean connect(String uri, String login, String password, Envelope.UserDescription description);
+    public boolean connect(String uri, String key, Envelope.UserDescription description);
 
     /**
      * Close connection to server

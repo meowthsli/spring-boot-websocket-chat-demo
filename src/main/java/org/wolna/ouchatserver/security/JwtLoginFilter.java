@@ -40,13 +40,13 @@ import static org.wolna.ouchatserver.security.SecurityConstants.SECRET;
 import static org.wolna.ouchatserver.security.SecurityConstants.SIGN_UP_URL;
 import static org.wolna.ouchatserver.security.SecurityConstants.TOKEN_PREFIX;
 
-public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     static Log LOG = LogFactory.getLog(ChatController.class);
     
     private AuthenticationManager authenticationManager;
     private final ObjectMapper mapper;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper mapper) {
+    public JwtLoginFilter(AuthenticationManager authenticationManager, ObjectMapper mapper) {
         super();
         super.setFilterProcessesUrl(SIGN_UP_URL);
         this.authenticationManager = authenticationManager;

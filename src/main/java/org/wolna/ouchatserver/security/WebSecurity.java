@@ -46,8 +46,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL, "/api/register").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new JWTAuthorizationFilter(authenticationManager()))
-                .addFilterAt(new JWTAuthenticationFilter(authenticationManager(), mapper), UsernamePasswordAuthenticationFilter.class)
+                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+                .addFilter(new JwtLoginFilter(authenticationManager(), mapper))
+                .addFilter(apif())
                 
                 // this disables session creation on Spring Security
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -70,5 +71,10 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     @Bean
     AuthenticationProvider jwtProvider() {
         return new JwtAuthenticationProvider();
+    }
+    
+    @Bean
+    ApiKeyAuthenticationFilter apif() throws Exception {
+        return new ApiKeyAuthenticationFilter(authenticationManager());
     }
 }

@@ -7,6 +7,7 @@ package org.wolna.ouchatserver.security;
 
 import io.jsonwebtoken.Jwts;
 import java.io.IOException;
+import java.util.Map;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -23,52 +24,53 @@ import org.wolna.ouchatserver.controller.ChatController;
 import static org.wolna.ouchatserver.security.SecurityConstants.HEADER_STRING;
 import static org.wolna.ouchatserver.security.SecurityConstants.SECRET;
 import static org.wolna.ouchatserver.security.SecurityConstants.TOKEN_PREFIX;
+import static org.wolna.ouchatserver.security.SecurityConstants.TOKEN_QUERY_STRING;
 
-public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
+public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
     
-    @Autowired
-    AuthenticationManager authenticationManager;
-
     static Log LOG = LogFactory.getLog(ChatController.class);
 
-    public JWTAuthorizationFilter(AuthenticationManager authManager) {
+    public JwtAuthenticationFilter(AuthenticationManager authManager) {
         super(authManager);
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest req,
-            HttpServletResponse res,
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res,
             FilterChain chain) throws IOException, ServletException {
+        // Check possibilities
+        Authentication authentication = null;
+        // 1. Check auth header
         String header = req.getHeader(HEADER_STRING);
-
-        if (header == null || !header.startsWith(TOKEN_PREFIX)) {
-            chain.doFilter(req, res);
-            return;
+        if (header != null && header.startsWith(TOKEN_PREFIX)) {
+            authentication = getAuthentication(header);
+        } else {
+            // 2. Check token query string
+            Map<String, String> qps = RequestUtils.getQueryParameters(req);
+            if(qps.containsKey(TOKEN_QUERY_STRING) && qps.get(TOKEN_QUERY_STRING) != null) {
+                authentication = getAuthentication(qps.get(TOKEN_QUERY_STRING));
+            }
         }
         
-        Authentication authentication = getAuthentication(req);
         if(authentication != null) {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
+
         chain.doFilter(req, res);
     }
 
-    private Authentication getAuthentication(HttpServletRequest request) {
-        String token = request.getHeader(HEADER_STRING);
-        if (token != null) {
-            // parse the token.
-            String email = Jwts.parser()
-                    .setSigningKey(SECRET.getBytes())
-                    .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
-                    .getBody()
-                    .getSubject();
+    private Authentication getAuthentication(String token) {
+        // parse the token.
+        String email = Jwts.parser()
+                .setSigningKey(SECRET.getBytes())
+                .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+                .getBody()
+                .getSubject();
 
-            if (email != null) {
-                LOG.info("Request authorized for user " + email);
-                return super.getAuthenticationManager().authenticate(new JwtAuthenticationToken(email));
-            }
+        if (email != null) {
+            LOG.info("Request authorized for user " + email);
+            return super.getAuthenticationManager().authenticate(new JwtAuthenticationToken(email));
         }
-        LOG.warn("Request not authorized " + request.getPathInfo());
+
         return null;
     }
 

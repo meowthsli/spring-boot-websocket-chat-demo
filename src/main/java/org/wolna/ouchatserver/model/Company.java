@@ -46,7 +46,7 @@ public class Company {
     }
     protected String name;
     
-    public Set<AccessToken> getTokens() {
+    public Set<ApiKey> getTokens() {
         return new HashSet<>(this.tokens);
     }
     
@@ -60,7 +60,7 @@ public class Company {
     
     @OneToMany(mappedBy = "company", cascade = {CascadeType.ALL})
     @JsonManagedReference
-    Set<AccessToken> tokens = new HashSet<>();
+    Set<ApiKey> tokens = new HashSet<>();
     
     protected Company() {}
 
@@ -68,8 +68,8 @@ public class Company {
      * Creates new token
      * @return 
      */
-    public AccessToken addToken() {
-        AccessToken at = AccessToken.make();
+    public ApiKey addToken() {
+        ApiKey at = ApiKey.make();
         tokens.add(at);
         return at;
     }

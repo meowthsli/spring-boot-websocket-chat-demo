@@ -1,5 +1,4 @@
 import * as Stomp from 'stompjs';
-import * as SockJS from 'sockjs-client';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 import { Envelope } from '../Envelope';
@@ -44,15 +43,16 @@ export class OUChatOpConnectorImpl implements OUChatOpsConnector {
      * @param uri endpoint uri
      * @param clientDesc client description
      */
-    public connect(login: string, passcode: string, uri: string, clientDesc: Envelope.UserDescription) : boolean {
-        this.disconnect(); // ignore return
+    public connect(uri: string, key: string, clientDesc: Envelope.UserDescription) : boolean {
+        //-- this.disconnect(); // ignore return
         
         // Recreate socket
-        this.socket = new SockJS(uri);
-        this.stompClient = Stomp.over(this.socket);
+       // this.socket = new SockJS(uri);
+       // this.stompClient = Stomp.over(this.socket);
+       this.stompClient = Stomp.client(uri);
 
         // Open socket again
-        this.stompClient.connect(login, passcode, 
+        this.stompClient.connect("", "", 
             () => {
                 // subscribe
                 
@@ -65,7 +65,7 @@ export class OUChatOpConnectorImpl implements OUChatOpsConnector {
                 this._onConnected.next(); // signal caller we succeeded
             },
             () => { // error 
-                this.disconnect(); // ignore returns
+                //-- this.disconnect(); // ignore returns
                 var res = new Envelope.Response();
                 res.errorCode = Envelope.Response.GENERIC_ERROR;
                 res.errorDescription = "Unknown error";
@@ -79,7 +79,8 @@ export class OUChatOpConnectorImpl implements OUChatOpsConnector {
      * Close and disconnect connection, raise event
      */
     public disconnect() : boolean {
-        if(this.socket) { 
+        return true;
+        /*if(this.socket) { 
             if(this.subscription) {
                 this.subscription.unsubscribe();
             }
@@ -96,7 +97,7 @@ export class OUChatOpConnectorImpl implements OUChatOpsConnector {
             this._onError.next(err);
             return true;
         }
-        return false;
+        return false;*/
     }
 
     /**
