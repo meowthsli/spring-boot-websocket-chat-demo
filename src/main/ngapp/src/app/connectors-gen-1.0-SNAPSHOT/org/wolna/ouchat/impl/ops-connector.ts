@@ -49,10 +49,10 @@ export class OUChatOpConnectorImpl implements OUChatOpsConnector {
         // Recreate socket
        // this.socket = new SockJS(uri);
        // this.stompClient = Stomp.over(this.socket);
-       this.stompClient = Stomp.client(uri);
+       this.stompClient = Stomp.client(uri + "?jwt=" + key);
 
         // Open socket again
-        this.stompClient.connect("", "", 
+        this.stompClient.connect(".", ".", 
             () => {
                 // subscribe
                 
