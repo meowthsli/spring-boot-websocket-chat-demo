@@ -95,7 +95,8 @@ export class ChatComponent implements OnInit {
     let email = `${this.uctx.username}-cli@acme.org`;  // TODO: use actual email
     this.connector.connect(
       environment.wsAddress + "Client",
-      this.uctx.apiKey,
+      // this.uctx.apiKey,
+      '7f09ad81-7f30-4e9a-9e29-dabf3441fa19',
       new Envelope.UserDescription("login1", "fio fio", [])
     );
   }
