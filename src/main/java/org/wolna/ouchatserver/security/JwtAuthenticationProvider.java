@@ -20,6 +20,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.wolna.ouchatserver.security.UserDetailsServiceImpl.SecurityUser;
 
 /**
  *
@@ -38,7 +39,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             throw new UsernameNotFoundException("User not found");
         }
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(ud,
-                ud.getPassword(), auths());
+                ud.getPassword(), auths(((SecurityUser)ud).getUser().isSupervisor()));
         return token;
     }
 
@@ -47,9 +48,13 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         return JwtAuthenticationToken.class.isAssignableFrom(authentication);
     }
     
-    private static Collection<? extends GrantedAuthority> auths() {
+    private static Collection<? extends GrantedAuthority> auths(boolean isSupervisor) {
         Set<GrantedAuthority> auth = new HashSet<>();
-        auth.add(new SimpleGrantedAuthority("ROLE_OPS"));
+        if(isSupervisor) {
+            auth.add(new SimpleGrantedAuthority("ROLE_SUPERVISOR"));
+        } else {
+            auth.add(new SimpleGrantedAuthority("ROLE_OPERATOR"));
+        }
         return auth;
     }
     
