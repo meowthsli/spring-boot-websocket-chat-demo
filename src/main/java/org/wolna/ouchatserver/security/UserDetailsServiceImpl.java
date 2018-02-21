@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.wolna.ouchatserver.model.UserRepository;
+import static org.wolna.ouchatserver.security.JwtAuthenticationProvider.auths;
 
 //@Transactional(propagation = Propagation.MANDATORY)
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -45,7 +46,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         private final org.wolna.ouchatserver.model.User uu;
         
         public SecurityUser(org.wolna.ouchatserver.model.User uu) {
-            super(uu.getEmail(), uu.getEncodedPassword(), Collections.EMPTY_SET);
+            super(uu.getEmail(), uu.getEncodedPassword(), 
+                    true, true, true, !uu.isLocked(),
+                    auths(uu.isSupervisor()));
             this.uu = uu;
         }
         

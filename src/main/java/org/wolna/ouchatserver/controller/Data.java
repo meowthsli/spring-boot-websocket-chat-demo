@@ -119,7 +119,8 @@ public class Data {
         return key;
     }
 
-    @RequestMapping(path = "/user", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping(path = "/user", method = {RequestMethod.POST, RequestMethod.PUT}, 
+            produces = "application/json")
     @ResponseBody
     @Transactional
     public Object newUser(Authentication au, @RequestBody RegistrationData data) {
@@ -129,6 +130,28 @@ public class Data {
         users.save(u);
         
         return Collections.EMPTY_MAP;
+    }
+    
+    @RequestMapping(path = "/user/{id}/lock", method = {RequestMethod.POST, RequestMethod.PUT}, 
+            produces = "application/json")
+    @ResponseBody
+    @Transactional
+    public User lockUser(@PathVariable("id") User user) {
+        if(!user.isLocked()) {
+            user.toggleLock();
+        }
+        return user;
+    }
+    
+    @RequestMapping(path = "/user/{id}/unlock", method = {RequestMethod.POST, RequestMethod.PUT}, 
+            produces = "application/json")
+    @ResponseBody
+    @Transactional
+    public User unlockUser(@PathVariable("id") User user) {
+        if(user.isLocked()) {
+            user.toggleLock();
+        }
+        return user;
     }
 
     private User registerUser(Company c, RegistrationData data) {

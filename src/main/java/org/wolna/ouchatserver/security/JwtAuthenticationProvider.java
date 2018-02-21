@@ -12,6 +12,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -35,8 +36,8 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         JwtAuthenticationToken ja = (JwtAuthenticationToken)authentication;
         UserDetails ud = userLoader.loadUserByUsername(ja.getEmail());
-        if(ud == null) {
-            throw new UsernameNotFoundException("User not found");
+        if (!ud.isAccountNonLocked()){
+            throw new LockedException("User account is locked");
         }
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(ud,
                 ud.getPassword(), auths(((SecurityUser)ud).getUser().isSupervisor()));
@@ -48,7 +49,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         return JwtAuthenticationToken.class.isAssignableFrom(authentication);
     }
     
-    private static Collection<? extends GrantedAuthority> auths(boolean isSupervisor) {
+    public static Collection<? extends GrantedAuthority> auths(boolean isSupervisor) {
         Set<GrantedAuthority> auth = new HashSet<>();
         if(isSupervisor) {
             auth.add(new SimpleGrantedAuthority("ROLE_SUPERVISOR"));
