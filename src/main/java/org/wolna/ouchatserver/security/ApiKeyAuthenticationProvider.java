@@ -16,6 +16,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.wolna.ouchatserver.model.ApiKey;
 import org.wolna.ouchatserver.model.ApiKeyRepository;
 
@@ -31,17 +32,17 @@ public class ApiKeyAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication auth) throws AuthenticationException {
-        ApiKey key = keys.findOneByValue(auth.getPrincipal().toString().split(":")[0]);
+        ApiKey key = keys.findOneByValue(auth.getCredentials().toString());
         if(key == null || key.getIsBlocked()) {
             throw new BadCredentialsException("Api key invalid or blocked");
         }
-        AnonymousAuthenticationToken aa = (AnonymousAuthenticationToken)auth;
+        ApiKeyAuthenticationToken aa = (ApiKeyAuthenticationToken)auth;
         return aa;
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return AnonymousAuthenticationToken.class.isAssignableFrom(authentication);
+        return ApiKeyAuthenticationToken.class.isAssignableFrom(authentication);
     }
     
 }

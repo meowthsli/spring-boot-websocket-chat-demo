@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.wolna.ouchatserver.security;
+package org.wolna.ouchatserver.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -24,6 +26,11 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.wolna.ouchatserver.security.ApiKeyAuthenticationFilter;
+import org.wolna.ouchatserver.security.ApiKeyAuthenticationProvider;
+import org.wolna.ouchatserver.security.JwtAuthenticationFilter;
+import org.wolna.ouchatserver.security.JwtAuthenticationProvider;
+import org.wolna.ouchatserver.security.JwtLoginFilter;
 import static org.wolna.ouchatserver.security.SecurityConstants.SIGN_UP_URL;
 
 @Configuration
@@ -49,11 +56,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers("/Ws").hasAnyRole("OPS", "SUPERVISOR")
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
-                .addFilter(new JwtLoginFilter(authenticationManager(), mapper))
-                .addFilter(apif())
-                
-                // this disables session creation on Spring Security
+                .addFilter(authf()).addFilter(new JwtLoginFilter(authenticationManager(), mapper)).addFilter(apif())
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // this disables session creation on Spring Security
                 ;
     }
     
@@ -61,7 +65,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
         auth.authenticationProvider(jwtProvider());
-        auth.authenticationProvider(anonProvider());
+        auth.authenticationProvider(apikeyProvider());
         auth.eraseCredentials(false);
     }
 
@@ -72,18 +76,25 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         return source;
     }
     
-    @Bean
+    @Bean @Lazy
     AuthenticationProvider jwtProvider() {
         return new JwtAuthenticationProvider();
     }
     
-    @Bean
+    @Bean @Lazy
     ApiKeyAuthenticationFilter apif() throws Exception {
         return new ApiKeyAuthenticationFilter(authenticationManager());
     }
 
-    @Bean
-    AuthenticationProvider anonProvider() {
+    @Bean @Lazy
+    AuthenticationProvider apikeyProvider() {
         return new ApiKeyAuthenticationProvider();
     }
+
+    
+    @Bean @Lazy
+    Filter authf() throws Exception {
+        return new JwtAuthenticationFilter(authenticationManager());
+    }
+
 }

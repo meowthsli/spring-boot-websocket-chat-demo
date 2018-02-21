@@ -24,10 +24,10 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
         
         // Recreate socket
         // this.socket = new SockJS(uri);
-        this.stompClient = Stomp.client(uri + "?api_key=" + key);
+        this.stompClient = Stomp.client(uri + "?api_key=" + key + "&login=" + clientDesc.userLogin);
 
         // Open socket again
-        this.stompClient.connect("", "", 
+        this.stompClient.connect(".", ".", 
             () => {
                 // subscribe
                 this.subscription = this.stompClient.subscribe('/user/queue/client', (payload) => this.onStompReceived(payload));

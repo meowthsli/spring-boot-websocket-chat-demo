@@ -25,11 +25,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.wolna.ouchatserver.controller.ChatController;
 import org.wolna.ouchatserver.model.ApiKey;
 import org.wolna.ouchatserver.model.ApiKeyRepository;
 import static org.wolna.ouchatserver.security.SecurityConstants.API_KEY_QUERY_STRING;
+import static org.wolna.ouchatserver.security.SecurityConstants.LOGIN_QUERY_STRING;
 
 public class ApiKeyAuthenticationFilter extends BasicAuthenticationFilter {
 
@@ -45,19 +47,17 @@ public class ApiKeyAuthenticationFilter extends BasicAuthenticationFilter {
 
         // 1. Check token query string
         Map<String, String> qps = RequestUtils.getQueryParameters(req);
-        if (qps.containsKey(API_KEY_QUERY_STRING) && qps.get(API_KEY_QUERY_STRING) != null) {
-            super.getAuthenticationManager().authenticate(
-                    new AnonymousAuthenticationToken(
-                    "ANO", qps.get(API_KEY_QUERY_STRING) + ":" + UUID.randomUUID().toString(),
-                    auths()));
+        if (qps.containsKey(API_KEY_QUERY_STRING) && qps.containsKey(LOGIN_QUERY_STRING)) {
+            Authentication authentication = super.getAuthenticationManager().authenticate(
+                    new ApiKeyAuthenticationToken(
+                            qps.get(LOGIN_QUERY_STRING), // principal
+                            qps.get(API_KEY_QUERY_STRING) // credentials
+                    ));
+            if (authentication != null) {
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
 
         chain.doFilter(req, res);
-    }
-
-    private Collection<? extends GrantedAuthority> auths() {
-        Set<GrantedAuthority> auth = new HashSet<>();
-        auth.add(new SimpleGrantedAuthority("ROLE_CLIENT"));
-        return auth;
     }
 }

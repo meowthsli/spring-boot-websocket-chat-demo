@@ -10,6 +10,7 @@ public interface OUChatConnection {
        /**
      * Open connection to server.
      * @param uri Url to server [relative]
+     * @param login
      * @param key api key OR jwt token
      * @return true if success
      */

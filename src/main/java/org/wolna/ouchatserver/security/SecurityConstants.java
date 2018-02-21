@@ -17,4 +17,5 @@ public class SecurityConstants {
     public static final String SIGN_UP_URL = "/api/login";
     public static final String TOKEN_QUERY_STRING = "jwt";
     public static final String API_KEY_QUERY_STRING = "api_key";
+    public static final String LOGIN_QUERY_STRING = "login";
 }
