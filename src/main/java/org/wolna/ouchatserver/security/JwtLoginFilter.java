@@ -83,10 +83,10 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
                 .compact();
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
         Map<String, String> tokenMap = new HashMap<>();
-        tokenMap.put("token", token);
+        tokenMap.put("token", TOKEN_PREFIX + token);
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
         mapper.writeValue(res.getWriter(), tokenMap);
         
-        LOG.info("Auth successful for user " + ((User) auth.getPrincipal()).getUsername());
+        LOG.info("Login successful for user " + ((User) auth.getPrincipal()).getUsername());
     }
 }
