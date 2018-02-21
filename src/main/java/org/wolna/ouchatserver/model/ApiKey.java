@@ -62,4 +62,8 @@ public class ApiKey {
     protected ApiKey() {
         
     }
+
+    public void rename(String name) {
+        this.name = name;
+    }
 }

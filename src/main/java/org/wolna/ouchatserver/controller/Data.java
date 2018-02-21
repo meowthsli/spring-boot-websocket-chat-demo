@@ -100,6 +100,18 @@ public class Data {
         }
         return key;
     }
+    
+    @RequestMapping(path = "/key/{id}",
+            method = {RequestMethod.POST, RequestMethod.PUT},
+            produces = "application/json")
+    @ResponseBody
+    @Transactional
+    @Secured("ROLE_SUPERVISOR")
+    // TODO: работать только со своими ключами
+    public ApiKey renameKey(@PathVariable(name = "id") ApiKey key, @RequestBody NewApiKeyData data) {
+        key.rename(data.getName());
+        return key;
+    }
 
 
     public static class NewApiKeyData {
