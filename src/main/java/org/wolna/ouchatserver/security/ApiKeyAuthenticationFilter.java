@@ -33,9 +33,6 @@ import static org.wolna.ouchatserver.security.SecurityConstants.API_KEY_QUERY_ST
 
 public class ApiKeyAuthenticationFilter extends BasicAuthenticationFilter {
 
-    @Autowired
-    ApiKeyRepository keys;
-
     static Log LOG = LogFactory.getLog(ChatController.class);
 
     public ApiKeyAuthenticationFilter(AuthenticationManager authManager) {
@@ -49,23 +46,13 @@ public class ApiKeyAuthenticationFilter extends BasicAuthenticationFilter {
         // 1. Check token query string
         Map<String, String> qps = RequestUtils.getQueryParameters(req);
         if (qps.containsKey(API_KEY_QUERY_STRING) && qps.get(API_KEY_QUERY_STRING) != null) {
-            Authentication authentication = getAuthentication(qps.get(API_KEY_QUERY_STRING));
-            if (authentication != null) {
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+            super.getAuthenticationManager().authenticate(
+                    new AnonymousAuthenticationToken(
+                    "ANO", qps.get(API_KEY_QUERY_STRING) + ":" + UUID.randomUUID().toString(),
+                    auths()));
         }
 
         chain.doFilter(req, res);
-    }
-
-    private Authentication getAuthentication(String apiKey) {
-        ApiKey key = keys.findOneByValue(apiKey);
-        if (key != null) {
-            return new AnonymousAuthenticationToken("cli" + UUID.randomUUID().toString(),
-                    apiKey, auths());
-        }
-
-        return null;
     }
 
     private Collection<? extends GrantedAuthority> auths() {

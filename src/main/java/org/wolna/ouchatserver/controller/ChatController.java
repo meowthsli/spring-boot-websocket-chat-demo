@@ -1,5 +1,6 @@
 package org.wolna.ouchatserver.controller;
 
+import java.security.Principal;
 import java.time.Instant;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
@@ -51,7 +52,8 @@ public class ChatController {
     
     @MessageMapping("/client.say")
     @SendTo("/broadcast/all-ops")
-    public Envelope.MessageToServer clientSay(@Payload Envelope.MessageToServer chatMessage, SimpMessageHeaderAccessor smha) {
+    public Envelope.MessageToServer clientSay(@Payload Envelope.MessageToServer chatMessage, 
+            SimpMessageHeaderAccessor smha, Principal who) {
         String clientId = getCurrentUserID(smha);
         long id = messageId.incrementAndGet();
         

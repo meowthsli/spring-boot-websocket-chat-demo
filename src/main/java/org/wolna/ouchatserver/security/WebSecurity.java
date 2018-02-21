@@ -20,6 +20,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -44,6 +45,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL, "/api/register").permitAll()
+                // .antMatchers("/WsClient", "/WsClient/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JwtAuthenticationFilter(authenticationManager()))
@@ -51,13 +53,14 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .addFilter(apif())
                 
                 // this disables session creation on Spring Security
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                ;
     }
     
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
         auth.authenticationProvider(jwtProvider());
+        auth.authenticationProvider(anonProvider());
         auth.eraseCredentials(false);
     }
 
@@ -76,5 +79,10 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     @Bean
     ApiKeyAuthenticationFilter apif() throws Exception {
         return new ApiKeyAuthenticationFilter(authenticationManager());
+    }
+
+    @Bean
+    AuthenticationProvider anonProvider() {
+        return new ApiKeyAuthenticationProvider();
     }
 }
