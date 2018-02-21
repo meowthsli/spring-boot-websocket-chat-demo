@@ -9,8 +9,11 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -28,30 +31,57 @@ import org.wolna.ouchatserver.security.UserDetailsServiceImpl.SecurityUser;
  */
 @RestController
 @RequestMapping("/api")
+@Secured("ROLE_SUPERVISOR")
 public class Data {
+
     @Autowired
     CompanyRepository companies;
-    
+
     @Autowired
     UserRepository users;
-    
+
     @RequestMapping(path = "/companies", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     @Transactional
+    // TODO: secure
     public List<Company> companies() {
         ArrayList<Company> cc = new ArrayList<>();
-        for(Company c : companies.findAll()) {
+        for (Company c : companies.findAll()) {
             cc.add(c);
         }
         return cc;
     }
-    
-    @RequestMapping(path = "/key", method = {RequestMethod.POST, RequestMethod.PUT},
+
+    @RequestMapping(path = "/organization", method = {RequestMethod.GET}, produces = "application/json")
+    @ResponseBody
+    @Transactional
+    @Secured("ROLE_SUPERVISOR")
+    public Company organization(Authentication au) {
+        User cu = ((SecurityUser) au.getPrincipal()).getUser();
+        return cu.company;
+    }
+
+    @RequestMapping(path = "/key",
+            method = {RequestMethod.POST, RequestMethod.PUT},
             produces = "application/json")
     @ResponseBody
     @Transactional
-    public ApiKey makeToken(Authentication au) {
-        User cu = ((SecurityUser)au.getPrincipal()).getUser();
-        return cu.company.addToken();
+    @Secured("ROLE_SUPERVISOR")
+    public ApiKey newApiKey(Authentication au, @RequestBody NewApiKeyData data) {
+        User cu = ((SecurityUser) au.getPrincipal()).getUser();
+        return cu.company.generateKey(data.name);
+    }
+
+    public static class NewApiKeyData {
+
+        private String name;
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return this.name;
+        }
     }
 }

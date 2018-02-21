@@ -6,6 +6,7 @@
 package org.wolna.ouchatserver.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -44,6 +45,7 @@ public class User {
     public String getEncodedPassword() {
         return encodedPassword;
     }
+    @JsonIgnore
     String encodedPassword;
     
     @Id
@@ -76,6 +78,10 @@ public class User {
     
     public void toggleLock() {
         this.isLocked = !this.isLocked;
+    }
+    
+    public boolean isSupervisor() {
+        return isSupervisor;
     }
     
     protected User() {}

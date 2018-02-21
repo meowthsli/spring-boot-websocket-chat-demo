@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.annotation.Generated;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -46,8 +47,8 @@ public class Company {
     }
     protected String name;
     
-    public Set<ApiKey> getTokens() {
-        return new HashSet<>(this.tokens);
+    public Set<ApiKey> getKeys() {
+        return new HashSet<>(this.keys);
     }
     
     public Set<User> getUsers() {
@@ -58,9 +59,9 @@ public class Company {
     @JsonManagedReference
     Set<User> users = new HashSet<>();
     
-    @OneToMany(mappedBy = "company", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "company", cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @JsonManagedReference
-    Set<ApiKey> tokens = new HashSet<>();
+    Set<ApiKey> keys = new HashSet<>();
     
     protected Company() {}
 
@@ -68,9 +69,10 @@ public class Company {
      * Creates new token
      * @return 
      */
-    public ApiKey addToken() {
-        ApiKey at = ApiKey.make();
-        tokens.add(at);
+    public ApiKey generateKey(String name) {
+        ApiKey at = ApiKey.make(name);
+        keys.add(at);
+        at.company = this;
         return at;
     }
 }

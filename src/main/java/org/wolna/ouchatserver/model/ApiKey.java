@@ -21,8 +21,9 @@ import javax.persistence.ManyToOne;
 @Entity
 public class ApiKey {
 
-    public static ApiKey make() {
+    public static ApiKey make(String name) {
         ApiKey t = new ApiKey();
+        t.name = name;
         t.value = UUID.randomUUID().toString();
         return t;
     }
@@ -32,10 +33,10 @@ public class ApiKey {
     
     String value;
     boolean isBlocked;
+    String name;
     
     @ManyToOne
     @JsonBackReference
-    @JsonIgnore
     Company company;
     
     public Long getId() {
@@ -52,6 +53,10 @@ public class ApiKey {
     
     public void toggleBlock() {
         this.isBlocked = !this.isBlocked;
+    }
+    
+    public String getName() {
+        return this.name;
     }
     
     protected ApiKey() {
