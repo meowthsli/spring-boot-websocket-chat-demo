@@ -13,6 +13,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -71,6 +72,35 @@ public class Data {
         User cu = ((SecurityUser) au.getPrincipal()).getUser();
         return cu.company.generateKey(data.name);
     }
+    
+    @RequestMapping(path = "/key/{id}/unlock",
+            method = {RequestMethod.POST, RequestMethod.PUT},
+            produces = "application/json")
+    @ResponseBody
+    @Transactional
+    @Secured("ROLE_SUPERVISOR")
+    // TODO: работать только со своими ключами
+    public ApiKey unlockKey(Authentication au, @PathVariable(name = "id") ApiKey key) {
+        if(key.getIsBlocked()) {
+            key.toggleBlock();
+        }
+        return key;
+    }
+    
+    @RequestMapping(path = "/key/{id}/lock",
+            method = {RequestMethod.POST, RequestMethod.PUT},
+            produces = "application/json")
+    @ResponseBody
+    @Transactional
+    @Secured("ROLE_SUPERVISOR")
+    // TODO: работать только со своими ключами
+    public ApiKey lockKey(Authentication au, @PathVariable(name = "id") ApiKey key) {
+        if(!key.getIsBlocked()) {
+            key.toggleBlock();
+        }
+        return key;
+    }
+
 
     public static class NewApiKeyData {
 
