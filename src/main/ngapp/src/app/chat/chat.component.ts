@@ -1,16 +1,19 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { NgModel, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { UsercontextService } from '../app.usercontext';
-import { ClientStompConnector } from '../stomp/app.client-stomp';
 import * as moment from 'moment';
 import { NbSpinnerService } from '@nebular/theme';
 import { ToasterService } from 'angular2-toaster/src/toaster.service';
 import { ToasterConfig } from 'angular2-toaster';
-import { ClientDesc, FIO } from '../stomp/app.stomp';
-import { OUChatClientConnector } from '../ou-chat-sdk/client-connector';
 import { environment } from '../../environments/environment';
 import { UserDesc, FIO as FIO2 } from '../ou-chat-sdk/dtos';
+import { OUChatClientConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/client-connector';
+import { OUChatOpConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/ops-connector';
+import { Envelope } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/Envelope';
+
+type CONNECTOR = OUChatClientConnectorImpl;
 
 @Component({
   selector: 'app-chat',
@@ -23,9 +26,11 @@ export class ChatComponent implements OnInit {
 
   $text: string;
   $history: Array<ChatItem> = new Array();
-  $connecting: number = 0;
+  $connectionPhase: number = 0;
 
-  // messages
+  /**
+   *  Bulb alerts
+   */
   $toasterconfig = new ToasterConfig({
     showCloseButton: false,
     tapToDismiss: true,
@@ -33,112 +38,77 @@ export class ChatComponent implements OnInit {
     limit: 1,
   });
 
-  constructor(private router:Router, private uctx: UsercontextService, /*private stomp: ClientStompConnector, */
-              private connector: OUChatClientConnector,
+  constructor(private router:Router, private uctx: UsercontextService,
+              private connector: OUChatClientConnectorImpl,
               private spinner: NbSpinnerService, private toaster: ToasterService) {}
 
-  // send message
+  /**
+   *  Send message button event handler
+   */
   public $onSendClick() {
     if(this.$text) {
-      let ci = new ChatItem(this.cids--, null, this.$text, moment());
+      var id = this.connector.say(this.$text);
+      let ci = new ChatItem(id, null, this.$text, moment());
       this.$history.push(ci);
-      this.connector.say(ci.id, ci.text, null /*not used*/);
       this.$text = null;
       this.scrollDown();
     }
   }
 
-  private cids : number = -1;
-  private clientID: string;
-
   ngOnInit(): void {
-    if(!this.uctx.username) {
+    if(!this.uctx.username) { // return if no name installed
       this.router.navigateByUrl(''), {skipLocationChange: false};
       return;
     }
 
-    /*this.stomp.incomingMessage.subscribe(msg => {
-		if(msg.type === 'MSG_ACK') {
-			var item = this.$history.find(ci => ci.id == msg.cid);
-			if(item) {
-				item.id = msg.ack;
-			}
-		} else if(msg.type === 'CHAT') {
-			for(var ci of msg.chatItems) {
-				this.$history.push(new ChatItem(ci.id, ci.opId, ci.text, moment(ci.at*1000)));
-			}
-			this.scrollDown();
-		} else if(msg.type === 'CLI_HISTORY') {
-			this.clientID = msg.clientID;
-			for(var ci of msg.chatItems) {
-				this.$history.push(new ChatItem(ci.id, ci.opId, ci.text, moment(ci.at*1000)));
-			}
-			this.scrollDown();
-		}
-	});
-	*/
-    this.connector.onMessage.subscribe(msg => {
-      if(msg.sayResp) {
-        var item = this.$history.find(ci => ci.id == msg.sayResp.cid);
+    this.connector.onConnected(()=> {
+      this.spinner.clear();
+      this.$connectionPhase = 2; // connection succeeded
+      this.connector.loadHistory(0);
+    });
+    this.connector.onError(()=> this.onDisconnect());
+    this.connector.onResult( r => {
+      if(r.messageAccepted) {
+        var mm = r.messageAccepted;
+        var item = this.$history.find(ci => ci.id == mm.messageTemporaryId);
         if(item) {
-          item.id == msg.sayResp.cid;
+          item.id == mm.messageId;
         }
-      } else if(msg.historyResp) {
-        this.clientID = msg.historyResp.clientID;
-        for(var ci of msg.historyResp.chatItems) {
-          this.$history.push(new ChatItem(ci.id, ci.opID, ci.text, moment(ci.at*1000)));
-        }
-        this.scrollDown();
+      } else {
+        /*if(msg.historyResp) {
+			this.clientID = msg.historyResp.clientID;
+			for(var ci of msg.historyResp.chatItems) {
+				this.$history.push(new ChatItem(ci.id, ci.opID, ci.text, moment(ci.at*1000)));
+			}
+			this.scrollDown();
+		}*/
       }
     });
-
-    /*this.stomp.onConnected.subscribe(()=> {
-		this.spinner.clear();
-		this.$connecting = 2;
-	});*/
-
-    this.connector.onConnected.subscribe(()=> {
-      this.spinner.clear();
-      this.$connecting = 2;
-    });
-
-    /*
-	this.stomp.onError.subscribe(()=> this.onDisconnect());
-	*/
-    this.connector.onError.subscribe(()=> this.onDisconnect());
-
 
     this.beginConnect();
   }
 
   private beginConnect() {
-    this.$connecting = 1;
+    this.$connectionPhase = 1; // connecting..
     this.spinner.load();
 
-    /*this.stomp.connect(new ClientDesc(
-		this.uctx.username + '@acme.org',
-		new FIO(
-			this.fn[Math.round(Math.random()*this.fn.length-1)],
-			'', this.ln[Math.round(Math.random()*this.ln.length-1)]
-		),
-		['VIP', 'MOSCOW'],
-		'+7 909 0000')
-	);
-	*/
-
-    let email = `${this.uctx.username}-cli@acme.org`;
-    let fio = new FIO2(this.fn[Math.round(Math.random()*this.fn.length-1)], '',
-      this.ln[Math.round(Math.random()*this.ln.length-1)]);
-
-    this.connector.connect(email, '***', environment.wsAddress, new UserDesc(email, fio, [], '+78988899999', 'Other info'));
+    let email = `${this.uctx.username}-cli@acme.org`;  // TODO: use actual email
+    this.connector.connect(
+      environment.wsAddress + "Client",
+      // this.uctx.apiKey,
+      '7f09ad81-7f30-4e9a-9e29-dabf3441fa19',
+      new Envelope.UserDescription("login1", "fio fio", [])
+    );
   }
 
   private onDisconnect() {
     this.spinner.clear();
-    this.$connecting = 0;
+    this.$connectionPhase = 0; // not connected
 
     let toast = this.toaster.pop("warning", "Нет связи с сервером", "Кликните, чтобы соединиться");
     toast.showCloseButton = true;
+
+    // try to connect again on click
     toast.clickHandler = (toast, button) => {
       this.toaster.clear();
       this.beginConnect()
@@ -146,17 +116,17 @@ export class ChatComponent implements OnInit {
     }
   }
 
-  private scrollDown() {
+  private scrollDown() { // TODO: fix hack!
     setTimeout(() =>  {
       let element = document.getElementById('chat-lines');
       element.scrollTop = element.scrollHeight ;
     }, 0);
   }
-
-  private fn = ['Михаил', 'Петр', 'Максим', 'Андрей', 'Федор'];
-  private ln = ['Иванов', 'Петров', 'Крамер', 'Сидоров', 'Фёдоров', 'Маслов'];
 }
 
+/**
+ * To store chat items
+ */
 export class ChatItem {
   public constructor(public id, public opId, public text, public at: moment.Moment) {}
 }
