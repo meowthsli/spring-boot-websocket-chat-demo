@@ -9,7 +9,7 @@ package org.wolna.ouchatserver.controller;
  *
  * @author yurij
  */
-public class CompanyRegistration {
+public class RegistrationData {
 
     private String name;
 

@@ -23,18 +23,27 @@ import javax.persistence.Table;
 public class User {
 
     public static User makeSupervisor(Company c, String email, String encodedPass) {
-        User u = new User(c, email, encodedPass);
+        User u = new User(c, email, null, encodedPass);
         u.isSupervisor = true;
         return u;
     }
     
-    public User(Company c, String email, String encodedPassword) {
+    public static User makeNormal(Company c, String email, String name, String encodedPass) {
+        User u = new User(c, email, name, encodedPass);
+        return u;
+    }
+    
+    public User(Company c, String email, String name, String encodedPassword) {
         if(!c.users.contains(this)) {
             c.users.add(this);
         }
         this.company = c;
         this.email = email;
         this.encodedPassword = encodedPassword;
+        if(name == null) {
+            name = "";
+        }
+        this.name = name;
     }
     String email;
 
@@ -55,6 +64,8 @@ public class User {
    
     boolean isVerified;
     boolean isLocked;
+    
+    String name;
     
     @ManyToOne
     @JsonBackReference
@@ -82,6 +93,10 @@ public class User {
     
     public boolean isSupervisor() {
         return isSupervisor;
+    }
+    
+    public String getName() {
+        return name;
     }
     
     protected User() {}

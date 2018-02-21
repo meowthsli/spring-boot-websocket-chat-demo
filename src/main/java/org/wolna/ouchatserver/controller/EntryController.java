@@ -31,7 +31,7 @@ import org.wolna.ouchatserver.security.Credentials;
  */
 @RestController
 @RequestMapping("/api")
-public class UserController {
+public class EntryController {
     
     @Autowired
     UserRepository userRepo;
@@ -45,14 +45,14 @@ public class UserController {
     @RequestMapping(path = "/register", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     @Transactional
-    public Object registerCompany(@RequestBody CompanyRegistration data) {
+    public Object registerCompany(@RequestBody RegistrationData data) {
         Company c = new Company(data.getName());    
         User u = registerOpUser(c, data);
         compRepo.save(c);
         return Collections.EMPTY_MAP;
     }
 
-    private User registerOpUser(Company c, CompanyRegistration data) {
+    private User registerOpUser(Company c, RegistrationData data) {
         if(!data.getPassword().equals(data.getConfirmPassword())) {
             throw new InvalidOperationException("Password doesn't match");
         }
