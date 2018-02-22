@@ -23,7 +23,7 @@ import org.wolna.ouchatserver.model.CompanyRepository;
 import org.wolna.ouchatserver.model.InvalidOperationException;
 import org.wolna.ouchatserver.model.User;
 import org.wolna.ouchatserver.model.UserRepository;
-import org.wolna.ouchatserver.security.Credentials;
+import org.wolna.ouchatserver.security.LoginCredentials;
 
 /**
  *

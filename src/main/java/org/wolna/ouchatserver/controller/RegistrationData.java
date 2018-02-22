@@ -5,6 +5,8 @@
  */
 package org.wolna.ouchatserver.controller;
 
+import org.wolna.ouchatserver.model.InvalidOperationException;
+
 /**
  *
  * @author yurij
@@ -48,6 +50,12 @@ public class RegistrationData {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public void checkPassword() {
+        if(!getPassword().equals(getConfirmPassword())) {
+            throw new InvalidOperationException("Passwords don't match");
+        }
     }
     
 }

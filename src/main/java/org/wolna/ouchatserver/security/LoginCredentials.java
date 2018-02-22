@@ -9,7 +9,7 @@ package org.wolna.ouchatserver.security;
  *
  * @author yurij
  */
-public class Credentials {
+public class LoginCredentials {
 
     private String email;
     private String password;

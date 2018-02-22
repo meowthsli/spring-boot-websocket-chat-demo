@@ -3,14 +3,15 @@ package org.wolna.ouchatserver;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class WebsocketDemoApplicationTests {
+@TestPropertySource(properties = {"spring.datasource.url=jdbc:hsqldb:mem:test"})
+public class RestApiTests {
 
 	@Test
 	public void contextLoads() {
 	}
-
 }

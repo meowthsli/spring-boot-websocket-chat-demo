@@ -100,4 +100,19 @@ public class User {
     }
     
     protected User() {}
+
+    public void changePassword(String encodedPass) {
+        assert encodedPass != null;
+        this.encodedPassword = encodedPass;
+    }
+
+    public void changeEmail(String email) {
+        assert email != null;
+        this.email = email;
+    }
+
+    public void rename(String name) {
+        assert name != null;
+        this.name = name;
+    }
 }

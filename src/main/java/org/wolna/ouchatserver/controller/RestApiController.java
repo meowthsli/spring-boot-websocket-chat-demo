@@ -5,13 +5,11 @@
  */
 package org.wolna.ouchatserver.controller;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +34,7 @@ import org.wolna.ouchatserver.security.UserDetailsServiceImpl.SecurityUser;
 @RestController
 @RequestMapping("/api")
 @Secured("ROLE_SUPERVISOR")
-public class Data {
+public class RestApiController {
 
     @Autowired
     CompanyRepository companies;
@@ -119,6 +117,12 @@ public class Data {
         return key;
     }
 
+    /**
+     * Завести нового юзера
+     * @param au
+     * @param data
+     * @return
+     */
     @RequestMapping(path = "/user", method = {RequestMethod.POST, RequestMethod.PUT}, 
             produces = "application/json")
     @ResponseBody
@@ -130,6 +134,26 @@ public class Data {
         users.save(u);
         
         return Collections.EMPTY_MAP;
+    }
+
+    @RequestMapping(path = "/user/{id}", method = {RequestMethod.PATCH},
+            produces = "application/json")
+    @ResponseBody
+    @Transactional
+    public User newUser(Authentication au, @RequestBody RegistrationData data, @PathVariable("id") User u) {
+        
+        data.checkPassword(); // exception
+        if(data.getPassword() != null) {
+            u.changePassword(encoder.encode(data.getPassword()));
+        }
+        if(data.getEmail() != null) {
+            u.changeEmail(data.getEmail());
+        }
+        if(data.getName() != null) {
+            u.rename(data.getName());
+        }
+
+        return u;
     }
     
     @RequestMapping(path = "/user/{id}/lock", method = {RequestMethod.POST, RequestMethod.PUT}, 
@@ -155,9 +179,7 @@ public class Data {
     }
 
     private User registerUser(Company c, RegistrationData data) {
-        if(!data.getPassword().equals(data.getConfirmPassword())) {
-            throw new InvalidOperationException("Passwords don't match");
-        }
+        data.checkPassword();
         if(users.findByEmail(data.getEmail()) != null) {
             throw new InvalidOperationException("User already exists");
         }

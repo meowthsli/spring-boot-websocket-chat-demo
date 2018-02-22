@@ -12,28 +12,25 @@ package org.wolna.ouchatserver.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.http.MediaType;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.wolna.ouchatserver.controller.ChatController;
-
 import static org.wolna.ouchatserver.security.SecurityConstants.EXPIRATION_TIME;
 import static org.wolna.ouchatserver.security.SecurityConstants.HEADER_STRING;
 import static org.wolna.ouchatserver.security.SecurityConstants.SECRET;
@@ -57,8 +54,8 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
         try {
-            Credentials creds = new ObjectMapper()
-                    .readValue(req.getInputStream(), Credentials.class);
+            LoginCredentials creds = new ObjectMapper()
+                    .readValue(req.getInputStream(), LoginCredentials.class);
 
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
