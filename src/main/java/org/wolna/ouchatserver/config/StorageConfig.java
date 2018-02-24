@@ -20,6 +20,7 @@ import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.DataRegionConfiguration;
 import org.apache.ignite.configuration.DataStorageConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -41,7 +42,7 @@ import org.wolna.ouchatserver.model.UserRepository;
 public class StorageConfig {
 
     @Bean
-    @Lazy
+    @Lazy @ConditionalOnMissingBean
     public Ignite ignite() {
         IgniteConfiguration config = new IgniteConfiguration();
         config.setClientMode(false);
@@ -55,8 +56,8 @@ public class StorageConfig {
         dscfg.setDefaultDataRegionConfiguration(drcfg);
         
         String cwd = Paths.get("").toAbsolutePath().toString();
-        dscfg.setStoragePath(cwd + "/ignite/store");
-        dscfg.setWalPath(cwd + "/ignite/wal");
+        dscfg.setStoragePath(cwd + "/store/ignite/data");
+        dscfg.setWalPath(cwd + "/store/ignite/wal");
         dscfg.setCheckpointFrequency(500);
        
         config.setDataStorageConfiguration(dscfg);
