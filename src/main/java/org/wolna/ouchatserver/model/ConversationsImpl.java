@@ -4,17 +4,18 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.cache.Cache;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteAtomicLong;
 import org.apache.ignite.IgniteCache;
+import org.apache.ignite.cache.query.FieldsQueryCursor;
 import org.apache.ignite.cache.query.QueryCursor;
+import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.cache.query.SqlQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.core.Authentication;
 import org.wolna.ouchat.Envelope;
-import org.wolna.ouchatserver.model.Conversations;
 
 /**
  *
@@ -27,11 +28,20 @@ public class ConversationsImpl implements Conversations {
     @Autowired @Qualifier("convsMeta")
     IgniteCache<String, Conversation> convsMeta;
     
-    @Autowired @Qualifier("messageIdGen")
-    IgniteAtomicLong messageIdGen;
+    @Autowired
+    Ignite ignite;
     
     @Autowired
     ApiKeyRepository keys;
+    
+    @PostConstruct
+    void onCreate() {
+        messageIdGen = ignite.atomicLong(
+                "messageIdGen", // Atomic long name.
+                getMaxId() + 10, // Initial value.
+                true);     		// Create if it does not exist.
+    }
+    private IgniteAtomicLong messageIdGen;
 
     @Override
     public void initConversation(Envelope.UserDescription desc, String who, String apiKeyValue) {
@@ -99,6 +109,16 @@ public class ConversationsImpl implements Conversations {
     @Override
     public void lockConversation(String clientLogin) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private long getMaxId() {
+        SqlFieldsQuery q = new SqlFieldsQuery("select MAX(id) from Message");
+        try(FieldsQueryCursor<List<?>> cc = messages.query(q)){
+            for (List<?> row : cc.getAll()) {
+                return row.get(0) == null ? 1000L : (Long)row.get(0);
+            }
+        }
+        return 1000L;
     }
 
 }

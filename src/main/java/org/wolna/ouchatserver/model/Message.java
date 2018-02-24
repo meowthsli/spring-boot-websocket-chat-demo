@@ -2,6 +2,7 @@ package org.wolna.ouchatserver.model;
 
 import java.io.Serializable;
 import java.time.Instant;
+import org.apache.ignite.cache.affinity.AffinityKeyMapped;
 import org.apache.ignite.cache.query.annotations.QuerySqlField;
 
 /**
@@ -15,6 +16,7 @@ public class Message implements Serializable {
     public Instant at;
     @QuerySqlField(index = true, orderedGroups = {
         @QuerySqlField.Group(name = "histo_idx", order = 0)})
+    @AffinityKeyMapped
     public String clientLogin;
     @QuerySqlField(orderedGroups = {
         @QuerySqlField.Group(name = "histo_idx", order = 2, descending = true)})
