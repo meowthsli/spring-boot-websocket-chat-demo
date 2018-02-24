@@ -50,7 +50,7 @@ public class ApiKeyAuthenticationFilter extends BasicAuthenticationFilter {
         if (qps.containsKey(API_KEY_QUERY_STRING) && qps.containsKey(LOGIN_QUERY_STRING)) {
             Authentication authentication = super.getAuthenticationManager().authenticate(
                     new ApiKeyAuthenticationToken(
-                            qps.get(LOGIN_QUERY_STRING), // principal
+                            "client:" + qps.get(LOGIN_QUERY_STRING), // principal
                             qps.get(API_KEY_QUERY_STRING) // credentials
                     ));
             if (authentication != null) {

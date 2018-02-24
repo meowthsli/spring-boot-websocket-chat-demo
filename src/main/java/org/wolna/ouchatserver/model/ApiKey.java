@@ -24,14 +24,14 @@ public class ApiKey {
     public static ApiKey make(String name) {
         ApiKey t = new ApiKey();
         t.name = name;
-        t.value = UUID.randomUUID().toString();
+        t.val = UUID.randomUUID().toString();
         return t;
     }
     
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
     
-    String value;
+    String val;
     boolean isBlocked;
     String name;
     
@@ -44,7 +44,7 @@ public class ApiKey {
     }
     
     public String getValue() {
-        return value;
+        return val;
     }
     
     public boolean getIsBlocked() {

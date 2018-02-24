@@ -32,7 +32,7 @@ public class ApiKeyAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication auth) throws AuthenticationException {
-        ApiKey key = keys.findOneByValue(auth.getCredentials().toString());
+        ApiKey key = keys.findOneByVal(auth.getCredentials().toString());
         if(key == null || key.getIsBlocked()) {
             throw new BadCredentialsException("Api key invalid or blocked");
         }

@@ -5,12 +5,17 @@
  */
 package org.wolna.ouchatserver.model;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 /**
  *
  * @author yurij
  */
 public interface ApiKeyRepository extends CrudRepository<ApiKey, Long> {
-    ApiKey findOneByValue(String value);
+    ApiKey findOneByVal(String value);
+    
+    @Query("select k.company.id from ApiKey k where k.val = :keyValue")
+    Long findCompanyIdByKeyValue(@Param("keyValue") String keyValue);
 }

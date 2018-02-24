@@ -51,14 +51,10 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
      * Close and disconnect connection, raise event
      */
     public disconnect() : boolean {
-        if(this.socket) { 
-            if(this.subscription) {
-                this.subscription.unsubscribe();
-            }
-            this.socket.close();
+        if(this.subscription) {
+            this.subscription.unsubscribe();        
             this.subscription = null;
             this.stompClient = null;
-            this.socket = null;
             var err = new Envelope.Response();
             err.errorCode = Envelope.Response.ERROR_DISCONNECTED;
             err.errorDescription = "Disconnected by user";
@@ -148,7 +144,6 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
     
     // Socket part
     protected subscription;
-    protected socket;
     protected stompClient;
 
     
