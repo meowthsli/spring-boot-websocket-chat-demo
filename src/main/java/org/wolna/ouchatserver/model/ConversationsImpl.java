@@ -57,8 +57,8 @@ public class ConversationsImpl implements Conversations {
         // TODO: add test message
         Message m = new Message();
         m.clientLogin = who ;
-        m.at = Instant.now();
-        m.id = 0;
+        m.created = Instant.now();
+        m.msgId = 0;
         m.text = "hello";
         messages.put(0L, m);
     }
@@ -71,16 +71,16 @@ public class ConversationsImpl implements Conversations {
     @Override
     public long addMessage(String clientLogin, String message) {
         Message m = new Message();
-        m.id = messageIdGen.incrementAndGet();
+        m.msgId = messageIdGen.incrementAndGet();
         m.text = message;
         m.clientLogin = clientLogin;
-        m.at = Instant.now();
-        messages.put(m.id, m);
-        return m.id;
+        m.created = Instant.now();
+        messages.put(m.msgId, m);
+        return m.msgId;
     }
     
      private SqlQuery createHistoryQuery(String who, long lastSeen) {
-        SqlQuery q = new SqlQuery(Message.class, "clientLogin = ? and id < ?");
+        SqlQuery q = new SqlQuery(Message.class, "clientLogin = ? and msgId < ? ORDER BY msgId DESC");
         q.setPageSize(60);
         q.setArgs(who, lastSeen > 0 ? lastSeen : Long.MAX_VALUE);
         return q;
@@ -112,7 +112,7 @@ public class ConversationsImpl implements Conversations {
     }
 
     private long getMaxId() {
-        SqlFieldsQuery q = new SqlFieldsQuery("select MAX(id) from Message");
+        SqlFieldsQuery q = new SqlFieldsQuery("select MAX(msgId) from Message");
         try(FieldsQueryCursor<List<?>> cc = messages.query(q)){
             for (List<?> row : cc.getAll()) {
                 return row.get(0) == null ? 1000L : (Long)row.get(0);

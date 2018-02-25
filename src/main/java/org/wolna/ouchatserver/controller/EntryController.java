@@ -5,14 +5,10 @@
  */
 package org.wolna.ouchatserver.controller;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,7 +19,6 @@ import org.wolna.ouchatserver.model.CompanyRepository;
 import org.wolna.ouchatserver.model.InvalidOperationException;
 import org.wolna.ouchatserver.model.User;
 import org.wolna.ouchatserver.model.UserRepository;
-import org.wolna.ouchatserver.security.LoginCredentials;
 
 /**
  *

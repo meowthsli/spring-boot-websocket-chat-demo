@@ -11,20 +11,20 @@ import org.apache.ignite.cache.query.annotations.QuerySqlField;
  */
 public class Message implements Serializable {
 
-    @QuerySqlField(orderedGroups = {
-        @QuerySqlField.Group(name = "histo_idx", order = 1, descending = true)})
-    public Instant at;
+   /*@QuerySqlField(orderedGroups = {
+        @QuerySqlField.Group(name = "histo_idx", order = 2, descending = true)})*/
+    public Instant created;
     @QuerySqlField(index = true, orderedGroups = {
         @QuerySqlField.Group(name = "histo_idx", order = 0)})
-    @AffinityKeyMapped
+    //@AffinityKeyMapped
     public String clientLogin;
     @QuerySqlField(orderedGroups = {
-        @QuerySqlField.Group(name = "histo_idx", order = 2, descending = true)})
-    public long id;
+        @QuerySqlField.Group(name = "histo_idx", order = 1, descending = true)})
+    public long msgId;
     public String text;
 
     public Instant getAt() {
-        return at;
+        return created;
     }
 
     public String getClientLogin() {

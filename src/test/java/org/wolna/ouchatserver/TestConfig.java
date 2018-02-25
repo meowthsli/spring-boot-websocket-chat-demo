@@ -33,6 +33,11 @@ public class TestConfig {
         drcfg.setPersistenceEnabled(true);
         dscfg.setDefaultDataRegionConfiguration(drcfg);
        
+        String cwd = Paths.get("").toAbsolutePath().toString();
+        dscfg.setStoragePath(cwd + "/target/ignite/data");
+        dscfg.setWalPath(cwd + "/target/ignite/wal");
+        dscfg.setCheckpointFrequency(500);
+        
         config.setDataStorageConfiguration(dscfg);
 
         Ignite i = Ignition.start(config);
