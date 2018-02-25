@@ -22,13 +22,15 @@ export class OrganizationComponent implements OnInit {
       editButtonContent: '<i class="nb-edit"></i>',
       saveButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
+      confirmSave: true
     },
     delete: {
       deleteButtonContent: '<i class="nb-trash"></i>',
       confirmDelete: true,
     },
     actions: {
-      columnTitle: 'Действия'
+      columnTitle: 'Действия',
+      delete: false
     },
     columns: {
       name: {
@@ -38,6 +40,24 @@ export class OrganizationComponent implements OnInit {
       email: {
         title: 'Email',
         type: 'string',
+      },
+      disabled: {
+        title: 'Статус',
+        filter: {
+          type: 'checkbox',
+          config: {
+            true: 'Активен',
+            false: 'Блокирован',
+            resetText: 'Показать все',
+          },
+        },
+        editor: {
+          type: 'checkbox',
+          config: {
+            true: 'Активен',
+            false: 'Блокирован'
+          }
+        }
       }
     },
   };
@@ -53,6 +73,7 @@ export class OrganizationComponent implements OnInit {
       editButtonContent: '<i class="nb-edit"></i>',
       saveButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
+      confirmSave: true
     },
     actions: {
       columnTitle: 'Действия',
@@ -66,6 +87,7 @@ export class OrganizationComponent implements OnInit {
       token: {
         title: 'Ключ',
         type: 'string',
+        editable: false
       },
       disabled: {
         title: 'Статус',
@@ -117,8 +139,50 @@ export class OrganizationComponent implements OnInit {
     }
   }
 
+  /**
+   * Добавление Ключа
+   *
+   * @param event
+   */
   public onTokenCreateConfirm(event: any): void {
     this.service.createToken(new CompanyToken(event.newData))
+      .toPromise()
+      .then(result => {
+        event.confirm.resolve(result);
+      })
+      .catch(error => {
+        event.confirm.reject();
+      });
+  }
+
+  /**
+   *  Изменение Ключа
+   *
+   * @param event
+   */
+  public onTokenUpdateConfirm(event: any): void {
+    this.service.updateToken(event.newData)
+      .toPromise()
+      .then(result => {
+        event.confirm.resolve(result);
+      })
+      .catch(error => {
+        event.confirm.reject();
+      });
+  }
+
+  /**
+   * Добавление Оператора
+   *
+   * @param event
+   */
+  public onOperatorCreateConfirm(event: any): void {
+    this.service.createOperator({
+        name: event.newData.name,
+        email: event.newData.email,
+        password: '12345',
+        confirmPassword: '12345'
+      })
       .toPromise()
       .then(result => {
         event.confirm.resolve();
@@ -128,16 +192,16 @@ export class OrganizationComponent implements OnInit {
       });
   }
 
-  public onOperatorCreateConfirm(event: any): void {
-    this.service.createOperator({
-        name: event.newData.name,
-        email: event.newData.email,
-        password: '1234',
-        confirmPassword: '1234'
-      })
+  /**
+   * Редактирование Оператора
+   *
+   * @param event
+   */
+  public onOperatorUpdateConfirm(event: any): void {
+    this.service.updateOperator(event.newData)
       .toPromise()
       .then(result => {
-        event.confirm.resolve();
+        event.confirm.resolve(result);
       })
       .catch(error => {
         event.confirm.reject();

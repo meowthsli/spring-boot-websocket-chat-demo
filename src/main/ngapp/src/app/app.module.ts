@@ -108,7 +108,7 @@ const routes: Routes = [
             login: {
               endpoint: 'http://localhost:8080/api/login',
               redirect: {
-                success: '/dashboard/supervisor/organizations'
+                success: '/dashboard/supervisor/organization'
               }
             },
             register: {

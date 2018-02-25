@@ -16,11 +16,15 @@ export class NbAuthJWTInterceptor implements HttpInterceptor {
     return this.authService.getToken()
       .pipe(
         switchMap((token: NbAuthJWTToken) => {
-          if (token) {
+
+          req = req.clone({
+            url: req.url.search(/^\/api\//) > -1 ? 'http://localhost:8080' + req.url : req.url
+          });
+
+          if (token && token.getValue()) {
             // const JWT = `Bearer ${token.getValue()}`;
             const JWT = token.getValue();
             req = req.clone({
-              url: req.url.search(/^\/api\//) > -1 ? 'http://localhost:8080' + req.url : req.url,
               setHeaders: {
                 Authorization: JWT,
               },

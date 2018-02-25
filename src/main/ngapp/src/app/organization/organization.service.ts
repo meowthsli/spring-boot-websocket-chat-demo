@@ -38,14 +38,14 @@ export class Operator {
   public readonly email: string;
   public readonly name: string;
   public readonly supervisor: boolean;
-  public readonly disabled: boolean;
+  public readonly disabled: 'Активен' | 'Блокирован';
 
-  constructor(data: any) {
+  constructor(private data: any) {
     this.id = data.id;
     this.email = data.email;
     this.name = data.name;
     this.supervisor = data.supervisor;
-    this.disabled = data.locked;
+    this.disabled = data.locked ? 'Блокирован' : 'Активен';
   }
 
 }
@@ -72,40 +72,23 @@ export class OrganizationService {
     private http: HttpClient
   ) { }
 
-  private tokens: CompanyToken[] = [
-    {
-      token: '111221212121212112',
-      name: 'Ключ iOS',
-      disabled: 'Активен'
-    } as CompanyToken,
-    {
-      token: 'aabababababaababab',
-      name: 'Ключ Android',
-      disabled: 'Активен'
-    } as CompanyToken
-  ];
-
-  private operators: Operator[] = [
-    {
-      email: 'ivan@mail.ru',
-      name: 'Иванов Иван'
-    } as Operator,
-    {
-      email: 'petr@mail.ru',
-      name: 'Петров Иван'
-    } as Operator
-  ];
-
-  // public getOrganization(id: string): Observable<Organization> {
-  //   return Observable.of(this.organizations.find(organization => organization.email === id));
-  // }
-
+  /**
+   * Получить Организации
+   *
+   * @returns {Observable<Organization>}
+   */
   public getOrganization(): Observable<Organization> {
     return this.http.get('/api/organization').pipe(map(result => {
       return new Organization(result);
     }));
   }
 
+  /**
+   * Создать Ключ
+   *
+   * @param {CompanyToken} token
+   * @returns {Observable<CompanyToken>}
+   */
   public createToken(token: CompanyToken): Observable<CompanyToken> {
     return this.http.post<ICompanyToken>('/api/key', {
         name: token.name
@@ -115,10 +98,48 @@ export class OrganizationService {
       }))
   }
 
+  /**
+   * Обновить данные Ключа
+   *
+   * @param {CompanyToken} token
+   * @returns {Observable<CompanyToken>}
+   */
+  public updateToken(token: CompanyToken): Observable<CompanyToken> {
+    return this.http.post<ICompanyToken>('/api/key/' + token.id, {
+        name: token.name,
+        isBlocked: token.disabled === 'Блокирован'
+      })
+      .pipe(map(result => {
+        return new CompanyToken(result);
+      }))
+  }
+
+  /**
+   * Создать Оператора
+   *
+   * @param {INewOperator} operator
+   * @returns {Observable<Operator>}
+   */
   public createOperator(operator: INewOperator): Observable<Operator> {
     return this.http.post<ICompanyToken>('/api/user', operator)
       .pipe(map(result => {
-        debugger;
+        return new Operator(result);
+      }))
+  }
+
+  /**
+   * Обновить Оператора
+   *
+   * @param {INewOperator} operator
+   * @returns {Observable<Operator>}
+   */
+  public updateOperator(operator: Operator): Observable<Operator> {
+    return this.http.patch<ICompanyToken>('/api/user', {
+        name: operator.name,
+        email: operator.email,
+        locked: operator.disabled === 'Блокирован'
+      })
+      .pipe(map(result => {
         return new Operator(result);
       }))
   }
