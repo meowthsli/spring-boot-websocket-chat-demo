@@ -44,33 +44,33 @@ public class IgniteTests {
         // Ignite i = Ignition.start();
         //IgniteCache<String, Message> convs = i.getOrCreateCache("messages");
         Message m1 = new Message();
-        m1.id = 2L;
+        m1.msgId = 2L;
         m1.clientLogin = "hello";
-        messages.put(m1.id, m1);
+        messages.put(m1.msgId, m1);
         
         Message m = new Message();
-        m.id = 1L;
+        m.msgId = 1L;
         m.clientLogin = "hello2";
-        messages.put(m.id, m);
+        messages.put(m.msgId, m);
         
         Message m2 = new Message();
-        m2.id = 3L;
+        m2.msgId = 3L;
         m2.clientLogin = "hello";
-        messages.put(m2.id, m2);
+        messages.put(m2.msgId, m2);
         
         Message m3 = new Message();
-        m3.id = 4L;
+        m3.msgId = 4L;
         m3.clientLogin = "hello3";
-        messages.put(m3.id, m3);
+        messages.put(m3.msgId, m3);
         
         Message m0 = new Message();
-        m0.id = 0L;
+        m0.msgId = 0L;
         m0.clientLogin = "hello";
-        messages.put(m0.id, m0);
+        messages.put(m0.msgId, m0);
         
         Assert.assertNotNull(messages.get(4L));
         
-        SqlQuery<Long, Message> q = new SqlQuery<>(Message.class, "clientLogin = ? and id < ?");
+        SqlQuery<Long, Message> q = new SqlQuery<>(Message.class, "clientLogin = ? and msgId < ? ORDER BY msgId DESC");
         q.setArgs("hello", 5L);
         
         List<Entry<Long, Message>> mm = messages.query(q).getAll();

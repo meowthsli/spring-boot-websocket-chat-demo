@@ -16,6 +16,7 @@ import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.QueryEntity;
 import org.apache.ignite.cache.QueryIndex;
 import org.apache.ignite.cache.affinity.AffinityFunction;
+import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.DataRegionConfiguration;
 import org.apache.ignite.configuration.DataStorageConfiguration;
@@ -84,28 +85,16 @@ public class StorageConfig {
     public IgniteCache<Long, Message> messages(Ignite ignite) {
         CacheConfiguration<Long, Message> config = new CacheConfiguration<>("messages");
         config.setDataRegionName(ignite.configuration().getDataStorageConfiguration().getDefaultDataRegionConfiguration().getName());
+        config.setStatisticsEnabled(true);
         
-        QueryEntity qe = new QueryEntity();
+        config.setIndexedTypes(Long.class, Message.class);
+        IgniteCache<Long, Message> cache = ignite.getOrCreateCache(config);
         
-        qe.addQueryField("at", "java.time.Instant", "at");
-        qe.addQueryField("clientLogin", "java.lang.String", "clientLogin");
-        qe.addQueryField("id", "java.lang.Long", "id");
-
-        qe.setKeyFieldName("id");
-        qe.setKeyType("java.lang.Long");
-        qe.setValueType(Message.class.getCanonicalName());
-
-        QueryIndex qi = new QueryIndex();
-        qi.setName("histo_idx");
-        LinkedHashMap<String, Boolean> fields = new LinkedHashMap<>();
-        fields.put("clientLogin", Boolean.TRUE);
-        fields.put("at", Boolean.FALSE);
-        fields.put("id", Boolean.FALSE);
-        qi.setFields(fields);
-        qe.setIndexes(Arrays.asList(qi));
-
-        config.setQueryEntities(Arrays.asList(qe));
-        return ignite.getOrCreateCache(config);
+        //SqlFieldsQuery qry = new SqlFieldsQuery("CREATE INDEX search_msgs ON Message (clientLogin ASC, msgId DESC);");
+        //qry.setSchema("PUBLIC");
+        //cache.query(qry);
+        
+        return cache;
     }
 
     @PreDestroy
