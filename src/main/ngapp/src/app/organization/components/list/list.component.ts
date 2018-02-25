@@ -44,14 +44,14 @@ export class ListComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private service: OrganizationService
   ) {
-    this.service.getOrganizations().subscribe(organizations => this.source.load(organizations));
+    //this.service.getOrganizations().subscribe(organizations => this.source.load(organizations));
   }
 
   public ngOnInit() {
   }
 
   public onSelectOrganization(event: {data: Organization}): void {
-    this.router.navigate(['../organization/', event.data.email], {relativeTo: this.activatedRoute});
+    this.router.navigate(['../organization/', event.data.id], {relativeTo: this.activatedRoute});
   }
 
   public onDeleteConfirm(event): void {

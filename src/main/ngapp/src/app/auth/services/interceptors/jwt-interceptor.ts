@@ -13,13 +13,14 @@ export class NbAuthJWTInterceptor implements HttpInterceptor {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-debugger;
     return this.authService.getToken()
       .pipe(
         switchMap((token: NbAuthJWTToken) => {
           if (token) {
-            const JWT = `Bearer ${token.getValue()}`;
+            // const JWT = `Bearer ${token.getValue()}`;
+            const JWT = token.getValue();
             req = req.clone({
+              url: req.url.search(/^\/api\//) > -1 ? 'http://localhost:8080' + req.url : req.url,
               setHeaders: {
                 Authorization: JWT,
               },

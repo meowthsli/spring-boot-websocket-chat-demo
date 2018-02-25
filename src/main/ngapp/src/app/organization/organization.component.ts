@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
-import { Organization, OrganizationService } from './organization.service';
+import { CompanyToken, Operator, Organization, OrganizationService } from './organization.service';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 
@@ -16,6 +16,7 @@ export class OrganizationComponent implements OnInit {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
+      confirmCreate: true
     },
     edit: {
       editButtonContent: '<i class="nb-edit"></i>',
@@ -46,6 +47,7 @@ export class OrganizationComponent implements OnInit {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
+      confirmCreate: true
     },
     edit: {
       editButtonContent: '<i class="nb-edit"></i>',
@@ -90,16 +92,18 @@ export class OrganizationComponent implements OnInit {
 
   public tokenSource: LocalDataSource = new LocalDataSource();
 
-  public organization: Observable<Organization>;
+  public organization: Organization;
 
   constructor(
     private route: ActivatedRoute,
     private service: OrganizationService
   ) {
     const organizationId: string = this.route.snapshot.paramMap.get('id');
-    this.organization = this.service.getOrganization(organizationId);
-    this.service.getOperators().subscribe(operators => this.operatorSource.load(operators));
-    this.service.getTokens().subscribe(tokens => this.tokenSource.load(tokens));
+    this.service.getOrganization().subscribe(organization => {
+      this.organization = organization;
+      this.operatorSource.load(organization.operators);
+      this.tokenSource.load(organization.tokens)
+    });
   }
 
   public ngOnInit() {
@@ -111,6 +115,33 @@ export class OrganizationComponent implements OnInit {
     } else {
       event.confirm.reject();
     }
+  }
+
+  public onTokenCreateConfirm(event: any): void {
+    this.service.createToken(new CompanyToken(event.newData))
+      .toPromise()
+      .then(result => {
+        event.confirm.resolve();
+      })
+      .catch(error => {
+        event.confirm.reject();
+      });
+  }
+
+  public onOperatorCreateConfirm(event: any): void {
+    this.service.createOperator({
+        name: event.newData.name,
+        email: event.newData.email,
+        password: '1234',
+        confirmPassword: '1234'
+      })
+      .toPromise()
+      .then(result => {
+        event.confirm.resolve();
+      })
+      .catch(error => {
+        event.confirm.reject();
+      });
   }
 
 }

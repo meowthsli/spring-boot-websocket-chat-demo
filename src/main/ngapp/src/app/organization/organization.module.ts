@@ -7,11 +7,13 @@ import { RouterModule } from '@angular/router';
 import { routes } from './organization.routes';
 import { OrganizationService } from './organization.service';
 import { ListComponent } from './components/list/list.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
+    HttpClientModule,
     Ng2SmartTableModule,
     NbLayoutModule,
     NbCardModule
