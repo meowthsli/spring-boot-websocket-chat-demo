@@ -6,7 +6,6 @@
 package org.wolna.ouchatserver.controller;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -127,13 +126,13 @@ public class RestApiController {
             produces = "application/json")
     @ResponseBody
     @Transactional
-    public Object newUser(Authentication au, @RequestBody RegistrationData data) {
+    public User newUser(Authentication au, @RequestBody RegistrationData data) {
         User svsr = ((SecurityUser) au.getPrincipal()).getUser();
            
         User u = registerUser(svsr.company, data);
         users.save(u);
         
-        return Collections.EMPTY_MAP;
+        return u;
     }
 
     @RequestMapping(path = "/user/{id}", method = {RequestMethod.PATCH},
