@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
 import { routes } from './chat.routes';
 import { PipesModule } from '../pipes/pipes.module';
 import { FormsModule } from '@angular/forms';
-import { OUChatClientConnector } from '../ou-chat-sdk/client-connector';
+import { OUChatClientConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/client-connector';
 
 @NgModule({
   imports: [
@@ -21,7 +21,7 @@ import { OUChatClientConnector } from '../ou-chat-sdk/client-connector';
   ],
   declarations: [ChatComponent],
   providers: [
-    OUChatClientConnector
+    OUChatClientConnectorImpl
   ]
 })
 export class ChatModule { }
