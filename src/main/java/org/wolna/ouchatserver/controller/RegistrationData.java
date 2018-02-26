@@ -58,4 +58,13 @@ public class RegistrationData {
         }
     }
     
+    private Boolean locked;
+
+    public Boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(Boolean locked) {
+        this.locked = locked;
+    }
 }
