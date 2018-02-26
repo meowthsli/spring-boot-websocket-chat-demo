@@ -1,5 +1,4 @@
 import { Component, Output, EventEmitter } from "@angular/core";
-import { StompConnector } from "../stomp/app.stomp";
 import { OnInit } from "@angular/core/src/metadata/lifecycle_hooks";
 
 import {BtoaPipe, AtobPipe} from '../b64.pipe';
@@ -16,10 +15,10 @@ export class ClientQueueComponent implements OnInit {
     @Output() public $clientOpen: EventEmitter<String> = new EventEmitter();
 
     // methods
-    public constructor(private stomp: StompConnector) {}
+    public constructor() {}
     
     ngOnInit(): void {
-        this.stomp.incomingMessage.subscribe(msg => this.onMessage(msg));
+        // this.stomp.incomingMessage.subscribe(msg => this.onMessage(msg));
     }
 
     private onMessage(p:any) {
@@ -34,7 +33,7 @@ export class ClientQueueComponent implements OnInit {
                     qi.text = text;
                 }
 
-                this.stomp.getInfo([p.clientID]);
+               // this.stomp.getInfo([p.clientID]);
             }
         }
 
@@ -52,7 +51,7 @@ export class ClientQueueComponent implements OnInit {
             }
 
             if(!this.nameCache[p.clientID]) {
-                this.stomp.getInfo([p.clientID]);
+               // this.stomp.getInfo([p.clientID]);
             }
         }
 

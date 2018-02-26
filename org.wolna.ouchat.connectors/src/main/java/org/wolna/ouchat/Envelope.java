@@ -14,6 +14,8 @@ public class Envelope {
     public LoadHistoryResp loadHistoryResp;
     public OkTryLockChat tryLockChat;
     public OkReleaseChat releaseChat;
+    public MessageFromClient clientMessage;
+    public OpHello opHello;
 
     /**
      * Client sends when makes connection
@@ -37,7 +39,7 @@ public class Envelope {
      * Response from server to client hello
      */
     public static final class HelloOk {
-        public long id = 1;
+        public long ok = 1;
     }
     
     /**
@@ -163,6 +165,23 @@ public class Envelope {
     }
     
     /**
+     * Message to load client history from server
+     */
+    public static class LoadHistoryOp {
+        public long lastSeenMessage;
+        public String clientLogin;
+        public LoadHistoryOp(String clientLogin, long lastSeenMessage) {
+            this.lastSeenMessage = lastSeenMessage;
+            this.clientLogin = clientLogin;
+        }
+        
+        /**
+         * Internal. Do notuse
+         */
+        protected LoadHistoryOp() {}
+    }
+    
+    /**
      * History messages
      */
     public static class LoadHistoryResp {
@@ -173,22 +192,22 @@ public class Envelope {
             this.userLogin = userLogin;
         }
     }
-
+    
     /**
      * Message to load client history from server
      */
-    public static class LoadHistoryOp {
-        public long lastSeenMessage;
+    public static class MessageFromClient {
+        public TextMessage message;
         public String clientID;
-        public LoadHistoryOp(String clientID, long lastSeenMessage) {
-            this.lastSeenMessage = lastSeenMessage;
+        public MessageFromClient(String clientID, TextMessage message) {
+            this.message = message;
             this.clientID = clientID;
         }
 
         /**
          * Internal. Do not use
          */
-        protected LoadHistoryOp() {}
+        protected MessageFromClient() {}
     }
     
     public static class TryLockChat {

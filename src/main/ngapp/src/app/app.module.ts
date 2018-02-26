@@ -15,8 +15,6 @@ import { LoginComponent } from './login/app.login';
 import { ChatComponent } from './op-chat/app.chat';
 import { ClientChatComponent } from './client-chat/app.client-chat';
 import { ClientQueueComponent } from './op-chat/app.client-queue';
-import { StompConnector } from './stomp/app.stomp';
-import { ClientStompConnector } from './stomp/app.client-stomp';
 import { BtoaPipe, AtobPipe } from './b64.pipe';
 import { CapitalizePipe } from './pipes/capitalize';
 import { TimeformatPipe } from './pipes/time-formatter';
@@ -30,7 +28,6 @@ import { FioPipeSimple } from './pipes/fio-pipe-simple';
 import { SettingsComponent } from './op-chat/app.management';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 
-import { OUChatClientConnector } from './ou-chat-sdk/client-connector';
 import { NbAuthModule } from './auth/auth.module';
 import { NbEmailPassAuthProvider } from './auth/providers/email-pass-auth.provider';
 import { OrganizationModule } from './organization/organization.module';
@@ -39,6 +36,8 @@ import { AdminModule } from './dashboard/admin/admin.module';
 import { OperatorChatModule } from './operator-chat/operator-chat.module';
 import { PipesModule } from './pipes/pipes.module';
 import { OUChatClientConnectorImpl } from './connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/client-connector';
+import { OUChatOpConnectorImpl } from './connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/ops-connector';
+
 import { ChatModule } from './chat/chat.module';
 import { AppGuardService } from './app.guard.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -142,9 +141,7 @@ const routes: Routes = [
     }),
   ],
   providers: [
-    UsercontextService, OUChatClientConnectorImpl,
-    StompConnector,
-    ClientStompConnector,
+    UsercontextService, OUChatClientConnectorImpl, OUChatOpConnectorImpl,
     NbSidebarService,
     NbSpinnerService,
     ToasterService,

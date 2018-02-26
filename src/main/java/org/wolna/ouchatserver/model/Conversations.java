@@ -44,4 +44,11 @@ public interface Conversations {
      * @param clientLogin
     */
     void lockConversation(String clientLogin);
+
+    /**
+     * Add message to conversation
+     * @param clientLogin
+     * @param message 
+     */
+    long addOpMessage(String clientLogin, String message);
 }

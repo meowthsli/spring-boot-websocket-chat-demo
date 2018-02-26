@@ -20,6 +20,7 @@ import org.wolna.ouchat.Envelope.ClientHello;
 import org.wolna.ouchat.Envelope.HelloOk;
 import org.wolna.ouchatserver.model.Conversations;
 import org.wolna.ouchatserver.model.Message;
+import org.wolna.ouchatserver.security.UserDetailsServiceImpl.SecurityUser;
 
 /**
  * Created by on 24/07/17.
@@ -31,7 +32,7 @@ public class ChatController {
 
     @Autowired
     private SimpMessagingTemplate sender;
-    
+
     @Autowired
     Conversations storage;
 
@@ -59,7 +60,7 @@ public class ChatController {
 
     @MessageMapping("/client.say")
     @SendTo("/broadcast/all-ops")
-    public Envelope.MessageToServer clientSay(@Payload Envelope.MessageToServer chatMessage,
+    public Envelope clientSay(@Payload Envelope.MessageToServer chatMessage,
             SimpMessageHeaderAccessor smha, Authentication who) {
         long id = storage.addClientMessage(clientLogin(who), chatMessage.text);
 
@@ -68,9 +69,12 @@ public class ChatController {
         e.messageAccepted = new Envelope.MessageAccepted(chatMessage.temporaryId, id, Date.from(Instant.now()));
         sender.convertAndSendToUser(clientLogin(who), "/queue/client", e);
 
-        return new Envelope.MessageToServer(chatMessage.text, id);
+        Envelope oe = new Envelope();
+        oe.clientMessage = new Envelope.MessageFromClient(clientLogin(who),
+                new Envelope.TextMessage(id, chatMessage.text, true, Date.from(e.messageAccepted.when.toInstant()))
+        );
+        return oe;
     }
-    
 
     /**
      * TODO: load real history
@@ -84,8 +88,8 @@ public class ChatController {
     @SendToUser("/queue/client")
     public Envelope clientHistory(@Payload Envelope.LoadHistory getHisto,
             SimpMessageHeaderAccessor smha, Authentication who) {
-        Collection<Message> mm = storage.loadHistory(clientLogin(who), Long.MAX_VALUE);
-        
+        Collection<Message> mm = storage.loadHistory(clientLogin(who), getHisto.lastSeenMessage);
+
         Envelope e = new Envelope();
         e.loadHistoryResp = new Envelope.LoadHistoryResp(
                 mm.stream().map(x -> new Envelope.TextMessage(x.msgId, x.text, x.fromClient, Date.from(x.created)))
@@ -93,7 +97,7 @@ public class ChatController {
                 clientLogin(who));
         return e;
     }
-    
+
     /// operator handlers
     /**
      * New op is here
@@ -101,24 +105,45 @@ public class ChatController {
      * @param hello
      * @param smha
      * @param who
+     * @return
      */
     @MessageMapping("/op.hello")
     @SendTo("/broadcast/all-ops")
-    public void operatorHello(@Payload Envelope.OpHello hello,
+    public Envelope operatorHello(@Payload Envelope.OpHello hello,
             SimpMessageHeaderAccessor smha, Authentication who) {
-        sender.convertAndSendToUser(who.getPrincipal().toString(), "/queue/op", new HelloOk()); // example of send to client back
+        sender.convertAndSendToUser(opsLogin(who), "/queue/op", new HelloOk()); // example of send to client back
+
+        hello.desc.userLogin = opsLogin(who);
+
+        Envelope e = new Envelope();
+        e.opHello = hello;
+        return e;
     }
 
     @MessageMapping("/operator.histo")
     @SendToUser("/queue/op")
     public Envelope operatorHisto(@Payload Envelope.LoadHistoryOp opHisto,
             SimpMessageHeaderAccessor smha) {
-        throw new UnsupportedOperationException("Not implemented");
+        Collection<Message> mm = storage.loadHistory(opHisto.clientLogin, opHisto.lastSeenMessage);
+
+        Envelope e = new Envelope();
+        e.loadHistoryResp = new Envelope.LoadHistoryResp(
+                mm.stream()
+                        .map(x -> new Envelope.TextMessage(x.msgId, x.text, x.fromClient, Date.from(x.created)))
+                        .collect(Collectors.toList())
+                        .toArray(new Envelope.TextMessage[0]),
+                opHisto.clientLogin);
+        return e;
     }
 
     @MessageMapping("/operator.say")
-    public void operatorSay(@Payload Envelope.MessageToServerOp opMessage, SimpMessageHeaderAccessor smha) {
-        throw new UnsupportedOperationException("Not supported");
+    public void operatorSay(@Payload Envelope.MessageToServerOp chatMessage, SimpMessageHeaderAccessor smha) {
+        long id = storage.addOpMessage(chatMessage.clientID, chatMessage.text);
+
+        // send back acceptance
+        Envelope e = new Envelope();
+        e.messageAccepted = new Envelope.MessageAccepted(chatMessage.temporaryId, id, Date.from(Instant.now()));
+        sender.convertAndSendToUser(chatMessage.clientID, "/queue/client", e);
     }
 
     @MessageMapping("/operator.tryLock")
@@ -134,11 +159,16 @@ public class ChatController {
             SimpMessageHeaderAccessor smha) {
         throw new UnsupportedOperationException("Not implemented");
     }
+
     private static String clientLogin(Authentication user) {
         return user.getPrincipal().toString();
     }
 
     private static String apiKey(Authentication who) {
         return who.getCredentials().toString();
+    }
+
+    private static String opsLogin(Authentication user) {
+        return ((SecurityUser)user.getPrincipal()).getUser().getEmail();
     }
 }

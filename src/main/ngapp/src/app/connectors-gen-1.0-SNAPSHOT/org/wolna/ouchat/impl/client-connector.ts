@@ -73,7 +73,7 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
             var p = new Envelope();
             
             this.stompClient.send("/app/client.histo", {}, JSON.stringify(new Envelope.LoadHistory(lastSeen)));
-            return 0;
+            return Envelope.Response.ERROR_NOT_CONNECTED;
         } 
         return Envelope.Response.GENERIC_ERROR;
     }
@@ -88,7 +88,7 @@ export class OUChatClientConnectorImpl implements OUChatClientConnector {
             env.errorCode = Envelope.Response.ERROR_NOT_CONNECTED;
             env.errorDescription = "Not connected";
             this._onError.next(env);
-            return 0;
+            return Envelope.Response.ERROR_NOT_CONNECTED;
         }   
         this.stompClient.send("/app/client.say", {}, JSON.stringify(new Envelope.MessageToServer(text, ++this.messageTempId)));
         return this.messageTempId;

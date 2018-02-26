@@ -72,6 +72,18 @@ public class ConversationsImpl implements Conversations {
         return m.msgId;
     }
     
+    @Override
+    public long addOpMessage(String clientLogin, String message) {
+        Message m = new Message();
+        m.msgId = messageIdGen.incrementAndGet();
+        m.text = message;
+        m.clientLogin = clientLogin;
+        m.created = Instant.now();
+        m.fromClient = false;
+        messages.put(m.msgId, m);
+        return m.msgId;
+    }
+    
      private SqlQuery createHistoryQuery(String who, long lastSeen) {
         SqlQuery q = new SqlQuery(Message.class, "clientLogin = ? and msgId < ? ORDER BY msgId DESC");
         q.setPageSize(60);

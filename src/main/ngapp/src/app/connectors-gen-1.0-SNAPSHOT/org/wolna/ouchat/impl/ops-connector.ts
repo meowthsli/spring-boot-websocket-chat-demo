@@ -38,17 +38,14 @@ export class OUChatOpConnectorImpl implements OUChatOpsConnector {
 
     /**
      * Set up connection
-     * @param login User login. Use ENTERPRISE KEY for client, or email for operator/supervisor
-     * @param passcode user password. Use ENTERPRISE KEY for client, or password for operator/supervisor
+     * @param key JWT token for supervisor
      * @param uri endpoint uri
-     * @param clientDesc client description
+     * @param opDesc operator description. You can not to fill login email for operator/supervisor
      */
-    public connect(uri: string, key: string, clientDesc: Envelope.UserDescription) : boolean {
-        //-- this.disconnect(); // ignore return
+    public connect(uri: string, key: string, opDesc: Envelope.UserDescription) : boolean {
+        this.disconnect(); // ignore return
         
-        // Recreate socket
-       // this.socket = new SockJS(uri);
-       // this.stompClient = Stomp.over(this.socket);
+        // Recreate client
        this.stompClient = Stomp.client(uri + "?jwt=" + key);
 
         // Open socket again
@@ -60,7 +57,7 @@ export class OUChatOpConnectorImpl implements OUChatOpsConnector {
                 this.subscription = this.stompClient.subscribe('/user/queue/op', (payload) => this.onStompReceived(payload));
                 
                 if(this.subscription && this.broadcastSubscription) { 
-                    this.stompClient.send("/app/op.hello", {}, JSON.stringify(new Envelope.OpHello(clientDesc)));
+                    this.stompClient.send("/app/op.hello", {}, JSON.stringify(new Envelope.OpHello(opDesc)));
                 } // in case of error an error frame will arrive from server
                 this._onConnected.next(); // signal caller we succeeded
             },
@@ -79,25 +76,20 @@ export class OUChatOpConnectorImpl implements OUChatOpsConnector {
      * Close and disconnect connection, raise event
      */
     public disconnect() : boolean {
-        return true;
-        /*if(this.socket) { 
-            if(this.subscription) {
-                this.subscription.unsubscribe();
-            }
-            if(this.broadcastSubscription) {
-                this.broadcastSubscription.unsubscribe();
-            };
-            this.socket.close();
-            this.subscription = null;
-            this.stompClient = null;
-            this.socket = null;
-            var err = new Envelope.Response();
-            err.errorCode = Envelope.Response.ERROR_DISCONNECTED;
-            err.errorDescription = "Disconnected by user";
-            this._onError.next(err);
-            return true;
+        if(this.subscription) {
+            this.subscription.unsubscribe();
         }
-        return false;*/
+        if(this.broadcastSubscription) {
+            this.broadcastSubscription.unsubscribe();
+        };
+        this.subscription = null;
+        this.broadcastSubscription = null;
+        this.stompClient = null;
+        var err = new Envelope.Response();
+        err.errorCode = Envelope.Response.ERROR_DISCONNECTED;
+        err.errorDescription = "Disconnected by user";
+        this._onError.next(err);
+        return true;
     }
 
     /**
@@ -107,7 +99,7 @@ export class OUChatOpConnectorImpl implements OUChatOpsConnector {
     public loadHistory(clientID: string, lastSeen: number): number {
         if(this.isConnected()) {
             this.stompClient.send("/app/op.histo", {}, JSON.stringify(new Envelope.LoadHistoryOp(clientID, lastSeen)));
-            return 0;
+            return Envelope.Response.ERROR_NOT_CONNECTED;
         } 
         return Envelope.Response.ERROR_NOT_CONNECTED;
     }
@@ -122,7 +114,7 @@ export class OUChatOpConnectorImpl implements OUChatOpsConnector {
             env.errorCode = Envelope.Response.ERROR_NOT_CONNECTED;
             env.errorDescription = "Not connected";
             this._onError.next(env);
-            return 0;
+            return Envelope.Response.ERROR_NOT_CONNECTED;
         }   
         this.stompClient.send("/app/op.say", {}, JSON.stringify(new Envelope.MessageToServerOp(clientID, text, ++this.messageTempId)));
         return this.messageTempId;
@@ -141,7 +133,6 @@ export class OUChatOpConnectorImpl implements OUChatOpsConnector {
         return !(!this.subscription);
     }
 
-   
     /**
      * Subscribe to messages
      * @param handler 
@@ -181,7 +172,6 @@ export class OUChatOpConnectorImpl implements OUChatOpsConnector {
 
     
     // Event part
-    // protected _onResultSubscription: Subscription;
 
      /**
      * When connected

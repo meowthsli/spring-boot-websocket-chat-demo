@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -47,7 +46,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             // 2. Check token query string
             Map<String, String> qps = RequestUtils.getQueryParameters(req);
             if(qps.containsKey(TOKEN_QUERY_STRING) && qps.get(TOKEN_QUERY_STRING) != null) {
-                authentication = getAuthentication(qps.get(TOKEN_QUERY_STRING));
+                authentication = getAuthentication(qps.get(TOKEN_QUERY_STRING).replace("%20", " "));
             }
         }
         

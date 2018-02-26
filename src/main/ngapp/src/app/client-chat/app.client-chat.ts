@@ -8,9 +8,9 @@ import { NbSpinnerService } from '@nebular/theme';
 import { ToasterService } from 'angular2-toaster/src/toaster.service';
 import { ToasterConfig } from 'angular2-toaster';
 import { environment } from '../../environments/environment';
-import { UserDesc, FIO as FIO2 } from '../ou-chat-sdk/dtos';
+// import { UserDesc, FIO as FIO2 } from '../ou-chat-sdk/dtos';
 import { OUChatClientConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/client-connector';
-import { OUChatOpConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/ops-connector';
+// import { OUChatOpConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/ops-connector';
 import { Envelope } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/Envelope';
 
 type CONNECTOR = OUChatClientConnectorImpl;

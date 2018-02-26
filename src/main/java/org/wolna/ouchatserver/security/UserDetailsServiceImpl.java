@@ -5,7 +5,6 @@
  */
 package org.wolna.ouchatserver.security;
 
-import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -54,6 +53,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         
         public org.wolna.ouchatserver.model.User getUser() {
             return this.uu;
+        }
+
+        @Override
+        public String toString() {
+            return this.uu.getEmail();
         }
     }
 }

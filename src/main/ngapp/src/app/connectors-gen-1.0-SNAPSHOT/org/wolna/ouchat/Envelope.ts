@@ -15,12 +15,18 @@ export class Envelope {
 
     public releaseChat : Envelope.OkReleaseChat;
 
+    public clientMessage : Envelope.MessageFromClient;
+
+    public opHello : Envelope.OpHello;
+
     constructor() {
         if(this.messageAccepted===undefined) this.messageAccepted = null;
         if(this.helloOk===undefined) this.helloOk = null;
         if(this.loadHistoryResp===undefined) this.loadHistoryResp = null;
         if(this.tryLockChat===undefined) this.tryLockChat = null;
         if(this.releaseChat===undefined) this.releaseChat = null;
+        if(this.clientMessage===undefined) this.clientMessage = null;
+        if(this.opHello===undefined) this.opHello = null;
     }
 }
 Envelope["__class"] = "org.wolna.ouchat.Envelope";
@@ -62,7 +68,7 @@ export namespace Envelope {
      * @class
      */
     export class HelloOk {
-        public id : number = 1;
+        public ok : number = 1;
 
         constructor() {
         }
@@ -277,6 +283,40 @@ export namespace Envelope {
 
 
     /**
+     * Message to load client history from server
+     * @param {string} clientLogin
+     * @param {number} lastSeenMessage
+     * @class
+     */
+    export class LoadHistoryOp {
+        public lastSeenMessage : number;
+
+        public clientLogin : string;
+
+        public constructor(clientLogin? : any, lastSeenMessage? : any) {
+            if(((typeof clientLogin === 'string') || clientLogin === null) && ((typeof lastSeenMessage === 'number') || lastSeenMessage === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+                if(this.clientLogin===undefined) this.clientLogin = null;
+                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+                if(this.clientLogin===undefined) this.clientLogin = null;
+                (() => {
+                    this.lastSeenMessage = lastSeenMessage;
+                    this.clientLogin = clientLogin;
+                })();
+            } else if(clientLogin === undefined && lastSeenMessage === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+                if(this.clientLogin===undefined) this.clientLogin = null;
+                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+                if(this.clientLogin===undefined) this.clientLogin = null;
+            } else throw new Error('invalid overload');
+        }
+    }
+    LoadHistoryOp["__class"] = "org.wolna.ouchat.Envelope.LoadHistoryOp";
+
+
+    /**
      * History messages
      * @param {Array} messages
      * @param {string} userLogin
@@ -300,35 +340,35 @@ export namespace Envelope {
     /**
      * Message to load client history from server
      * @param {string} clientID
-     * @param {number} lastSeenMessage
+     * @param {Envelope.TextMessage} message
      * @class
      */
-    export class LoadHistoryOp {
-        public lastSeenMessage : number;
+    export class MessageFromClient {
+        public message : Envelope.TextMessage;
 
         public clientID : string;
 
-        public constructor(clientID? : any, lastSeenMessage? : any) {
-            if(((typeof clientID === 'string') || clientID === null) && ((typeof lastSeenMessage === 'number') || lastSeenMessage === null)) {
+        public constructor(clientID? : any, message? : any) {
+            if(((typeof clientID === 'string') || clientID === null) && ((message != null && message instanceof <any>Envelope.TextMessage) || message === null)) {
                 let __args = Array.prototype.slice.call(arguments);
-                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+                if(this.message===undefined) this.message = null;
                 if(this.clientID===undefined) this.clientID = null;
-                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+                if(this.message===undefined) this.message = null;
                 if(this.clientID===undefined) this.clientID = null;
                 (() => {
-                    this.lastSeenMessage = lastSeenMessage;
+                    this.message = message;
                     this.clientID = clientID;
                 })();
-            } else if(clientID === undefined && lastSeenMessage === undefined) {
+            } else if(clientID === undefined && message === undefined) {
                 let __args = Array.prototype.slice.call(arguments);
-                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+                if(this.message===undefined) this.message = null;
                 if(this.clientID===undefined) this.clientID = null;
-                if(this.lastSeenMessage===undefined) this.lastSeenMessage = 0;
+                if(this.message===undefined) this.message = null;
                 if(this.clientID===undefined) this.clientID = null;
             } else throw new Error('invalid overload');
         }
     }
-    LoadHistoryOp["__class"] = "org.wolna.ouchat.Envelope.LoadHistoryOp";
+    MessageFromClient["__class"] = "org.wolna.ouchat.Envelope.MessageFromClient";
 
 
     export class TryLockChat {
