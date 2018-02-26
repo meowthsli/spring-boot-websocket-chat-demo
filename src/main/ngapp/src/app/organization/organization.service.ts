@@ -105,7 +105,7 @@ export class OrganizationService {
    * @returns {Observable<CompanyToken>}
    */
   public updateToken(token: CompanyToken): Observable<CompanyToken> {
-    return this.http.post<ICompanyToken>('/api/key/' + token.id, {
+    return this.http.put<ICompanyToken>('/api/key/' + token.id, {
         name: token.name,
         isBlocked: token.disabled === 'Блокирован'
       })
@@ -134,10 +134,10 @@ export class OrganizationService {
    * @returns {Observable<Operator>}
    */
   public updateOperator(operator: Operator): Observable<Operator> {
-    return this.http.patch<ICompanyToken>('/api/user', {
+    return this.http.put<ICompanyToken>('/api/user/' + operator.id, {
         name: operator.name,
         email: operator.email,
-        locked: operator.disabled === 'Блокирован'
+        isLocked: operator.disabled === 'Блокирован'
       })
       .pipe(map(result => {
         return new Operator(result);
