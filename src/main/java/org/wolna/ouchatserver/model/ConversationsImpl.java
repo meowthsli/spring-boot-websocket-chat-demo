@@ -53,14 +53,6 @@ public class ConversationsImpl implements Conversations {
         cons.setDesc(desc);
         // put meta back
         convsMeta.put(who, cons);
-
-        // TODO: add test message
-        Message m = new Message();
-        m.clientLogin = who ;
-        m.created = Instant.now();
-        m.msgId = 0;
-        m.text = "hello";
-        messages.put(0L, m);
     }
 
     @Override
@@ -69,12 +61,13 @@ public class ConversationsImpl implements Conversations {
     }
 
     @Override
-    public long addMessage(String clientLogin, String message) {
+    public long addClientMessage(String clientLogin, String message) {
         Message m = new Message();
         m.msgId = messageIdGen.incrementAndGet();
         m.text = message;
         m.clientLogin = clientLogin;
         m.created = Instant.now();
+        m.fromClient = true;
         messages.put(m.msgId, m);
         return m.msgId;
     }

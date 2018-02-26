@@ -11,7 +11,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.security.core.Authentication;
@@ -62,7 +61,7 @@ public class ChatController {
     @SendTo("/broadcast/all-ops")
     public Envelope.MessageToServer clientSay(@Payload Envelope.MessageToServer chatMessage,
             SimpMessageHeaderAccessor smha, Authentication who) {
-        long id = storage.addMessage(clientLogin(who), chatMessage.text);
+        long id = storage.addClientMessage(clientLogin(who), chatMessage.text);
 
         // send back acceptance
         Envelope e = new Envelope();
@@ -89,7 +88,8 @@ public class ChatController {
         
         Envelope e = new Envelope();
         e.loadHistoryResp = new Envelope.LoadHistoryResp(
-                mm.stream().map(x -> x.text).collect(Collectors.toList()).toArray(new String[0]),
+                mm.stream().map(x -> new Envelope.TextMessage(x.msgId, x.text, x.fromClient, Date.from(x.created)))
+                        .collect(Collectors.toList()).toArray(new Envelope.TextMessage[0]),
                 clientLogin(who));
         return e;
     }

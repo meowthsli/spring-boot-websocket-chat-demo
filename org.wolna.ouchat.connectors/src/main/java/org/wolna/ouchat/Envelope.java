@@ -166,9 +166,9 @@ public class Envelope {
      * History messages
      */
     public static class LoadHistoryResp {
-        public String[] messages;
-        public String userLogin;
-        public LoadHistoryResp(String[] messages, String userLogin) {
+        public final TextMessage[] messages;
+        public final String userLogin;
+        public LoadHistoryResp(TextMessage[] messages, String userLogin) {
             this.messages = messages;
             this.userLogin = userLogin;
         }
@@ -278,5 +278,24 @@ public class Envelope {
          * Error description or null
          */
         public String errorDescription;
+    }
+    
+    public static class TextMessage {
+
+        public long id;
+        public String text;
+        public boolean fromClient;
+        public Date dateAt;
+        
+        protected TextMessage() {
+            
+        }
+        
+        public TextMessage(long id, String text, boolean fromClient, Date createdAt) {
+            this.id = id;
+            this.text = text;
+            this.fromClient = fromClient;
+            this.dateAt = createdAt;    
+        }
     }
 }

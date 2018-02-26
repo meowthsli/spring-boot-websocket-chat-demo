@@ -283,11 +283,11 @@ export namespace Envelope {
      * @class
      */
     export class LoadHistoryResp {
-        public messages : string[];
+        public messages : Envelope.TextMessage[];
 
         public userLogin : string;
 
-        public constructor(messages : string[], userLogin : string) {
+        public constructor(messages : Envelope.TextMessage[], userLogin : string) {
             if(this.messages===undefined) this.messages = null;
             if(this.userLogin===undefined) this.userLogin = null;
             this.messages = messages;
@@ -469,6 +469,48 @@ export namespace Envelope {
         }
     }
     Response["__class"] = "org.wolna.ouchat.Envelope.Response";
+
+
+    export class TextMessage {
+        public id : number;
+
+        public text : string;
+
+        public fromClient : boolean;
+
+        public dateAt : Date;
+
+        public constructor(id? : any, text? : any, fromClient? : any, createdAt? : any) {
+            if(((typeof id === 'number') || id === null) && ((typeof text === 'string') || text === null) && ((typeof fromClient === 'boolean') || fromClient === null) && ((createdAt != null && createdAt instanceof <any>Date) || createdAt === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.id===undefined) this.id = 0;
+                if(this.text===undefined) this.text = null;
+                if(this.fromClient===undefined) this.fromClient = false;
+                if(this.dateAt===undefined) this.dateAt = null;
+                if(this.id===undefined) this.id = 0;
+                if(this.text===undefined) this.text = null;
+                if(this.fromClient===undefined) this.fromClient = false;
+                if(this.dateAt===undefined) this.dateAt = null;
+                (() => {
+                    this.id = id;
+                    this.text = text;
+                    this.fromClient = fromClient;
+                    this.dateAt = createdAt;
+                })();
+            } else if(id === undefined && text === undefined && fromClient === undefined && createdAt === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.id===undefined) this.id = 0;
+                if(this.text===undefined) this.text = null;
+                if(this.fromClient===undefined) this.fromClient = false;
+                if(this.dateAt===undefined) this.dateAt = null;
+                if(this.id===undefined) this.id = 0;
+                if(this.text===undefined) this.text = null;
+                if(this.fromClient===undefined) this.fromClient = false;
+                if(this.dateAt===undefined) this.dateAt = null;
+            } else throw new Error('invalid overload');
+        }
+    }
+    TextMessage["__class"] = "org.wolna.ouchat.Envelope.TextMessage";
 
 }
 

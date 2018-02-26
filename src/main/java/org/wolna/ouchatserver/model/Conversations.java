@@ -28,7 +28,7 @@ public interface Conversations {
      * @param clientLogin
      * @param message 
      */
-    long addMessage(String clientLogin, String message);
+    long addClientMessage(String clientLogin, String message);
     
     /**
      * Loads messages
