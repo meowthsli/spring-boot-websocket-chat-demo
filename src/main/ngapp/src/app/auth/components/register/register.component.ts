@@ -105,11 +105,11 @@ import { NbAuthResult, NbAuthService } from '../../services/auth.service';
           </small>
         </div>
 
-        <div class="form-group accept-group col-sm-12" *ngIf="getConfigValue('forms.register.terms')">
-          <nb-checkbox name="terms" [(ngModel)]="user.terms" [required]="getConfigValue('forms.register.terms')">
-            Согласен с <a href="#" target="_blank"><strong>Правилами и условиями</strong></a>
-          </nb-checkbox>
-        </div>
+        <!--<div class="form-group accept-group col-sm-12" *ngIf="getConfigValue('forms.register.terms')">-->
+          <!--<nb-checkbox name="terms" [(ngModel)]="user.terms" [required]="getConfigValue('forms.register.terms')">-->
+            <!--Согласен с <a href="#" target="_blank"><strong>Правилами и условиями</strong></a>-->
+          <!--</nb-checkbox>-->
+        <!--</div>-->
 
         <button [disabled]="submitted || !form.valid" class="btn btn-block btn-hero-success"
                 [class.btn-pulse]="submitted">

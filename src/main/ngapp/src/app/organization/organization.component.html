@@ -4,7 +4,12 @@
   </nb-card-header>
 
   <nb-card-body>
-    <ng2-smart-table [settings]="tokenSettings" [source]="tokenSource" (deleteConfirm)="onDeleteConfirm($event)">
+    <ng2-smart-table
+      [settings]="tokenSettings"
+      [source]="tokenSource"
+      (deleteConfirm)="onDeleteConfirm($event)"
+      (createConfirm)="onTokenCreateConfirm($event)"
+      (editConfirm)="onTokenUpdateConfirm($event)">
     </ng2-smart-table>
   </nb-card-body>
 </nb-card>
@@ -15,7 +20,12 @@
   </nb-card-header>
 
   <nb-card-body>
-    <ng2-smart-table [settings]="operatorSettings" [source]="operatorSource" (deleteConfirm)="onDeleteConfirm($event)">
+    <ng2-smart-table
+      [settings]="operatorSettings"
+      [source]="operatorSource"
+      (deleteConfirm)="onDeleteConfirm($event)"
+      (createConfirm)="onOperatorCreateConfirm($event)"
+      (editConfirm)="onOperatorUpdateConfirm($event)">
     </ng2-smart-table>
   </nb-card-body>
 </nb-card>

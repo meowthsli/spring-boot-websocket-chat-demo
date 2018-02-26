@@ -41,6 +41,8 @@ import { PipesModule } from './pipes/pipes.module';
 import { OUChatClientConnectorImpl } from './connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/client-connector';
 import { ChatModule } from './chat/chat.module';
 import { AppGuardService } from './app.guard.service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { NbAuthJWTInterceptor } from './auth/services/interceptors/jwt-interceptor';
 
 const routes: Routes = [
   {
@@ -106,7 +108,7 @@ const routes: Routes = [
             login: {
               endpoint: 'http://localhost:8080/api/login',
               redirect: {
-                success: '/dashboard/admin/organizations'
+                success: '/dashboard/supervisor/organization'
               }
             },
             register: {
@@ -147,7 +149,8 @@ const routes: Routes = [
     NbSpinnerService,
     ToasterService,
     NgbModalStack,
-    AppGuardService
+    AppGuardService,
+    {provide: HTTP_INTERCEPTORS, useClass: NbAuthJWTInterceptor, multi: true}
   ],
   bootstrap: [
     AppComponent

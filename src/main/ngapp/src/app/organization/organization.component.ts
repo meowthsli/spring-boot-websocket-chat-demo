@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
-import { Organization, OrganizationService } from './organization.service';
+import { CompanyToken, Operator, Organization, OrganizationService } from './organization.service';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 
@@ -16,18 +16,21 @@ export class OrganizationComponent implements OnInit {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
+      confirmCreate: true
     },
     edit: {
       editButtonContent: '<i class="nb-edit"></i>',
       saveButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
+      confirmSave: true
     },
     delete: {
       deleteButtonContent: '<i class="nb-trash"></i>',
       confirmDelete: true,
     },
     actions: {
-      columnTitle: 'Действия'
+      columnTitle: 'Действия',
+      delete: false
     },
     columns: {
       name: {
@@ -37,6 +40,24 @@ export class OrganizationComponent implements OnInit {
       email: {
         title: 'Email',
         type: 'string',
+      },
+      disabled: {
+        title: 'Статус',
+        filter: {
+          type: 'checkbox',
+          config: {
+            true: 'Активен',
+            false: 'Блокирован',
+            resetText: 'Показать все',
+          },
+        },
+        editor: {
+          type: 'checkbox',
+          config: {
+            true: 'Активен',
+            false: 'Блокирован'
+          }
+        }
       }
     },
   };
@@ -46,11 +67,13 @@ export class OrganizationComponent implements OnInit {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
+      confirmCreate: true
     },
     edit: {
       editButtonContent: '<i class="nb-edit"></i>',
       saveButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
+      confirmSave: true
     },
     actions: {
       columnTitle: 'Действия',
@@ -64,6 +87,7 @@ export class OrganizationComponent implements OnInit {
       token: {
         title: 'Ключ',
         type: 'string',
+        editable: false
       },
       disabled: {
         title: 'Статус',
@@ -90,16 +114,18 @@ export class OrganizationComponent implements OnInit {
 
   public tokenSource: LocalDataSource = new LocalDataSource();
 
-  public organization: Observable<Organization>;
+  public organization: Organization;
 
   constructor(
     private route: ActivatedRoute,
     private service: OrganizationService
   ) {
     const organizationId: string = this.route.snapshot.paramMap.get('id');
-    this.organization = this.service.getOrganization(organizationId);
-    this.service.getOperators().subscribe(operators => this.operatorSource.load(operators));
-    this.service.getTokens().subscribe(tokens => this.tokenSource.load(tokens));
+    this.service.getOrganization().subscribe(organization => {
+      this.organization = organization;
+      this.operatorSource.load(organization.operators);
+      this.tokenSource.load(organization.tokens)
+    });
   }
 
   public ngOnInit() {
@@ -111,6 +137,75 @@ export class OrganizationComponent implements OnInit {
     } else {
       event.confirm.reject();
     }
+  }
+
+  /**
+   * Добавление Ключа
+   *
+   * @param event
+   */
+  public onTokenCreateConfirm(event: any): void {
+    this.service.createToken(new CompanyToken(event.newData))
+      .toPromise()
+      .then(result => {
+        event.confirm.resolve(result);
+      })
+      .catch(error => {
+        event.confirm.reject();
+      });
+  }
+
+  /**
+   *  Изменение Ключа
+   *
+   * @param event
+   */
+  public onTokenUpdateConfirm(event: any): void {
+    this.service.updateToken(event.newData)
+      .toPromise()
+      .then(result => {
+        event.confirm.resolve(result);
+      })
+      .catch(error => {
+        event.confirm.reject();
+      });
+  }
+
+  /**
+   * Добавление Оператора
+   *
+   * @param event
+   */
+  public onOperatorCreateConfirm(event: any): void {
+    this.service.createOperator({
+        name: event.newData.name,
+        email: event.newData.email,
+        password: '12345',
+        confirmPassword: '12345'
+      })
+      .toPromise()
+      .then(result => {
+        event.confirm.resolve();
+      })
+      .catch(error => {
+        event.confirm.reject();
+      });
+  }
+
+  /**
+   * Редактирование Оператора
+   *
+   * @param event
+   */
+  public onOperatorUpdateConfirm(event: any): void {
+    this.service.updateOperator(event.newData)
+      .toPromise()
+      .then(result => {
+        event.confirm.resolve(result);
+      })
+      .catch(error => {
+        event.confirm.reject();
+      });
   }
 
 }
