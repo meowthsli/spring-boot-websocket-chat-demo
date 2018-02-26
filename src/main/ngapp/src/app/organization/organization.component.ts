@@ -41,6 +41,10 @@ export class OrganizationComponent implements OnInit {
         title: 'Email',
         type: 'string',
       },
+      password: {
+        title: 'Новый пароль',
+        type: 'string',
+      },
       disabled: {
         title: 'Статус',
         filter: {
@@ -180,8 +184,8 @@ export class OrganizationComponent implements OnInit {
     this.service.createOperator({
         name: event.newData.name,
         email: event.newData.email,
-        password: '12345',
-        confirmPassword: '12345'
+        password: event.newData.password,
+        confirmPassword: event.newData.password
       })
       .toPromise()
       .then(result => {
