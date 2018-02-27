@@ -39,6 +39,7 @@ export class Operator {
   public readonly name: string;
   public readonly supervisor: boolean;
   public readonly disabled: 'Активен' | 'Блокирован';
+  public readonly password: string;
 
   constructor(private data: any) {
     this.id = data.id;
@@ -46,6 +47,7 @@ export class Operator {
     this.name = data.name;
     this.supervisor = data.supervisor;
     this.disabled = data.locked ? 'Блокирован' : 'Активен';
+    this.password = data.password;
   }
 
 }
@@ -134,11 +136,16 @@ export class OrganizationService {
    * @returns {Observable<Operator>}
    */
   public updateOperator(operator: Operator): Observable<Operator> {
-    return this.http.put<ICompanyToken>('/api/user/' + operator.id, {
-        name: operator.name,
-        email: operator.email,
-        isLocked: operator.disabled === 'Блокирован'
-      })
+    const params: any = {
+      name: operator.name,
+      email: operator.email,
+      locked: operator.disabled === 'Блокирован'
+    };
+    if (operator.password) {
+      params.password = operator.password;
+      params.password = operator.password;
+    }
+    return this.http.put<ICompanyToken>('/api/user/' + operator.id, params)
       .pipe(map(result => {
         return new Operator(result);
       }))
