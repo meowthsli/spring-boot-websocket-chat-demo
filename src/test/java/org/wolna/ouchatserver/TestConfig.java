@@ -29,14 +29,12 @@ public class TestConfig {
         
         DataStorageConfiguration dscfg = new DataStorageConfiguration();
         DataRegionConfiguration drcfg = new DataRegionConfiguration();
-        drcfg.setName("pers");
         drcfg.setPersistenceEnabled(true);
         dscfg.setDefaultDataRegionConfiguration(drcfg);
        
         String cwd = Paths.get("").toAbsolutePath().toString();
         dscfg.setStoragePath(cwd + "/target/ignite/data");
         dscfg.setWalPath(cwd + "/target/ignite/wal");
-        dscfg.setCheckpointFrequency(500);
         
         config.setDataStorageConfiguration(dscfg);
 

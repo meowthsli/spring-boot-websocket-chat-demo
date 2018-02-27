@@ -33,7 +33,7 @@ repositories {
 dependencies {
     dependencies {
         compile 'com.github.NaikSoftware:StompProtocolAndroid:1.4.4'
-        compile 'org.wolna.ouchat:ouchat-connectors:1.0-SNAPSHOT'
+        compile 'org.wolna:ouchat-connectors:1.0-SNAPSHOT'
     }
     testCompile group: 'junit', name: 'junit', version: '4.10'
 }

@@ -11,6 +11,7 @@ import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.configuration.CacheConfiguration;
+import org.apache.ignite.configuration.DataRegionConfiguration;
 import org.apache.ignite.configuration.DataStorageConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -43,13 +44,16 @@ public class StorageConfig {
         config.setPeerClassLoadingEnabled(false);
         
         DataStorageConfiguration dscfg = new DataStorageConfiguration();
-        dscfg.getDefaultDataRegionConfiguration().setPersistenceEnabled(true);
+        DataRegionConfiguration drc = new DataRegionConfiguration();
+        drc.setName(dscfg.getDefaultDataRegionConfiguration().getName());
+        drc.setPersistenceEnabled(true);
+        drc.setMaxSize(1*1024*1024*1024);
+        dscfg.setDefaultDataRegionConfiguration(drc);  
         
         String cwd = Paths.get("").toAbsolutePath().toString();
         dscfg.setStoragePath(cwd + "/store/ignite/data");
         dscfg.setWalPath(cwd + "/store/ignite/wal");
-        dscfg.setCheckpointFrequency(500);
-       
+        
         config.setDataStorageConfiguration(dscfg);
 
         Ignite i = Ignition.start(config);
@@ -73,9 +77,9 @@ public class StorageConfig {
     @Lazy
     public IgniteCache<Long, Message> messages(Ignite ignite) {
         CacheConfiguration<Long, Message> config = new CacheConfiguration<>("messages");
-        config.setDataRegionName(ignite.configuration().getDataStorageConfiguration().getDefaultDataRegionConfiguration().getName());
         config.setStatisticsEnabled(true);
-        config.setWriteBehindEnabled(true);
+        config.setDataRegionName(ignite.configuration().getDataStorageConfiguration().getDefaultDataRegionConfiguration().getName());
+        // config.setWriteBehindEnabled(true);
                 
         config.setIndexedTypes(Long.class, Message.class);
         IgniteCache<Long, Message> cache = ignite.getOrCreateCache(config);

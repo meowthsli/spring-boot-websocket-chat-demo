@@ -5,14 +5,26 @@
  */
 package org.wolna.ouchat;
 
+import java.util.function.Consumer;
+
 /**
  *
  * @author yurij
  */
-public class ClientConnector implements OUChatConnector{
+public class ClientConnector implements OUChatClientConnector{
 
     @Override
-    public boolean connect(String uri, String login, String password) {
+    public long loadHistory(long lastSeen) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public long say(String text) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean connect(String uri, String key, Envelope.UserDescription description) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -22,13 +34,25 @@ public class ClientConnector implements OUChatConnector{
     }
 
     @Override
-    public void loadHistory() {
+    public boolean isConnected() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void say(String text) {
+    public boolean onResult(Consumer<Envelope> handler) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public boolean onError(Consumer<Envelope> handler) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean onConnected(Consumer<Object> handler) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+  
     
 }

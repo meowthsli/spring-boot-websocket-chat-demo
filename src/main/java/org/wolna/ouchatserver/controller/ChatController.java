@@ -55,7 +55,7 @@ public class ChatController {
             Authentication /*ApiKeyAuthenticationToken*/ who) {
         // init meta
         storage.initConversation(hello.desc, clientLogin(who), apiKey(who));
-        clientInfo.updateInfo(hello.desc);
+        clientInfo.updateInfo(clientLogin(who), hello.desc);
 
         // send back OK
         sender.convertAndSendToUser(clientLogin(who), "/queue/client", new HelloOk());
