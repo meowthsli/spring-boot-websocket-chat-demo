@@ -143,7 +143,7 @@ export class OrganizationService {
     };
     if (operator.password) {
       params.password = operator.password;
-      params.password = operator.password;
+      params.confirmPassword = operator.password;
     }
     return this.http.put<ICompanyToken>('/api/user/' + operator.id, params)
       .pipe(map(result => {

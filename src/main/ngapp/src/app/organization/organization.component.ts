@@ -189,7 +189,7 @@ export class OrganizationComponent implements OnInit {
       })
       .toPromise()
       .then(result => {
-        event.confirm.resolve();
+        event.confirm.resolve(result);
       })
       .catch(error => {
         event.confirm.reject();
