@@ -53,6 +53,9 @@ public class RegistrationData {
     }
 
     public void checkPassword() {
+        if((getPassword() == null) && (getConfirmPassword() == null)) {
+            return;
+        }
         if(!getPassword().equals(getConfirmPassword())) {
             throw new InvalidOperationException("Passwords don't match");
         }
