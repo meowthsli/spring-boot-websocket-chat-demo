@@ -15,8 +15,8 @@ public class ClientInfo {
     @Autowired @Qualifier("convsMeta")
     IgniteCache<String, Conversation> info;
     
-    public void updateInfo(Envelope.UserDescription clientInfo) {
-        Conversation c = info.get(clientInfo.userLogin);
+    public void updateInfo(String clientLogin, Envelope.UserDescription clientInfo) {
+        Conversation c = info.get(clientLogin);
         c.setDesc(clientInfo);
         info.put(clientInfo.userLogin, c);
     }

@@ -1,11 +1,12 @@
 package org;
-import org.wolna.ouchat.OUChatConnector;
+
+import org.wolna.ouchat.OUChatClientConnector;
 
 public class Main {
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        OUChatConnector ctr = null;
+        OUChatClientConnector ctr = null;
     }
 }
