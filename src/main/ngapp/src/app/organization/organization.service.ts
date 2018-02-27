@@ -109,7 +109,7 @@ export class OrganizationService {
   public updateToken(token: CompanyToken): Observable<CompanyToken> {
     return this.http.put<ICompanyToken>('/api/key/' + token.id, {
         name: token.name,
-        isBlocked: token.disabled === 'Блокирован'
+        blocked: token.disabled === 'Блокирован'
       })
       .pipe(map(result => {
         return new CompanyToken(result);
