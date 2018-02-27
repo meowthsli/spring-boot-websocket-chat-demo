@@ -24,7 +24,7 @@ public class Conversation implements Serializable {
     
     private Envelope.UserDescription client;
 
-    public Envelope.UserDescription getClientLogin() {
+    public Envelope.UserDescription getClientInfo() {
         return client;
     }
     

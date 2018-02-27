@@ -11,6 +11,17 @@ type USER_ID = string;
  * Client connector
  */
 export class OUChatOpConnectorImpl implements OUChatOpsConnector {
+    /**
+     * Request full client info
+     * 
+     * @param {string} clientID
+     */
+    public getInfo(clientID: string) {
+        if(!this.isConnected()) {
+            return Envelope.Response.ERROR_NOT_CONNECTED;
+        }
+        this.stompClient.send("/app/op.info", {}, JSON.stringify(new Envelope.Info(clientID)));
+    }
     
     /**
      * Try to lock chat to speak

@@ -19,6 +19,8 @@ export class Envelope {
 
     public opHello : Envelope.OpHello;
 
+    public info : Envelope.Info;
+
     constructor() {
         if(this.messageAccepted===undefined) this.messageAccepted = null;
         if(this.helloOk===undefined) this.helloOk = null;
@@ -27,6 +29,7 @@ export class Envelope {
         if(this.releaseChat===undefined) this.releaseChat = null;
         if(this.clientMessage===undefined) this.clientMessage = null;
         if(this.opHello===undefined) this.opHello = null;
+        if(this.info===undefined) this.info = null;
     }
 }
 Envelope["__class"] = "org.wolna.ouchat.Envelope";
@@ -465,6 +468,48 @@ export namespace Envelope {
         }
     }
     OkReleaseChat["__class"] = "org.wolna.ouchat.Envelope.OkReleaseChat";
+
+
+    export class InfoRequest {
+        public clientID : string;
+
+        public constructor(clientID? : any) {
+            if(((typeof clientID === 'string') || clientID === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.clientID===undefined) this.clientID = null;
+                if(this.clientID===undefined) this.clientID = null;
+                (() => {
+                    this.clientID = clientID;
+                })();
+            } else if(clientID === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.clientID===undefined) this.clientID = null;
+                if(this.clientID===undefined) this.clientID = null;
+            } else throw new Error('invalid overload');
+        }
+    }
+    InfoRequest["__class"] = "org.wolna.ouchat.Envelope.InfoRequest";
+
+
+    export class Info {
+        public description : Envelope.UserDescription;
+
+        public constructor(desc? : any) {
+            if(((desc != null && desc instanceof <any>Envelope.UserDescription) || desc === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.description===undefined) this.description = null;
+                if(this.description===undefined) this.description = null;
+                (() => {
+                    this.description = desc;
+                })();
+            } else if(desc === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.description===undefined) this.description = null;
+                if(this.description===undefined) this.description = null;
+            } else throw new Error('invalid overload');
+        }
+    }
+    Info["__class"] = "org.wolna.ouchat.Envelope.Info";
 
 
     export class Response extends Envelope {

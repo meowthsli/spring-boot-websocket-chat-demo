@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.wolna.ouchat.Envelope;
 import org.wolna.ouchat.Envelope.ClientHello;
 import org.wolna.ouchat.Envelope.HelloOk;
+import org.wolna.ouchat.Envelope.Response;
 import org.wolna.ouchatserver.model.Conversations;
 import org.wolna.ouchatserver.model.Message;
 import org.wolna.ouchatserver.security.UserDetailsServiceImpl.SecurityUser;
@@ -35,6 +36,9 @@ public class ChatController {
 
     @Autowired
     Conversations storage;
+    
+    @Autowired
+    ClientInfo clientInfo;
 
     /**
      * New op is here
@@ -51,6 +55,7 @@ public class ChatController {
             Authentication /*ApiKeyAuthenticationToken*/ who) {
         // init meta
         storage.initConversation(hello.desc, clientLogin(who), apiKey(who));
+        clientInfo.updateInfo(hello.desc);
 
         // send back OK
         sender.convertAndSendToUser(clientLogin(who), "/queue/client", new HelloOk());
@@ -120,7 +125,7 @@ public class ChatController {
         return e;
     }
 
-    @MessageMapping("/operator.histo")
+    @MessageMapping("/op.histo")
     @SendToUser("/queue/op")
     public Envelope operatorHisto(@Payload Envelope.LoadHistoryOp opHisto,
             SimpMessageHeaderAccessor smha) {
@@ -136,7 +141,8 @@ public class ChatController {
         return e;
     }
 
-    @MessageMapping("/operator.say")
+    @MessageMapping("/op.say")
+    @SendToUser("/queue/op")
     public void operatorSay(@Payload Envelope.MessageToServerOp chatMessage, SimpMessageHeaderAccessor smha) {
         long id = storage.addOpMessage(chatMessage.clientID, chatMessage.text);
 
@@ -144,6 +150,16 @@ public class ChatController {
         Envelope e = new Envelope();
         e.messageAccepted = new Envelope.MessageAccepted(chatMessage.temporaryId, id, Date.from(Instant.now()));
         sender.convertAndSendToUser(chatMessage.clientID, "/queue/client", e);
+    }
+    
+    @MessageMapping("/op.info")
+    @SendTo("/broadcast/all-ops")
+    public Response operatorInfo(@Payload Envelope.InfoRequest infoRequest, SimpMessageHeaderAccessor smha) {
+        
+        // send back acceptance
+        Response e = new Response();
+        e.info = new Envelope.Info(this.clientInfo.loadInfo(infoRequest.clientID));
+        return e;
     }
 
     @MessageMapping("/operator.tryLock")

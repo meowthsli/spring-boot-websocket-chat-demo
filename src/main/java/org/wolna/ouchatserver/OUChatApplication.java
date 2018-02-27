@@ -9,6 +9,7 @@ import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.wolna.ouchatserver.controller.ClientInfo;
 import org.wolna.ouchatserver.security.UserDetailsServiceImpl;
 
 @SpringBootApplication
@@ -43,5 +44,10 @@ public class OUChatApplication {
         reg.setFilter(new OpenEntityManagerInViewFilter());
         reg.setOrder(0);
         return reg;
+    }
+    
+    @Bean
+    public ClientInfo getCI() {
+        return new ClientInfo();
     }
 }

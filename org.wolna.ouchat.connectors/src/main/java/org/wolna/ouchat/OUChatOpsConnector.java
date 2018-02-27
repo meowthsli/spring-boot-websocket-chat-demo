@@ -33,4 +33,11 @@ public interface OUChatOpsConnector extends OUChatConnection {
      * @return operation id
      */
     public long releaseChat(String clientID);
+    
+    /**
+     * Request full client info
+     * 
+     * @param clientID  
+     */
+    void getInfo(String clientID);
 }

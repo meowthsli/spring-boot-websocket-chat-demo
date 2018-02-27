@@ -16,6 +16,7 @@ public class Envelope {
     public OkReleaseChat releaseChat;
     public MessageFromClient clientMessage;
     public OpHello opHello;
+    public Info info;
 
     /**
      * Client sends when makes connection
@@ -276,6 +277,24 @@ public class Envelope {
          * Internal. Do not use
          */
         protected OkReleaseChat() {}
+    }
+    
+    public static class InfoRequest {
+        public String clientID;
+        public InfoRequest(String clientID) {
+            this.clientID = clientID;
+        }
+        
+        protected InfoRequest() {}
+    }
+    
+    public static class Info {
+        public UserDescription description;
+        public Info(UserDescription desc) {
+            this.description = desc;
+        }
+        
+        protected Info() {}
     }
 
     public static class Response extends Envelope {

@@ -6,19 +6,11 @@
 package org.wolna.ouchatserver.config;
 
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
 import javax.annotation.PreDestroy;
 import org.apache.ignite.Ignite;
-import org.apache.ignite.IgniteAtomicLong;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
-import org.apache.ignite.cache.QueryEntity;
-import org.apache.ignite.cache.QueryIndex;
-import org.apache.ignite.cache.affinity.AffinityFunction;
-import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
-import org.apache.ignite.configuration.DataRegionConfiguration;
 import org.apache.ignite.configuration.DataStorageConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -51,10 +43,7 @@ public class StorageConfig {
         config.setPeerClassLoadingEnabled(false);
         
         DataStorageConfiguration dscfg = new DataStorageConfiguration();
-        DataRegionConfiguration drcfg = new DataRegionConfiguration();
-        drcfg.setName("pers");
-        drcfg.setPersistenceEnabled(true);
-        dscfg.setDefaultDataRegionConfiguration(drcfg);
+        dscfg.getDefaultDataRegionConfiguration().setPersistenceEnabled(true);
         
         String cwd = Paths.get("").toAbsolutePath().toString();
         dscfg.setStoragePath(cwd + "/store/ignite/data");
@@ -86,7 +75,8 @@ public class StorageConfig {
         CacheConfiguration<Long, Message> config = new CacheConfiguration<>("messages");
         config.setDataRegionName(ignite.configuration().getDataStorageConfiguration().getDefaultDataRegionConfiguration().getName());
         config.setStatisticsEnabled(true);
-        
+        config.setWriteBehindEnabled(true);
+                
         config.setIndexedTypes(Long.class, Message.class);
         IgniteCache<Long, Message> cache = ignite.getOrCreateCache(config);
         

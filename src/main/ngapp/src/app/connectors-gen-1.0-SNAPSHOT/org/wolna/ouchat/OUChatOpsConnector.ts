@@ -36,6 +36,13 @@ export interface OUChatOpsConnector extends OUChatConnection {
      * @return {number} operation id
      */
     releaseChat(clientID : string) : number;
+
+    /**
+     * Request full client info
+     * 
+     * @param {string} clientID
+     */
+    getInfo(clientID : string);
 }
 
 
