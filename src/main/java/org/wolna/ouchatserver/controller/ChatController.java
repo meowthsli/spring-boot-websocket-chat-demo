@@ -9,7 +9,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
@@ -46,11 +45,9 @@ public class ChatController {
      * @param hello
      * @param who
      * @param smha
-     * @return hello to all connected ops
      */
     @MessageMapping("/client.hello")
-    @SendTo("/broadcast/all-ops")
-    public ClientHello clientHello(@Payload ClientHello hello,
+    public void clientHello(@Payload ClientHello hello,
             SimpMessageHeaderAccessor smha,
             Authentication /*ApiKeyAuthenticationToken*/ who) {
         // init meta
@@ -60,12 +57,11 @@ public class ChatController {
         // send back OK
         sender.convertAndSendToUser(clientLogin(who), "/queue/client", new HelloOk());
 
-        return hello;
+        sender.convertAndSend("/broadcast/all-ops/" + company(who), hello);
     }
 
     @MessageMapping("/client.say")
-    @SendTo("/broadcast/all-ops")
-    public Envelope clientSay(@Payload Envelope.MessageToServer chatMessage,
+    public void clientSay(@Payload Envelope.MessageToServer chatMessage,
             SimpMessageHeaderAccessor smha, Authentication who) {
         long id = storage.addClientMessage(clientLogin(who), chatMessage.text);
 
@@ -78,7 +74,7 @@ public class ChatController {
         oe.clientMessage = new Envelope.MessageFromClient(clientLogin(who),
                 new Envelope.TextMessage(id, chatMessage.text, true, Date.from(e.messageAccepted.when.toInstant()))
         );
-        return oe;
+        sender.convertAndSend("/broadcast/all-ops/" + company(who), oe);
     }
 
     /**
@@ -110,19 +106,18 @@ public class ChatController {
      * @param hello
      * @param smha
      * @param who
-     * @return
      */
     @MessageMapping("/op.hello")
-    @SendTo("/broadcast/all-ops")
-    public Envelope operatorHello(@Payload Envelope.OpHello hello,
+    public void operatorHello(@Payload Envelope.OpHello hello,
             SimpMessageHeaderAccessor smha, Authentication who) {
         sender.convertAndSendToUser(opsLogin(who), "/queue/op", new HelloOk()); // example of send to client back
 
         hello.desc.userLogin = opsLogin(who);
 
-        Envelope e = new Envelope();
+        Response e = new Response();
         e.opHello = hello;
-        return e;
+        
+        sender.convertAndSend("/broadcast/all-ops/" + company(who), e);
     }
 
     @MessageMapping("/op.histo")
@@ -153,17 +148,18 @@ public class ChatController {
     }
     
     @MessageMapping("/op.info")
-    @SendTo("/broadcast/all-ops")
-    public Response operatorInfo(@Payload Envelope.InfoRequest infoRequest, SimpMessageHeaderAccessor smha) {
+    public void operatorInfo(@Payload Envelope.InfoRequest infoRequest,
+            SimpMessageHeaderAccessor smha, Authentication who) {
         
         // send back acceptance
         Response e = new Response();
         e.info = new Envelope.Info(this.clientInfo.loadInfo(infoRequest.clientID));
-        return e;
+        
+        sender.convertAndSend("/broadcast/all-ops/" + company(who), e);
     }
 
     @MessageMapping("/operator.tryLock")
-    @SendTo("/broadcast/all-ops")
+    //SendTo("/broadcast/all-ops")
     public Envelope tryLockChat(@Payload Envelope.TryLockChat msgLock,
             SimpMessageHeaderAccessor smha) {
         throw new UnsupportedOperationException("Not implemented");
@@ -186,5 +182,9 @@ public class ChatController {
 
     private static String opsLogin(Authentication user) {
         return ((SecurityUser)user.getPrincipal()).getUser().getEmail();
+    }
+    
+    private static String company(Authentication user) {
+        return ((SecurityUser)user.getPrincipal()).getUser().company.getId().toString();
     }
 }

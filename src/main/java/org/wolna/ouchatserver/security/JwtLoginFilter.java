@@ -36,6 +36,7 @@ import static org.wolna.ouchatserver.security.SecurityConstants.HEADER_STRING;
 import static org.wolna.ouchatserver.security.SecurityConstants.SECRET;
 import static org.wolna.ouchatserver.security.SecurityConstants.SIGN_UP_URL;
 import static org.wolna.ouchatserver.security.SecurityConstants.TOKEN_PREFIX;
+import org.wolna.ouchatserver.security.UserDetailsServiceImpl.SecurityUser;
 
 public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     static Log LOG = LogFactory.getLog(ChatController.class);
@@ -74,13 +75,15 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
         String token = Jwts.builder()
-                .setSubject(((User) auth.getPrincipal()).getUsername())
+                .setSubject(((SecurityUser) auth.getPrincipal()).getUsername())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
                 .compact();
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put("token", TOKEN_PREFIX + token);
+        tokenMap.put("company", ((SecurityUser) auth.getPrincipal()).getUser().company.getId().toString());
+        
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
         mapper.writeValue(res.getWriter(), tokenMap);
         

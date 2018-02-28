@@ -11,6 +11,8 @@ type USER_ID = string;
  * Client connector
  */
 export class OUChatOpConnectorImpl implements OUChatOpsConnector {
+    
+    company: number = 1;
     /**
      * Request full client info
      * 
@@ -64,7 +66,7 @@ export class OUChatOpConnectorImpl implements OUChatOpsConnector {
             () => {
                 // subscribe
                 
-                this.broadcastSubscription = this.stompClient.subscribe('/broadcast/all-ops', (payload) => this.onStompReceived(payload));
+                this.broadcastSubscription = this.stompClient.subscribe('/broadcast/all-ops' + '/' + this.company, (payload) => this.onStompReceived(payload));
                 this.subscription = this.stompClient.subscribe('/user/queue/op', (payload) => this.onStompReceived(payload));
                 
                 if(this.subscription && this.broadcastSubscription) { 
