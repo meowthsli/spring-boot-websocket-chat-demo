@@ -11,13 +11,12 @@ public class Envelope {
     // Answers to client
     public MessageAccepted messageAccepted;
     public HelloOk helloOk;
-    public LoadHistoryResp loadHistoryResp;
+    public MessagesArrived messages;
     public OkTryLockChat tryLockChat;
     public OkReleaseChat releaseChat;
     public MessageFromClient clientMessage;
     public OpHello opHello;
     public Info info;
-
     /**
      * Client sends when makes connection
      */
@@ -185,10 +184,10 @@ public class Envelope {
     /**
      * History messages
      */
-    public static class LoadHistoryResp {
+    public static class MessagesArrived {
         public final TextMessage[] messages;
         public final String userLogin;
-        public LoadHistoryResp(TextMessage[] messages, String userLogin) {
+        public MessagesArrived(TextMessage[] messages, String userLogin) {
             this.messages = messages;
             this.userLogin = userLogin;
         }

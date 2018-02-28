@@ -43,7 +43,11 @@ public interface Conversations {
     * Working with conversations
      * @param clientLogin
     */
-    void lockConversation(String clientLogin);
+    void lock(String clientLogin, String operatorLogin);
+    
+    void release(String clientLogin);
+    
+    boolean isLocked(String clientLogin);
 
     /**
      * Add message to conversation

@@ -65,7 +65,7 @@ public class ChatController {
             SimpMessageHeaderAccessor smha, Authentication who) {
         long id = storage.addClientMessage(clientLogin(who), chatMessage.text);
 
-        // send back acceptance
+        // send back acceptance to source client
         Envelope e = new Envelope();
         e.messageAccepted = new Envelope.MessageAccepted(chatMessage.temporaryId, id, Date.from(Instant.now()));
         sender.convertAndSendToUser(clientLogin(who), "/queue/client", e);
@@ -74,7 +74,9 @@ public class ChatController {
         oe.clientMessage = new Envelope.MessageFromClient(clientLogin(who),
                 new Envelope.TextMessage(id, chatMessage.text, true, Date.from(e.messageAccepted.when.toInstant()))
         );
+         // TODO: check if locked then do not send to ops, but only to conv owner
         sender.convertAndSend("/broadcast/all-ops/" + company(who), oe);
+        // sender.convertAndSendToUser(operator, "/queue/op", oe);
     }
 
     /**
@@ -92,7 +94,7 @@ public class ChatController {
         Collection<Message> mm = storage.loadHistory(clientLogin(who), getHisto.lastSeenMessage);
 
         Envelope e = new Envelope();
-        e.loadHistoryResp = new Envelope.LoadHistoryResp(
+        e.messages = new Envelope.MessagesArrived(
                 mm.stream().map(x -> new Envelope.TextMessage(x.msgId, x.text, x.fromClient, Date.from(x.created)))
                         .collect(Collectors.toList()).toArray(new Envelope.TextMessage[0]),
                 clientLogin(who));
@@ -127,7 +129,7 @@ public class ChatController {
         Collection<Message> mm = storage.loadHistory(opHisto.clientLogin, opHisto.lastSeenMessage);
 
         Envelope e = new Envelope();
-        e.loadHistoryResp = new Envelope.LoadHistoryResp(
+        e.messages = new Envelope.MessagesArrived(
                 mm.stream()
                         .map(x -> new Envelope.TextMessage(x.msgId, x.text, x.fromClient, Date.from(x.created)))
                         .collect(Collectors.toList())
@@ -138,13 +140,26 @@ public class ChatController {
 
     @MessageMapping("/op.say")
     @SendToUser("/queue/op")
-    public void operatorSay(@Payload Envelope.MessageToServerOp chatMessage, SimpMessageHeaderAccessor smha) {
+    public Response operatorSay(@Payload Envelope.MessageToServerOp chatMessage, 
+            SimpMessageHeaderAccessor smha,
+            Authentication who) {
         long id = storage.addOpMessage(chatMessage.clientID, chatMessage.text);
 
-        // send back acceptance
-        Envelope e = new Envelope();
-        e.messageAccepted = new Envelope.MessageAccepted(chatMessage.temporaryId, id, Date.from(Instant.now()));
-        sender.convertAndSendToUser(chatMessage.clientID, "/queue/client", e);
+        // duplicate message to client
+        Date d = Date.from(Instant.now());
+        Response msg = new Response();
+        msg.messages = new Envelope.MessagesArrived(
+                new Envelope.TextMessage[]{new Envelope.TextMessage(id, chatMessage.text, false, d)},
+                chatMessage.clientID);
+        sender.convertAndSendToUser(chatMessage.clientID, "/queue/client", msg);
+        
+        // check if locked, then do not send to every to all ops
+        // sender.convertAndSend("/broadcast/all-ops/" + company(who), msg);
+        
+        // send back acceptance to source op
+        Response e = new Response();
+        e.messageAccepted = new Envelope.MessageAccepted(chatMessage.temporaryId, id, d);
+        return e;
     }
     
     @MessageMapping("/op.info")
@@ -155,21 +170,28 @@ public class ChatController {
         Response e = new Response();
         e.info = new Envelope.Info(this.clientInfo.loadInfo(infoRequest.clientID));
         
+        // so if any of users asked for info
         sender.convertAndSend("/broadcast/all-ops/" + company(who), e);
     }
 
     @MessageMapping("/operator.tryLock")
-    //SendTo("/broadcast/all-ops")
-    public Envelope tryLockChat(@Payload Envelope.TryLockChat msgLock,
-            SimpMessageHeaderAccessor smha) {
-        throw new UnsupportedOperationException("Not implemented");
+    public void tryLockChat(@Payload Envelope.TryLockChat msgLock,
+            SimpMessageHeaderAccessor smha, Authentication who) {
+       this.storage.lock(msgLock.clientID, opsLogin(who));
+       
+       Response e = new Response();
+       e.tryLockChat = new Envelope.OkTryLockChat(msgLock.clientID);
+       sender.convertAndSend("/broadcast/all-ops/" + company(who), e);
     }
 
     @MessageMapping("/operator.release")
-    // @SendTo("/broadcast/all-ops")
-    public Envelope releaseChat(@Payload Envelope.ReleaseChat msgLock,
-            SimpMessageHeaderAccessor smha) {
-        throw new UnsupportedOperationException("Not implemented");
+    public void releaseChat(@Payload Envelope.ReleaseChat msgLock,
+              SimpMessageHeaderAccessor smha, Authentication who) {
+       this.storage.lock(msgLock.clientID, opsLogin(who));
+       
+       Response e = new Response();
+       e.releaseChat = new Envelope.OkReleaseChat(msgLock.clientID);
+       sender.convertAndSend("/broadcast/all-ops/" + company(who), e);
     }
 
     private static String clientLogin(Authentication user) {
