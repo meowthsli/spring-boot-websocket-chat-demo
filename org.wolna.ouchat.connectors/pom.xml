@@ -21,7 +21,7 @@
 			<repository>
 				<id>conn</id>
 				<name>Local repo</name>
-				<url>file://${basedir}/</url>
+				<url>file://${basedir}/repo</url>
 			</repository>
 		</distributionManagement>
     
