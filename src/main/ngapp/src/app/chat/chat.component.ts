@@ -48,7 +48,7 @@ export class ChatComponent implements OnInit {
   public $onSendClick() {
     if(this.$text) {
       var id = this.connector.say(this.$text);
-      let ci = new ChatItem(id, false, this.$text, moment());
+      let ci = new ChatItem(id, true, this.$text, moment(), id);
       this.$history.push(ci);
       this.$text = null;
       this.scrollDown();
@@ -71,11 +71,15 @@ export class ChatComponent implements OnInit {
       if(r.messageAccepted) {
         var mm = r.messageAccepted;
         var item = this.$history.find(ci => ci.id == mm.messageTemporaryId);
-        if(item) {
-          item.id == mm.messageId;
+        if (item) {
+          item.id = mm.messageId;
         }
       } else if (r.messages) {
-        this.$history = this.$history.concat(r.messages.messages.reverse().map(m => new ChatItem(m.id, m.fromClient, m.text, moment(m.dateAt))));
+        // Мерджим сообщения (оставляем уникальные)
+        this.$history = r.messages.messages.map(m => new ChatItem(m.id, m.fromClient, m.text, moment(m.dateAt)))
+          .concat(this.$history)
+          .filter((message, index, messages) => messages.indexOf(messages.find(m => m.id === message.id)) === index)
+          .sort((messageA, messageB) => messageA.at.valueOf() - messageB.at.valueOf());
         this.scrollDown();
 
         /*if(msg.historyResp) {
@@ -134,6 +138,11 @@ export class ChatItem {
     public id: number,
     public isFromClient: boolean,
     public text: string,
-    public at: Moment
+    public at: Moment,
+    public tempId: number = null,
   ) {}
+
+  public wasDelivered(): boolean {
+    return !this.tempId || this.id !== this.tempId;
+  }
 }
