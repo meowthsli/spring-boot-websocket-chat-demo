@@ -11,6 +11,7 @@ import { environment } from '../../environments/environment';
 import { OUChatClientConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/client-connector';
 import { OUChatOpConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/ops-connector';
 import { Envelope } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/Envelope';
+import { Moment } from 'moment';
 
 type CONNECTOR = OUChatClientConnectorImpl;
 
@@ -47,7 +48,7 @@ export class ChatComponent implements OnInit {
   public $onSendClick() {
     if(this.$text) {
       var id = this.connector.say(this.$text);
-      let ci = new ChatItem(id, null, this.$text, moment());
+      let ci = new ChatItem(id, false, this.$text, moment());
       this.$history.push(ci);
       this.$text = null;
       this.scrollDown();
@@ -73,7 +74,10 @@ export class ChatComponent implements OnInit {
         if(item) {
           item.id == mm.messageId;
         }
-      } else {
+      } else if (r.messages) {
+        this.$history = this.$history.concat(r.messages.messages.map(m => new ChatItem(m.id, m.fromClient, m.text, moment(m.dateAt))));
+        this.scrollDown();
+
         /*if(msg.historyResp) {
 			this.clientID = msg.historyResp.clientID;
 			for(var ci of msg.historyResp.chatItems) {
@@ -94,8 +98,7 @@ export class ChatComponent implements OnInit {
     let email = `${this.uctx.username}-cli@acme.org`;  // TODO: use actual email
     this.connector.connect(
       environment.wsAddress + "Client",
-      // this.uctx.apiKey,
-      '7f09ad81-7f30-4e9a-9e29-dabf3441fa19',
+      this.uctx.apiKey,
       new Envelope.UserDescription("login1", "fio fio", [])
     );
   }
@@ -127,5 +130,10 @@ export class ChatComponent implements OnInit {
  * To store chat items
  */
 export class ChatItem {
-  public constructor(public id, public opId, public text, public at: moment.Moment) {}
+  public constructor(
+    public id: number,
+    public isFromClient: boolean,
+    public text: string,
+    public at: Moment
+  ) {}
 }

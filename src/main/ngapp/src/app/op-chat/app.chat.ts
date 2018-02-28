@@ -37,8 +37,8 @@ export class ChatComponent implements OnInit {
 
   $connecting: number = 0;
   $toasterconfig = new ToasterConfig({
-    showCloseButton: false, 
-    tapToDismiss: true, 
+    showCloseButton: false,
+    tapToDismiss: true,
     timeout: 0,
     limit: 1,
   });
@@ -47,7 +47,7 @@ export class ChatComponent implements OnInit {
   $currentClientID: string = null;
 
   /**
-   * Click on client 
+   * Click on client
    */
   public $startClientChat(clientID: string) {
     this.conn.tryAcquireChat(clientID); // we maybe will have for LOCK_OK after that
@@ -85,7 +85,7 @@ export class ChatComponent implements OnInit {
 
   constructor(private router:Router, private uctx: UsercontextService, private conn: OUChatOpConnectorImpl,
     private toaster: ToasterService, private modal: NgbModal) {
-      
+
   }
 
   private findChat(userid: string) : UserChat {
@@ -110,7 +110,7 @@ export class ChatComponent implements OnInit {
         //  uc.addHistory(this.opID, msg.chatItems);
         //  this.scrollDown(uc);
        // }
-      } else if(msg.loadHistoryResp) {
+      } else if(msg.messages) {
         //this.$nowLoading = false;
         //if(!msg.chatItems) return;
         //let uc = this.findChat(msg.clientID);
@@ -120,12 +120,12 @@ export class ChatComponent implements OnInit {
         //    y = document.getElementById(this.$currentClientID);
         //    x = document.getElementById("text_" + uc.$history[0].realId);
         //  }
-        //  uc.merge(null, msg.chatItems);     
-        //  if(x && y) {            
+        //  uc.merge(null, msg.chatItems);
+        //  if(x && y) {
         //    setTimeout(() => {
         //      y.scrollTop = (x.offsetTop - 50);
         //    }, 0);
-        //  }          
+        //  }
         // }
       } else if (msg.tryLockChat) {
         // this.onMessage_LOCK_OK(msg);
@@ -150,8 +150,8 @@ export class ChatComponent implements OnInit {
     })
 
     }, 1000);
-    
-    
+
+
 
     this.beginConnect();
   }
@@ -207,7 +207,7 @@ export class ChatComponent implements OnInit {
   public $onSendClick(chat: UserChat) {
     if(chat.$text && chat.$text != '') {
       // let ci = chat.addItem(this.cids--, chat.$text, this.opID, moment());
-      this.conn.say(chat.clientID, chat.$text); 
+      this.conn.say(chat.clientID, chat.$text);
       chat.$text = null;
       this.scrollDown(chat);
     }
@@ -270,8 +270,8 @@ class UserChat {
       for(var i = 0; i < 10; ++i) {
         s = s + "abcdefgh".substr(Math.floor(Math.random()*8), 1);
       }
-      let newCi = new ChatItem(ci.id, null/*username*/, s, ci.opId, moment(ci.at*1000), this.realId++);      
-      //this.$history.push(newCi);      
+      let newCi = new ChatItem(ci.id, null/*username*/, s, ci.opId, moment(ci.at*1000), this.realId++);
+      //this.$history.push(newCi);
       this.$history.unshift(newCi);
     }
     // this.$history.sort((a, b) => (a.id < b.id? -1 : 1));
