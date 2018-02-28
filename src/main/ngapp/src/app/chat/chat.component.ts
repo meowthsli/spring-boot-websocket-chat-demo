@@ -75,7 +75,11 @@ export class ChatComponent implements OnInit {
           item.id = mm.messageId;
         }
       } else if (r.messages) {
-        this.$history = this.$history.concat(r.messages.messages.reverse().map(m => new ChatItem(m.id, m.fromClient, m.text, moment(m.dateAt))));
+        // Мерджим сообщения (оставляем уникальные)
+        this.$history = r.messages.messages.map(m => new ChatItem(m.id, m.fromClient, m.text, moment(m.dateAt)))
+          .concat(this.$history)
+          .filter((message, index, messages) => messages.indexOf(messages.find(m => m.id === message.id)) === index)
+          .sort((messageA, messageB) => messageA.at.valueOf() - messageB.at.valueOf());
         this.scrollDown();
 
         /*if(msg.historyResp) {
