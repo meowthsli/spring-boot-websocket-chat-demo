@@ -22,11 +22,18 @@ import org.wolna.ouchat.Envelope;
  * @author yurij
  */
 public class ConversationsImpl implements Conversations {
-    @Autowired @Qualifier("messages")
+
+    @Autowired
+    @Qualifier("messages")
     IgniteCache<Long, Message> messages;
     
-    @Autowired @Qualifier("convsMeta")
+    @Autowired
+    @Qualifier("convsMeta")
     IgniteCache<String, Conversation> convsMeta;
+    
+    @Autowired
+    @Qualifier("convLocks")
+    IgniteCache<String, String> locks;
     
     @Autowired
     Ignite ignite;
@@ -42,11 +49,11 @@ public class ConversationsImpl implements Conversations {
                 true);     		// Create if it does not exist.
     }
     private IgniteAtomicLong messageIdGen;
-
+    
     @Override
     public void initConversation(Envelope.UserDescription desc, String who, String apiKeyValue) {
         Conversation cons = convsMeta.get(who);
-        if(cons == null) {
+        if (cons == null) {
             cons = new Conversation(keys.findCompanyIdByKeyValue(apiKeyValue));
         }
         // update description: set desc, time, etc..
@@ -54,12 +61,12 @@ public class ConversationsImpl implements Conversations {
         // put meta back
         convsMeta.put(who, cons);
     }
-
+    
     @Override
     public void updateOperator(String clientLogin, Envelope.UserDescription operator) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     @Override
     public long addClientMessage(String clientLogin, String message) {
         Message m = new Message();
@@ -84,25 +91,25 @@ public class ConversationsImpl implements Conversations {
         return m.msgId;
     }
     
-     private SqlQuery createHistoryQuery(String who, long lastSeen) {
+    private SqlQuery createHistoryQuery(String who, long lastSeen) {
         SqlQuery q = new SqlQuery(Message.class, "clientLogin = ? and msgId < ? ORDER BY msgId DESC");
         q.setPageSize(60);
         q.setArgs(who, lastSeen > 0 ? lastSeen : Long.MAX_VALUE);
         return q;
     }
-
+    
     @Override
     public Collection<Message> loadHistory(String clientLogin, Long lastSeenId) {
         SqlQuery q = createHistoryQuery(clientLogin, lastSeenId);
-        
+
         // take last 50
         final int LAST_N = 50;
         int msgCount = 0;
         List<Message> msg = new ArrayList<>();
         try (QueryCursor<Cache.Entry<Long, Message>> cursor = messages.query(q)) {
-            for(Cache.Entry<Long, Message> e: cursor) {
+            for (Cache.Entry<Long, Message> e : cursor) {
                 msg.add(e.getValue()); // todo: add real messages
-                if(msgCount++ > LAST_N) {
+                if (msgCount++ > LAST_N) {
                     break;
                 }
             }
@@ -110,20 +117,30 @@ public class ConversationsImpl implements Conversations {
         
         return msg;
     }
-
-    @Override
-    public void lockConversation(String clientLogin) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+    
     private long getMaxId() {
         SqlFieldsQuery q = new SqlFieldsQuery("select MAX(msgId) from Message");
-        try(FieldsQueryCursor<List<?>> cc = messages.query(q)){
+        try (FieldsQueryCursor<List<?>> cc = messages.query(q)) {
             for (List<?> row : cc.getAll()) {
-                return row.get(0) == null ? 1000L : (Long)row.get(0);
+                return row.get(0) == null ? 1000L : (Long) row.get(0);
             }
         }
         return 1000L;
     }
-
+    
+    @Override
+    public void lock(String clientLogin, String operatorLogin) {
+        this.locks.put(clientLogin, operatorLogin);
+    }
+    
+    @Override
+    public void release(String clientLogin) {
+        this.locks.clear(clientLogin);
+    }
+    
+    @Override
+    public boolean isLocked(String clientLogin) {
+        return locks.containsKey(clientLogin);
+    }
+    
 }

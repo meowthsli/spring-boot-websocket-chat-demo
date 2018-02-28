@@ -7,6 +7,8 @@ package org.wolna.ouchatserver.config;
 
 import java.nio.file.Paths;
 import javax.annotation.PreDestroy;
+import javax.cache.expiry.Duration;
+import javax.cache.expiry.ModifiedExpiryPolicy;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
@@ -71,6 +73,14 @@ public class StorageConfig {
     @Lazy
     public IgniteCache<String, Conversation> metas(Ignite ignite) {
         return ignite.getOrCreateCache("metas");
+    }
+    
+    @Bean(name = "convLocks")
+    @Lazy
+    public IgniteCache<String, String> locks(Ignite ignite) {
+        CacheConfiguration<String, String> config = new CacheConfiguration<>("convLocks");
+        config.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(Duration.FIVE_MINUTES));
+        return ignite.createCache(config);
     }
 
     @Bean(name = "messages")

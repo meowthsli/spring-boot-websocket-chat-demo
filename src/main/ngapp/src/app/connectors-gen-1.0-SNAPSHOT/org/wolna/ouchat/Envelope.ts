@@ -9,7 +9,7 @@ export class Envelope {
 
     public helloOk : Envelope.HelloOk;
 
-    public loadHistoryResp : Envelope.LoadHistoryResp;
+    public messages : Envelope.MessagesArrived;
 
     public tryLockChat : Envelope.OkTryLockChat;
 
@@ -24,7 +24,7 @@ export class Envelope {
     constructor() {
         if(this.messageAccepted===undefined) this.messageAccepted = null;
         if(this.helloOk===undefined) this.helloOk = null;
-        if(this.loadHistoryResp===undefined) this.loadHistoryResp = null;
+        if(this.messages===undefined) this.messages = null;
         if(this.tryLockChat===undefined) this.tryLockChat = null;
         if(this.releaseChat===undefined) this.releaseChat = null;
         if(this.clientMessage===undefined) this.clientMessage = null;
@@ -325,7 +325,7 @@ export namespace Envelope {
      * @param {string} userLogin
      * @class
      */
-    export class LoadHistoryResp {
+    export class MessagesArrived {
         public messages : Envelope.TextMessage[];
 
         public userLogin : string;
@@ -337,7 +337,7 @@ export namespace Envelope {
             this.userLogin = userLogin;
         }
     }
-    LoadHistoryResp["__class"] = "org.wolna.ouchat.Envelope.LoadHistoryResp";
+    MessagesArrived["__class"] = "org.wolna.ouchat.Envelope.MessagesArrived";
 
 
     /**
