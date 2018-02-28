@@ -5,5 +5,4 @@
   <groupId>org.wolna</groupId>
   <artifactId>ouchat-connectors</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <description>POM was created from install:install-file</description>
 </project>

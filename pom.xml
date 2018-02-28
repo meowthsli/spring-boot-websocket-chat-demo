@@ -26,9 +26,17 @@
 
     <repositories>
         <repository>
-            <id>local-connectors</id>
+            <id>conn</id>
             <name>local connectors repo</name>
             <url>file://${project.basedir}/org.wolna.ouchat.connectors/repo/</url>
+						<snapshots>
+							<enabled>true</enabled>
+							<updatePolicy>always</updatePolicy>
+						</snapshots>
+						<releases>
+							<enabled>true</enabled>
+							<updatePolicy>always</updatePolicy>
+						</releases>
         </repository>
     </repositories>
 
