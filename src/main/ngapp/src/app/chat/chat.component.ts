@@ -75,7 +75,7 @@ export class ChatComponent implements OnInit {
           item.id == mm.messageId;
         }
       } else if (r.messages) {
-        this.$history = this.$history.concat(r.messages.messages.map(m => new ChatItem(m.id, m.fromClient, m.text, moment(m.dateAt))));
+        this.$history = this.$history.concat(r.messages.messages.reverse().map(m => new ChatItem(m.id, m.fromClient, m.text, moment(m.dateAt))));
         this.scrollDown();
 
         /*if(msg.historyResp) {
