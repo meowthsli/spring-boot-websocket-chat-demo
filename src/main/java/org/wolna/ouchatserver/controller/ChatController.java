@@ -18,6 +18,7 @@ import org.wolna.ouchat.Envelope;
 import org.wolna.ouchat.Envelope.ClientHello;
 import org.wolna.ouchat.Envelope.HelloOk;
 import org.wolna.ouchat.Envelope.Response;
+import org.wolna.ouchatserver.model.ApiKeyRepository;
 import org.wolna.ouchatserver.model.Conversations;
 import org.wolna.ouchatserver.model.Message;
 import org.wolna.ouchatserver.security.UserDetailsServiceImpl.SecurityUser;
@@ -38,6 +39,9 @@ public class ChatController {
     
     @Autowired
     ClientInfo clientInfo;
+    
+    @Autowired
+    ApiKeyRepository repo;
 
     /**
      * New op is here
@@ -75,7 +79,7 @@ public class ChatController {
                 new Envelope.TextMessage(id, chatMessage.text, true, Date.from(e.messageAccepted.when.toInstant()))
         );
          // TODO: check if locked then do not send to ops, but only to conv owner
-        sender.convertAndSend("/broadcast/all-ops/" + company(who), oe);
+        sender.convertAndSend("/broadcast/all-ops/" +  this.repo.findCompanyIdByKeyValue(apiKey(who)), oe);
         // sender.convertAndSendToUser(operator, "/queue/op", oe);
     }
 

@@ -80,7 +80,7 @@ public class StorageConfig {
     public IgniteCache<String, String> locks(Ignite ignite) {
         CacheConfiguration<String, String> config = new CacheConfiguration<>("convLocks");
         config.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(Duration.FIVE_MINUTES));
-        return ignite.createCache(config);
+        return ignite.getOrCreateCache(config);
     }
 
     @Bean(name = "messages")
