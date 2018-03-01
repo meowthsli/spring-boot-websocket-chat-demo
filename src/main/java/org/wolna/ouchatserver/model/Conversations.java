@@ -47,7 +47,7 @@ public interface Conversations {
     
     void release(String clientLogin);
     
-    boolean isLocked(String clientLogin);
+    String whoLocked(String clientLogin);
 
     /**
      * Add message to conversation

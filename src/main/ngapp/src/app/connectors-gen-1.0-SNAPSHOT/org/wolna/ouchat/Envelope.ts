@@ -401,21 +401,31 @@ export namespace Envelope {
     export class OkTryLockChat {
         public clientID : string;
 
-        public constructor(clientID? : any) {
-            if(((typeof clientID === 'string') || clientID === null)) {
+        public opID : string;
+
+        public constructor(clientID? : any, opID? : any) {
+            if(((typeof clientID === 'string') || clientID === null) && ((typeof opID === 'string') || opID === null)) {
                 let __args = Array.prototype.slice.call(arguments);
                 if(this.clientID===undefined) this.clientID = null;
+                if(this.opID===undefined) this.opID = null;
                 if(this.clientID===undefined) this.clientID = null;
+                if(this.opID===undefined) this.opID = null;
                 (() => {
                     if(clientID == null) {
                         throw Object.defineProperty(new Error("@clientID can not be null"), '__classes', { configurable: true, value: ['java.lang.Throwable','java.lang.Object','java.lang.RuntimeException','java.lang.IllegalArgumentException','java.lang.Exception'] });
                     }
+                    if(opID == null) {
+                        throw Object.defineProperty(new Error("@opID can not be null"), '__classes', { configurable: true, value: ['java.lang.Throwable','java.lang.Object','java.lang.RuntimeException','java.lang.IllegalArgumentException','java.lang.Exception'] });
+                    }
                     this.clientID = clientID;
+                    this.opID = opID;
                 })();
-            } else if(clientID === undefined) {
+            } else if(clientID === undefined && opID === undefined) {
                 let __args = Array.prototype.slice.call(arguments);
                 if(this.clientID===undefined) this.clientID = null;
+                if(this.opID===undefined) this.opID = null;
                 if(this.clientID===undefined) this.clientID = null;
+                if(this.opID===undefined) this.opID = null;
             } else throw new Error('invalid overload');
         }
     }

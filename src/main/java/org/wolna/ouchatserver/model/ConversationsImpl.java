@@ -139,8 +139,11 @@ public class ConversationsImpl implements Conversations {
     }
     
     @Override
-    public boolean isLocked(String clientLogin) {
-        return locks.containsKey(clientLogin);
+    public String whoLocked(String clientLogin) {
+        if(!locks.containsKey(clientLogin)) {
+            return null;
+        };
+        return locks.get(clientLogin);
     }
     
 }

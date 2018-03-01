@@ -230,12 +230,18 @@ public class Envelope {
     public static class OkTryLockChat {
         
         public String clientID;
-        public OkTryLockChat(String clientID) {
+        public String opID;
+        public OkTryLockChat(String clientID, String opID) {
             assert clientID != null;
+            assert opID != null;
             if(clientID == null) {
                 throw new IllegalArgumentException("@clientID can not be null");
             }
+            if(opID == null) {
+                throw new IllegalArgumentException("@opID can not be null");
+            }
             this.clientID = clientID;
+            this.opID = opID;
         }
 
         /**
