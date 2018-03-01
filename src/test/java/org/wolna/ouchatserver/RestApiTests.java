@@ -18,7 +18,7 @@ import org.wolna.ouchatserver.security.LoginCredentials;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@TestPropertySource(properties = {"spring.datasource.url=jdbc:hsqldb:mem:test"})
+@TestPropertySource(locations = {"classpath:/test.properties"})
 public class RestApiTests {
 
     @LocalServerPort
