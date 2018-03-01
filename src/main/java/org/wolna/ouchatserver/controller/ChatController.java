@@ -56,6 +56,9 @@ public class ChatController {
             Authentication /*ApiKeyAuthenticationToken*/ who) {
         // init meta
         storage.initConversation(hello.desc, clientLogin(who), apiKey(who));
+        if(hello.desc == null) {
+            throw new IllegalArgumentException("@hello.desc is null");
+        }
         clientInfo.updateInfo(clientLogin(who), hello.desc);
 
         // send back OK

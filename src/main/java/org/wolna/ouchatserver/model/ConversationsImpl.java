@@ -11,6 +11,7 @@ import org.apache.ignite.IgniteAtomicLong;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.query.FieldsQueryCursor;
 import org.apache.ignite.cache.query.QueryCursor;
+import org.apache.ignite.cache.query.ScanQuery;
 import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.cache.query.SqlQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,6 +145,24 @@ public class ConversationsImpl implements Conversations {
             return null;
         };
         return locks.get(clientLogin);
+    }
+
+    @Override
+    public List<String> search(String fio) {
+        ScanQuery<String, Conversation> qry = new ScanQuery<>((id, co) -> {
+            return co.getClientInfo().fio.toUpperCase().contains(fio.toUpperCase());
+        });
+        List<String> res = new ArrayList<>();
+        try(QueryCursor<String> cc = this.convsMeta.query(qry, e -> e.getKey())) {
+            for(String id: cc) {
+                res.add(id);
+                if (res.size() >= 20) {
+                    res.add("...");
+                    break;
+                }
+            }
+        }
+        return res;
     }
     
 }

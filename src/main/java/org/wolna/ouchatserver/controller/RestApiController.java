@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.wolna.ouchatserver.model.ApiKey;
 import org.wolna.ouchatserver.model.Company;
 import org.wolna.ouchatserver.model.CompanyRepository;
+import org.wolna.ouchatserver.model.Conversations;
 import org.wolna.ouchatserver.model.InvalidOperationException;
 import org.wolna.ouchatserver.model.User;
 import org.wolna.ouchatserver.model.UserRepository;
@@ -43,6 +45,9 @@ public class RestApiController {
 
     @Autowired
     BCryptPasswordEncoder encoder;
+    
+    @Autowired
+    Conversations convs;
 
     @RequestMapping(path = "/companies", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -192,6 +197,14 @@ public class RestApiController {
         }
         return user;
     }
+    
+    @RequestMapping(path = "/user/find", method = {RequestMethod.GET},
+            produces = "application/json")
+    @ResponseBody
+    public List<String> searchUser(@RequestParam("fio") String fio) {
+        return convs.search(fio);
+    }
+    
 
     private User registerUser(Company c, RegistrationData data) {
         data.checkPassword();
