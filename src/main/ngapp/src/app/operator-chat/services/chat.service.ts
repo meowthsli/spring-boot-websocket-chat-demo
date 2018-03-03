@@ -6,11 +6,100 @@ import { Author } from '../models/author.model';
 import { Message } from '../models/message.model';
 import * as moment from 'moment';
 import { forkJoin } from 'rxjs/observable/forkJoin';
+import { environment } from '../../../environments/environment';
+import { Envelope } from '../../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/Envelope';
+import { NbAuthService } from '../../auth/services/auth.service';
+import { OUChatOpConnectorImpl } from '../../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/ops-connector';
+import { ToasterService } from 'angular2-toaster';
+
+export enum ConnectionStatus {
+  DEFAULT = 0,
+  CONNECTING = 1,
+  CONNECTED = 2,
+  ERROR = 3
+}
 
 @Injectable()
 export class ChatService {
 
-  constructor() { }
+  public status = ConnectionStatus.DEFAULT;
+
+  constructor(
+    private connector: OUChatOpConnectorImpl,
+    private auth: NbAuthService,
+    private toaster: ToasterService
+  ) {
+    this.initialize();
+  }
+
+  private initialize(): void {
+    this.connector.onResult(msg => {
+      if(msg.messageAccepted) { // acknowledge of message
+        //let uc = this.findChat(msg.clientID);
+        //if(uc) {
+        //  uc.ack(msg.cid, msg.ack);
+        //}
+      } else if(msg.clientMessage) {
+        //let uc = this.findChat(msg.clientID);
+        //if(uc) {
+        //  uc.addHistory(this.opID, msg.chatItems);
+        //  this.scrollDown(uc);
+        // }
+      } else if(msg.messages) {
+        //this.$nowLoading = false;
+        //if(!msg.chatItems) return;
+        //let uc = this.findChat(msg.clientID);
+        //if(uc) {
+        //  let x = null, y = null;
+        //  if(uc.$history && uc.$history.length>0) {
+        //    y = document.getElementById(this.$currentClientID);
+        //    x = document.getElementById("text_" + uc.$history[0].realId);
+        //  }
+        //  uc.merge(null, msg.chatItems);
+        //  if(x && y) {
+        //    setTimeout(() => {
+        //      y.scrollTop = (x.offsetTop - 50);
+        //    }, 0);
+        //  }
+        // }
+      } else if (msg.tryLockChat) {
+        // this.onMessage_LOCK_OK(msg);
+      } else if (msg.releaseChat) {
+        // this.opID = msg.opID;
+      }
+    });
+
+    this.connector.onConnected(ok => this.onConnected());
+    this.connector.onError(error => this.onError(error));
+  }
+
+  private onError(error) {
+    this.status = ConnectionStatus.ERROR;
+    let toast = this.toaster.pop("warning", "Нет связи с сервером", "Кликните, чтобы соединиться");
+    toast.clickHandler = (toast, button) => {
+      this.toaster.clear();
+      this.connect();
+      return true;
+    };
+  }
+
+  private onConnected() {
+    this.status = ConnectionStatus.CONNECTED;
+    this.toaster.clear();
+  }
+
+  public connect(): void {
+    this.status = ConnectionStatus.CONNECTING;
+    this.auth.getToken().toPromise().then(token => {
+      this.connector.connect(
+        environment.wsAddress + '',
+        token.getValue(),
+        new Envelope.UserDescription('bro@mail.ru', "fio fio", [])
+      );
+    });
+  }
+
+
 
   /**
    * Синхронизация свободных чатов

@@ -8,6 +8,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/switchMap';
 import { FormControl } from '@angular/forms';
 import { combineLatest } from 'rxjs/observable/combineLatest';
+import { ToasterConfig } from 'angular2-toaster';
 
 @Component({
   selector: 'app-operator-chat',
@@ -35,6 +36,13 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
   public selectedChat: BehaviorSubject<Chat> = new BehaviorSubject(null);
   public subscription: Subscription = null;
 
+  public readonly toasterConfig = new ToasterConfig({
+    showCloseButton: false,
+    tapToDismiss: true,
+    timeout: 0,
+    limit: 1,
+  });
+
   constructor(
     private chatter: ChatService
   ) {
@@ -42,6 +50,8 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.chatter.connect();
+
     this.subscription = this.selectedChat.asObservable()
       .switchMap(selectedChat => this.chatter.syncChat(selectedChat && selectedChat.id))
       .subscribe(chat => {
