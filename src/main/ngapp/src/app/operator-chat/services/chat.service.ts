@@ -12,6 +12,7 @@ import { NbAuthService } from '../../auth/services/auth.service';
 import { OUChatOpConnectorImpl } from '../../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/ops-connector';
 import { ToasterService } from 'angular2-toaster';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { combineLatest } from 'rxjs/observable/combineLatest';
 
 export enum ConnectionStatus {
   DEFAULT = 0,
@@ -140,7 +141,7 @@ export class ChatService {
    * @returns {Observable<Chat>}
    */
   public syncChat(id: string): Observable<Chat> {
-    return forkJoin([
+    return combineLatest([
         this.syncFreeChats(),
         this.syncMyChats(),
       ])
