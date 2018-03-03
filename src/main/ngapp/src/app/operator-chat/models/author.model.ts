@@ -1,6 +1,6 @@
 export interface IAuthor {
   id: string;
-  operatorId: string;
+  operatorId?: string;
   fullname: string;
 }
 

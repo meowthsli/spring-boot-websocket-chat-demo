@@ -2,20 +2,22 @@ import { Author } from './author.model';
 import { Moment } from 'moment';
 
 export interface IMessage {
-  id?: string;
+  id?: number;
   tempId?: string;
   author: Author;
   text: string;
   datetime: Moment;
+  fromClient: boolean;
 }
 
 export class Message {
 
-  public id: string; // Идентификатор Сообщения
+  public id: number; // Идентификатор Сообщения
   public tempId: string; // Временный Идентификатор Сообщения
   public author: Author = null; // Автор Сообщения
   public text: string = ''; // Текст Сообщения
   public datetime: Moment = null; // Время Сообщения
+  public fromClient: boolean = false;
 
   constructor(data: IMessage) {
     this.id = data.id;
@@ -23,6 +25,7 @@ export class Message {
     this.author = data.author;
     this.text = data.text;
     this.datetime = data.datetime;
+    this.fromClient = data.fromClient;
   }
 
 }

@@ -13,7 +13,7 @@ export class Chat {
 
   public readonly id: string = ''; // Идентификатор чата
   public operatorId: string = null; // Идентификатор Оператора
-  public readonly messages: Message[] = []; // Сообщения
+  public messages: Message[] = []; // Сообщения
   public readonly author: Author = null; // Клиент
 
   public readonly newMessagesLength: number = 0; // Количество непрочитанных сообщений
@@ -43,7 +43,8 @@ export class Chat {
         operatorId: '2',
         fullname: 'Оператор'
       }),
-      datetime: moment()
+      datetime: moment(),
+      fromClient: false
     }));
     return this;
   }
@@ -57,6 +58,15 @@ export class Chat {
   public assignOperator(operatorId: string): Chat {
     this.operatorId = operatorId;
     return this;
+  }
+
+  public addMessage(message: Message): Chat {
+    return new Chat({
+      operatorId: this.operatorId,
+      id: this.id,
+      messages: this.messages.concat([message]),
+      author: this.author
+    });
   }
 
 }

@@ -11,6 +11,7 @@ import { Envelope } from '../../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/Env
 import { NbAuthService } from '../../auth/services/auth.service';
 import { OUChatOpConnectorImpl } from '../../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/ops-connector';
 import { ToasterService } from 'angular2-toaster';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 export enum ConnectionStatus {
   DEFAULT = 0,
@@ -23,6 +24,9 @@ export enum ConnectionStatus {
 export class ChatService {
 
   public status = ConnectionStatus.DEFAULT;
+
+  private freeChats: BehaviorSubject<Queue> = new BehaviorSubject(new Queue({chats: []}));
+  private myChats: BehaviorSubject<Queue> = new BehaviorSubject(new Queue({chats: []}));
 
   constructor(
     private connector: OUChatOpConnectorImpl,
@@ -40,6 +44,16 @@ export class ChatService {
         //  uc.ack(msg.cid, msg.ack);
         //}
       } else if(msg.clientMessage) {
+        this.freeChats.next(this.freeChats.value.appendMessage(new Message({
+          id: msg.clientMessage.message.id,
+          author: new Author({
+            id: msg.clientMessage.clientID,
+            fullname: ''
+          }),
+          text: msg.clientMessage.message.text,
+          datetime: moment(msg.clientMessage.message.dateAt),
+          fromClient: msg.clientMessage.message.fromClient
+        })));
         //let uc = this.findChat(msg.clientID);
         //if(uc) {
         //  uc.addHistory(this.opID, msg.chatItems);
@@ -107,92 +121,7 @@ export class ChatService {
    * @returns {Observable<Queue>}
    */
   public syncFreeChats(): Observable<Queue> {
-    return Observable.of(new Queue({
-      chats: [
-        new Chat({
-          id: '1',
-          operatorId: null,
-          messages: [
-            new Message({
-              id: '1',
-              author: new Author({
-                id: '1',
-                operatorId: '1',
-                fullname: 'Иванов Иван'
-              }),
-              text: 'Text text text',
-              datetime: moment()
-            }),
-            new Message({
-              id: '1',
-              author: new Author({
-                id: '1',
-                operatorId: null,
-                fullname: 'Иванов Иван'
-              }),
-              text: 'Text text text',
-              datetime: moment()
-            }),
-            new Message({
-              id: '1',
-              author: new Author({
-                id: '1',
-                operatorId: '1',
-                fullname: 'Иванов Иван'
-              }),
-              text: 'Text text text',
-              datetime: moment()
-            })
-          ],
-          author: new Author({
-            id: '1',
-            operatorId: '1',
-            fullname: 'Петров Сергей'
-          })
-        }),
-        new Chat({
-          id: '2',
-          operatorId: null,
-          messages: [
-            new Message({
-              id: '1',
-              author: new Author({
-                id: '1',
-                operatorId: '1',
-                fullname: 'Иванов Иван'
-              }),
-              text: 'Text text text',
-              datetime: moment()
-            }),
-            new Message({
-              id: '1',
-              author: new Author({
-                id: '1',
-                operatorId: null,
-                fullname: 'Иванов Иван'
-              }),
-              text: 'Text text text',
-              datetime: moment()
-            }),
-            new Message({
-              id: '1',
-              author: new Author({
-                id: '1',
-                operatorId: '1',
-                fullname: 'Иванов Иван'
-              }),
-              text: 'Text text text',
-              datetime: moment()
-            })
-          ],
-          author: new Author({
-            id: '1',
-            operatorId: '1',
-            fullname: 'Николаев Степан'
-          })
-        })
-      ]
-    }));
+    return this.freeChats.asObservable();
   }
 
   /**
@@ -201,92 +130,7 @@ export class ChatService {
    * @returns {Observable<Queue>}
    */
   public syncMyChats(): Observable<Queue> {
-    return Observable.of(new Queue({
-      chats: [
-        new Chat({
-          id: '3',
-          operatorId: '1',
-          messages: [
-            new Message({
-              id: '1',
-              author: new Author({
-                id: '1',
-                operatorId: '1',
-                fullname: 'Иванов Иван'
-              }),
-              text: 'Text text text',
-              datetime: moment()
-            }),
-            new Message({
-              id: '1',
-              author: new Author({
-                id: '1',
-                operatorId: null,
-                fullname: 'Иванов Иван'
-              }),
-              text: 'Text text text',
-              datetime: moment()
-            }),
-            new Message({
-              id: '1',
-              author: new Author({
-                id: '1',
-                operatorId: '1',
-                fullname: 'Иванов Иван'
-              }),
-              text: 'Text text text',
-              datetime: moment()
-            })
-          ],
-          author: new Author({
-            id: '1',
-            operatorId: '1',
-            fullname: 'Иванов Иван'
-          })
-        }),
-        new Chat({
-          id: '4',
-          operatorId: '1',
-          messages: [
-            new Message({
-              id: '1',
-              author: new Author({
-                id: '1',
-                operatorId: '1',
-                fullname: 'Иванов Иван'
-              }),
-              text: 'Text text text',
-              datetime: moment()
-            }),
-            new Message({
-              id: '1',
-              author: new Author({
-                id: '1',
-                operatorId: null,
-                fullname: 'Иванов Иван'
-              }),
-              text: 'Text text text',
-              datetime: moment()
-            }),
-            new Message({
-              id: '1',
-              author: new Author({
-                id: '1',
-                operatorId: '1',
-                fullname: 'Иванов Иван'
-              }),
-              text: 'Text text text',
-              datetime: moment()
-            })
-          ],
-          author: new Author({
-            id: '1',
-            operatorId: '1',
-            fullname: 'Пушкин Александр'
-          })
-        })
-      ]
-    }));
+    return this.myChats.asObservable();
   }
 
   /**
