@@ -1,15 +1,14 @@
 package org.wolna.ouchatserver.model;
 
 import java.io.Serializable;
-import java.time.Instant;
-import java.util.Objects;
-import org.apache.ignite.cache.query.annotations.QuerySqlField;
+import org.apache.ignite.cache.query.annotations.QueryTextField;
 import org.wolna.ouchat.Envelope;
 
 /**
  * Conversation with user
  * @author yurij
  */
+@QueryTextField
 public class Conversation implements Serializable {
     
     public Conversation(long companyId) {
@@ -28,8 +27,7 @@ public class Conversation implements Serializable {
         return client;
     }
     
-    public void setDesc(Envelope.UserDescription client) {
-        this.client = client;
-    }
-    
+    public void setDesc(Envelope.UserDescription clientInfo) {
+        this.client = clientInfo;
+    }  
 }

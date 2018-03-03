@@ -3,10 +3,8 @@ package org.wolna.ouchatserver;
 import java.util.List;
 import javax.cache.Cache.Entry;
 import org.apache.ignite.IgniteCache;
-import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.cache.query.SqlQuery;
 import org.junit.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +21,7 @@ import org.wolna.ouchatserver.model.Message;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource(properties = {"spring.datasource.url=jdbc:hsqldb:mem:test"})
+@TestPropertySource(locations = {"classpath:/test.properties"})
 public class IgniteTests {
     @Autowired @Qualifier("convsMeta")
     IgniteCache<String, Conversation> convs;

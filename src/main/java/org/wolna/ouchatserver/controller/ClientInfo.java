@@ -17,6 +17,9 @@ public class ClientInfo {
     
     public void updateInfo(String clientLogin, Envelope.UserDescription clientInfo) {
         Conversation c = info.get(clientLogin);
+        if(clientInfo.fio == null) {
+            throw new IllegalArgumentException("@clientInfo.fio is null");
+        }
         c.setDesc(clientInfo);
         info.put(clientInfo.userLogin, c);
     }

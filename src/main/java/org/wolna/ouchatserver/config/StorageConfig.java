@@ -16,9 +16,11 @@ import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.DataRegionConfiguration;
 import org.apache.ignite.configuration.DataStorageConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -36,8 +38,10 @@ import org.wolna.ouchatserver.model.UserRepository;
 @EnableJpaRepositories(basePackageClasses = {UserRepository.class})
 @EnableTransactionManagement(order = 0)
 public class StorageConfig {
+    @Value("${app.path-to-storage}")
+    String pathToStorage;
 
-    @Bean
+    @Bean(name = "ignite")
     @Lazy @ConditionalOnMissingBean
     public Ignite ignite() {
         IgniteConfiguration config = new IgniteConfiguration();
@@ -46,15 +50,21 @@ public class StorageConfig {
         config.setPeerClassLoadingEnabled(false);
         
         DataStorageConfiguration dscfg = new DataStorageConfiguration();
-        DataRegionConfiguration drc = new DataRegionConfiguration();
-        drc.setName(dscfg.getDefaultDataRegionConfiguration().getName());
-        drc.setPersistenceEnabled(true);
-        drc.setMaxSize(1*1024*1024*1024);
-        dscfg.setDefaultDataRegionConfiguration(drc);  
+        
+        DataRegionConfiguration drcMessages = new DataRegionConfiguration();
+        drcMessages.setName("Messages");
+        drcMessages.setPersistenceEnabled(true);
+        drcMessages.setMaxSize(500L*1024*1024);
+        
+        DataRegionConfiguration drcMeta = new DataRegionConfiguration();
+        drcMeta.setName("Meta");
+        drcMeta.setPersistenceEnabled(true);
+        drcMeta.setMaxSize(500L*1024*1024);
+        dscfg.setDataRegionConfigurations(drcMessages, drcMeta);  
         
         String cwd = Paths.get("").toAbsolutePath().toString();
-        dscfg.setStoragePath(cwd + "/store/ignite/data");
-        dscfg.setWalPath(cwd + "/store/ignite/wal");
+        dscfg.setStoragePath(cwd + pathToStorage + "/data");
+        dscfg.setWalPath(cwd + pathToStorage + "/wal");
         
         config.setDataStorageConfiguration(dscfg);
 
@@ -69,28 +79,27 @@ public class StorageConfig {
         return new ConversationsImpl();
     }
 
-    @Bean(name = "convsMeta")
-    @Lazy
+    @Bean(name = "convsMeta") @Lazy @DependsOn("ignite")
     public IgniteCache<String, Conversation> metas(Ignite ignite) {
-        return ignite.getOrCreateCache("metas");
+        CacheConfiguration<String, Conversation> config = new CacheConfiguration<>("metas");
+        config.setDataRegionName("Meta");
+        return ignite.getOrCreateCache(config);
     }
     
-    @Bean(name = "convLocks")
-    @Lazy
+    @Bean(name = "convLocks") @Lazy @DependsOn("ignite")
     public IgniteCache<String, String> locks(Ignite ignite) {
         CacheConfiguration<String, String> config = new CacheConfiguration<>("convLocks");
         config.setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(Duration.FIVE_MINUTES));
+        config.setDataRegionName("Meta");
         return ignite.getOrCreateCache(config);
     }
 
-    @Bean(name = "messages")
-    @Lazy
+    @Bean(name = "messages") @Lazy @DependsOn("ignite")
     public IgniteCache<Long, Message> messages(Ignite ignite) {
         CacheConfiguration<Long, Message> config = new CacheConfiguration<>("messages");
         config.setStatisticsEnabled(true);
-        config.setDataRegionName(ignite.configuration().getDataStorageConfiguration().getDefaultDataRegionConfiguration().getName());
-        // config.setWriteBehindEnabled(true);
-                
+        config.setDataRegionName("Messages");
+         
         config.setIndexedTypes(Long.class, Message.class);
         IgniteCache<Long, Message> cache = ignite.getOrCreateCache(config);
         

@@ -1,6 +1,7 @@
 package org.wolna.ouchatserver.model;
 
 import java.util.Collection;
+import java.util.List;
 import org.wolna.ouchat.Envelope;
 
 /**
@@ -47,7 +48,7 @@ public interface Conversations {
     
     void release(String clientLogin);
     
-    boolean isLocked(String clientLogin);
+    String whoLocked(String clientLogin);
 
     /**
      * Add message to conversation
@@ -55,4 +56,11 @@ public interface Conversations {
      * @param message 
      */
     long addOpMessage(String clientLogin, String message);
+
+    /**
+     * Searches by fio
+     * @param user
+     * @return list of client ids 
+     */
+    public List<String> search(String fio);
 }

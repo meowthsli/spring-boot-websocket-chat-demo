@@ -56,11 +56,17 @@ public class ChatController {
             Authentication /*ApiKeyAuthenticationToken*/ who) {
         // init meta
         storage.initConversation(hello.desc, clientLogin(who), apiKey(who));
+        if(hello.desc == null) {
+            throw new IllegalArgumentException("@hello.desc is null");
+        }
         clientInfo.updateInfo(clientLogin(who), hello.desc);
 
         // send back OK
-        sender.convertAndSendToUser(clientLogin(who), "/queue/client", new HelloOk());
+        Response r = new Response();
+        r.helloOk = new HelloOk();
+        sender.convertAndSendToUser(clientLogin(who), "/queue/client", r);
 
+        // forwart hello to all connected ops
         sender.convertAndSend("/broadcast/all-ops/" + company(who), hello);
     }
 
@@ -78,9 +84,13 @@ public class ChatController {
         oe.clientMessage = new Envelope.MessageFromClient(clientLogin(who),
                 new Envelope.TextMessage(id, chatMessage.text, true, Date.from(e.messageAccepted.when.toInstant()))
         );
-         // TODO: check if locked then do not send to ops, but only to conv owner
-        sender.convertAndSend("/broadcast/all-ops/" +  this.repo.findCompanyIdByKeyValue(apiKey(who)), oe);
-        // sender.convertAndSendToUser(operator, "/queue/op", oe);
+        // TODO: check if locked then do not send to ops, but only to conv owner
+        String op = this.storage.whoLocked(clientLogin(who));
+        if(op == null) {
+            sender.convertAndSend("/broadcast/all-ops/" +  this.repo.findCompanyIdByKeyValue(apiKey(who)), oe);
+        } else {
+            sender.convertAndSendToUser(op, "/queue/op", oe);
+        }
     }
 
     /**
@@ -184,7 +194,7 @@ public class ChatController {
        this.storage.lock(msgLock.clientID, opsLogin(who));
        
        Response e = new Response();
-       e.tryLockChat = new Envelope.OkTryLockChat(msgLock.clientID);
+       e.tryLockChat = new Envelope.OkTryLockChat(msgLock.clientID, opsLogin(who));
        sender.convertAndSend("/broadcast/all-ops/" + company(who), e);
     }
 
@@ -195,7 +205,7 @@ public class ChatController {
        
        Response e = new Response();
        e.releaseChat = new Envelope.OkReleaseChat(msgLock.clientID);
-       sender.convertAndSend("/broadcast/all-ops/" + company(who), e);
+       sender.convertAndSend("/broadcast/all-ops/" + company(who), e); // do we really need it?
     }
 
     private static String clientLogin(Authentication user) {

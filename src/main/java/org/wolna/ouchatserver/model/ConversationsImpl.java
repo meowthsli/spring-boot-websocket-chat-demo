@@ -11,8 +11,10 @@ import org.apache.ignite.IgniteAtomicLong;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.query.FieldsQueryCursor;
 import org.apache.ignite.cache.query.QueryCursor;
+import org.apache.ignite.cache.query.ScanQuery;
 import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.cache.query.SqlQuery;
+import org.apache.ignite.cache.query.TextQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.wolna.ouchat.Envelope;
@@ -139,8 +141,44 @@ public class ConversationsImpl implements Conversations {
     }
     
     @Override
-    public boolean isLocked(String clientLogin) {
-        return locks.containsKey(clientLogin);
+    public String whoLocked(String clientLogin) {
+        if(!locks.containsKey(clientLogin)) {
+            return null;
+        };
+        return locks.get(clientLogin);
+    }
+
+    @Override
+    public List<String> search(String fio) {
+        if(false) {
+            ScanQuery<String, Conversation> qry = new ScanQuery<>((id, co) -> {
+                return co.getClientInfo().fio.toUpperCase().contains(fio.toUpperCase());
+            });
+            List<String> res = new ArrayList<>();
+            try(QueryCursor<String> cc = this.convsMeta.query(qry, e -> e.getKey())) {
+                for(String id: cc) {
+                    res.add(id);
+                    if (res.size() >= 20) {
+                        res.add("...");
+                        break;
+                    }
+                }
+            }
+            return res;
+        } else {
+            TextQuery<String, Conversation> qry = new TextQuery<>(Conversation.class, fio);
+            List<String> res = new ArrayList<>();
+            try(QueryCursor<String> cc = this.convsMeta.query(qry, e -> e.getKey())) {
+                for(String id: cc) {
+                    res.add(id);
+                    if (res.size() >= 20) {
+                        res.add("...");
+                        break;
+                    }
+                }
+            }
+            return res;
+        }
     }
     
 }
