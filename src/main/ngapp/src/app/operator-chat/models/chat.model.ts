@@ -30,8 +30,15 @@ export class Chat {
 
   private initialize(): void {
     this.messages = this.messages.sort((mA, mB) => mA.datetime.valueOf() - mB.datetime.valueOf());
-    this.newMessagesLength = this.messages.filter(message => message.fromClient).length;
-    this.lastMessage = this.messages.slice().reverse().find(message => message.fromClient);
+    const messages: Message[] = this.messages.slice().reverse();
+    this.lastMessage = messages.find(message => message.fromClient);
+    this.newMessagesLength = 0;
+    if (this.lastMessage.fromClient) {
+      messages.some(message => {
+        message.fromClient && this.newMessagesLength++;
+        return !message.fromClient;
+      });
+    }
   }
 
   /**
