@@ -101,4 +101,17 @@ export class Chat {
     return this;
   }
 
+  /**
+   * Update Messages
+   *
+   * @param {Message[]} messages
+   * @returns {Chat}
+   */
+  public updateMessages(messages: Message[]): Chat {
+    this.messages = messages.concat(this.messages)
+      .filter((message, index, messages) => messages.indexOf(messages.find(m => m.id === message.id)) === index)
+    this.initialize();
+    return this;
+  }
+
 }

@@ -33,7 +33,6 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
   public myChats: Queue = null;
 
   public chat: Chat = null;
-  public selectedChat: BehaviorSubject<Chat> = new BehaviorSubject(null);
   public subscription: Subscription = null;
 
   public readonly toasterConfig = new ToasterConfig({
@@ -52,8 +51,7 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.chatter.connect();
 
-    this.subscription = this.selectedChat.asObservable()
-      .switchMap(selectedChat => this.chatter.syncChat(selectedChat && selectedChat.id))
+    this.subscription = this.chatter.syncSelectedChat()
       .subscribe(chat => {
         this.chat = chat;
         if (this.chat) {
@@ -61,8 +59,20 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.freeChatsStream.subscribe(queue => this.freeChats = queue);
-    this.myChatsStream.subscribe(queue => this.myChats = queue);
+    this.freeChatsStream.subscribe(queue => {
+      this.freeChats = queue;
+
+      if (this.chat) {
+        this.onScrollDown();
+      }
+    });
+    this.myChatsStream.subscribe(queue => {
+      this.myChats = queue;
+
+      if (this.chat) {
+        this.onScrollDown();
+      }
+    });
   }
 
   public ngOnDestroy(): void {
@@ -76,7 +86,6 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
    */
   public onSelectChat(chat: Chat): void {
     this.chatter.selectChat(chat);
-    this.selectedChat.next(chat);
   }
 
   /**

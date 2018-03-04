@@ -28,6 +28,13 @@ export class ChatService {
 
   private freeChats: BehaviorSubject<Queue> = new BehaviorSubject(new Queue({chats: []}));
   private myChats: BehaviorSubject<Queue> = new BehaviorSubject(new Queue({chats: []}));
+  private selectedChat: BehaviorSubject<Chat> = new BehaviorSubject(null);
+
+  private operator: Author = new Author({
+    id: '1',
+    operatorId: '1',
+    fullname: 'A A'
+  }); // TODO: Operator
 
   constructor(
     private connector: OUChatOpConnectorImpl,
@@ -41,10 +48,6 @@ export class ChatService {
     this.connector.onResult(msg => {
       if(msg.messageAccepted) { // acknowledge of message
         this.myChats.value.updateMessage(msg.messageAccepted.messageTemporaryId, msg.messageAccepted.messageId, moment(msg.messageAccepted.when))
-        //let uc = this.findChat(msg.clientID);
-        //if(uc) {
-        //  uc.ack(msg.cid, msg.ack);
-        //}
       } else if(msg.clientMessage) {
         const message: Message = new Message({
           id: msg.clientMessage.message.id,
@@ -62,13 +65,19 @@ export class ChatService {
         } else {
           this.freeChats.next(this.freeChats.value.appendMessage(message));
         }
-
-        //let uc = this.findChat(msg.clientID);
-        //if(uc) {
-        //  uc.addHistory(this.opID, msg.chatItems);
-        //  this.scrollDown(uc);
-        // }
       } else if(msg.messages) {
+        //if (this.selectedChat.value.id === msg.messages.userLogin) {
+          this.selectedChat.next(this.selectedChat.value.updateMessages(msg.messages.messages.map(message => {
+            return new Message({
+              id: message.id,
+              author: message.fromClient ? this.selectedChat.value.author: this.operator,
+              text: message.text,
+              datetime: moment(message.dateAt),
+              fromClient: message.fromClient
+            });
+          })));
+        //}
+
         //this.$nowLoading = false;
         //if(!msg.chatItems) return;
         //let uc = this.findChat(msg.clientID);
@@ -86,8 +95,10 @@ export class ChatService {
         //  }
         // }
       } else if (msg.tryLockChat) {
+        // TODO: lock chat
         // this.onMessage_LOCK_OK(msg);
       } else if (msg.releaseChat) {
+        // TODO: release chat
         // this.opID = msg.opID;
       }
     });
@@ -132,10 +143,7 @@ export class ChatService {
     const tempId: number = this.connector.say(clientId, text);
     this.myChats.value.appendMessage(new Message({
       id: tempId,
-      author: new Author({
-        id: '1',
-        fullname: ''
-      }),
+      author: this.operator,
       text: text,
       datetime: moment(),
       fromClient: false
@@ -166,14 +174,8 @@ export class ChatService {
    * @param {string} id Идентификатор чата
    * @returns {Observable<Chat>}
    */
-  public syncChat(id: string): Observable<Chat> {
-    return combineLatest([
-        this.syncFreeChats(),
-        this.syncMyChats(),
-      ])
-      .map(results => {
-        return results.map(queue => queue.chats).reduce((a, b) => a.concat(b), []).find(chat => chat.id === id);
-      });
+  public syncSelectedChat(): Observable<Chat> {
+    return this.selectedChat.asObservable();
   }
 
   /**
@@ -189,6 +191,9 @@ export class ChatService {
       this.freeChats.next(this.freeChats.value.removeChat(chat));
     }
 
+    this.selectedChat.next(chat);
+
+    this.connector.loadHistory(chat.id, chat.messages[chat.messages.length - 1].id);
   }
 
   /**
