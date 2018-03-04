@@ -40,12 +40,13 @@ export class ChatService {
   private initialize(): void {
     this.connector.onResult(msg => {
       if(msg.messageAccepted) { // acknowledge of message
+        this.myChats.value.updateMessage(msg.messageAccepted.messageTemporaryId, msg.messageAccepted.messageId, moment(msg.messageAccepted.when))
         //let uc = this.findChat(msg.clientID);
         //if(uc) {
         //  uc.ack(msg.cid, msg.ack);
         //}
       } else if(msg.clientMessage) {
-        this.freeChats.next(this.freeChats.value.appendMessage(new Message({
+        const message: Message = new Message({
           id: msg.clientMessage.message.id,
           author: new Author({
             id: msg.clientMessage.clientID,
@@ -54,7 +55,14 @@ export class ChatService {
           text: msg.clientMessage.message.text,
           datetime: moment(msg.clientMessage.message.dateAt),
           fromClient: msg.clientMessage.message.fromClient
-        })));
+        });
+
+        if ( this.myChats.value.hasClient(message.author) ) {
+          this.myChats.next(this.myChats.value.appendMessage(message));
+        } else {
+          this.freeChats.next(this.freeChats.value.appendMessage(message));
+        }
+
         //let uc = this.findChat(msg.clientID);
         //if(uc) {
         //  uc.addHistory(this.opID, msg.chatItems);
@@ -114,7 +122,25 @@ export class ChatService {
     });
   }
 
-
+  /**
+   * Send Message
+   *
+   * @param {string} clientId
+   * @param {string} text
+   */
+  public sendMessage(clientId: string, text: string): void {
+    const tempId: number = this.connector.say(clientId, text);
+    this.myChats.value.appendMessage(new Message({
+      id: tempId,
+      author: new Author({
+        id: '1',
+        fullname: ''
+      }),
+      text: text,
+      datetime: moment(),
+      fromClient: false
+    }), clientId);
+  }
 
   /**
    * Синхронизация свободных чатов
@@ -148,6 +174,31 @@ export class ChatService {
       .map(results => {
         return results.map(queue => queue.chats).reduce((a, b) => a.concat(b), []).find(chat => chat.id === id);
       });
+  }
+
+  /**
+   * Select Chat
+   *
+   * @param {Chat} chat
+   */
+  public selectChat(chat: Chat): void {
+    this.connector.tryAcquireChat(chat.id);
+
+    if ( ! chat.operatorId) {
+      this.myChats.next(this.myChats.value.prependChat(chat.assignOperator('1')));
+      this.freeChats.next(this.freeChats.value.removeChat(chat));
+    }
+
+  }
+
+  /**
+   * Remove Chat
+   *
+   * @param {Chat} chat
+   */
+  public removeChat(chat: Chat): void {
+    this.connector.releaseChat(chat.id);
+    this.myChats.next(this.myChats.value.removeChat(chat));
   }
 
 }

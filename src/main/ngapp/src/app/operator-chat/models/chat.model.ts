@@ -1,6 +1,7 @@
 import { Message } from './message.model';
 import { Author } from './author.model';
 import * as moment from 'moment';
+import { Moment } from 'moment';
 
 export interface IChat {
   operatorId: string;
@@ -11,22 +12,26 @@ export interface IChat {
 
 export class Chat {
 
-  public readonly id: string = ''; // Идентификатор чата
+  public readonly id: string = null; // Идентификатор чата
   public operatorId: string = null; // Идентификатор Оператора
   public messages: Message[] = []; // Сообщения
   public readonly author: Author = null; // Клиент
 
-  public readonly newMessagesLength: number = 0; // Количество непрочитанных сообщений
-  public readonly lastMessage: Message = null; // Последнее сообщение
+  public newMessagesLength: number = 0; // Количество непрочитанных сообщений
+  public lastMessage: Message = null; // Последнее сообщение
 
   constructor(data: IChat) {
     this.id = data.id;
     this.operatorId = data.operatorId;
     this.messages = data.messages;
     this.author = data.author;
+    this.initialize();
+  }
 
-    this.newMessagesLength = data.messages.filter(message => message).length;
-    this.lastMessage = data.messages[this.messages.length - 1];
+  private initialize(): void {
+    this.messages = this.messages.sort((mA, mB) => mA.datetime.valueOf() - mB.datetime.valueOf());
+    this.newMessagesLength = this.messages.filter(message => message.fromClient).length;
+    this.lastMessage = this.messages.slice().reverse().find(message => message.fromClient);
   }
 
   /**
@@ -60,13 +65,40 @@ export class Chat {
     return this;
   }
 
+  /**
+   * Add Message
+   *
+   * @param {Message} message
+   * @returns {Chat}
+   */
   public addMessage(message: Message): Chat {
-    return new Chat({
-      operatorId: this.operatorId,
-      id: this.id,
-      messages: this.messages.concat([message]),
-      author: this.author
-    });
+    this.messages = this.messages.concat([message]);
+    this.initialize();
+    return this;
+  }
+
+  /**
+   * Update Message
+   *
+   * @param {number} tempMessageId
+   * @param {number} messageId
+   * @param {moment.Moment} datetime
+   * @returns {Chat}
+   */
+  public updateMessage(tempMessageId: number, messageId: number, datetime: Moment): Chat {
+    const message: Message = this.messages.find(message => message.id === tempMessageId);
+    if (message) {
+      this.messages[this.messages.indexOf(message)] = new Message({
+        id: messageId,
+        tempId: tempMessageId,
+        author: message.author,
+        text: message.text,
+        datetime: datetime,
+        fromClient: message.fromClient
+      });
+      this.initialize();
+    }
+    return this;
   }
 
 }

@@ -75,6 +75,7 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
    * @param {Chat} chat
    */
   public onSelectChat(chat: Chat): void {
+    this.chatter.selectChat(chat);
     this.selectedChat.next(chat);
   }
 
@@ -85,11 +86,7 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
    */
   public onSendMessage(text: string): void {
     if (text && text.trim()) {
-      this.chat.appendMessage(text.trim());
-      if ( ! this.chat.operatorId) {
-        this.myChats.prependChat(this.chat.assignOperator('1'));
-        this.freeChats.removeChat(this.chat);
-      }
+      this.chatter.sendMessage(this.chat.id, text.trim());
       this.onScrollDown();
     }
   }
@@ -98,8 +95,8 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
    * Отпустить клиента
    */
   public onRelease(): void {
-    this.myChats.removeChat(this.chat);
-    this.chat = null; // TODO: Отпустить клиента
+    this.chatter.removeChat(this.chat);
+    this.chat = null;
   }
 
   /**

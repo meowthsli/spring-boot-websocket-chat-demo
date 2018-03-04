@@ -1,5 +1,7 @@
 import { Chat } from './chat.model';
 import { Message } from './message.model';
+import { Author } from './author.model';
+import { Moment } from 'moment';
 
 export interface IQueue {
   chats: Chat[];
@@ -63,11 +65,15 @@ export class Queue {
    * Append Message
    *
    * @param {Message} message
+   * @param {string} clientId
    * @returns {Queue}
    */
-  public appendMessage(message: Message): Queue {
+  public appendMessage(message: Message, clientId: string = null): Queue {
     // TODO: append message
-    const chat: Chat = this.chats.find(chat => chat.author.id === message.author.id);
+    const chat: Chat = clientId ?
+      this.chats.find(chat => chat.author.id === clientId)
+      :
+      this.chats.find(chat => chat.author.id === message.author.id);
     if (chat) {
       this.updateChat(chat.addMessage(message));
     } else {
@@ -78,6 +84,30 @@ export class Queue {
         author: message.author
       }));
     }
+    return this;
+  }
+
+  /**
+   * Has Client
+   *
+   * @param {Author} author
+   * @returns {boolean}
+   */
+  public hasClient(author: Author): boolean {
+    return this.chats.some(chat => chat.author.id === author.id);
+  }
+
+  /**
+   * Update Message
+   *
+   * @param {number} tempMessageId
+   * @param {number} messageId
+   * @param {moment.Moment} datetime
+   * @returns {Queue}
+   */
+  public updateMessage(tempMessageId: number, messageId: number, datetime: Moment): Queue {
+    const chat: Chat = this.chats.find(chat => chat.messages.some(message => message.id === tempMessageId));
+    chat.updateMessage(tempMessageId, messageId, datetime);
     return this;
   }
 

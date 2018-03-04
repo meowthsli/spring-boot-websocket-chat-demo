@@ -3,7 +3,7 @@ import { Moment } from 'moment';
 
 export interface IMessage {
   id?: number;
-  tempId?: string;
+  tempId?: number;
   author: Author;
   text: string;
   datetime: Moment;
@@ -13,7 +13,7 @@ export interface IMessage {
 export class Message {
 
   public id: number; // Идентификатор Сообщения
-  public tempId: string; // Временный Идентификатор Сообщения
+  public tempId: number; // Временный Идентификатор Сообщения
   public author: Author = null; // Автор Сообщения
   public text: string = ''; // Текст Сообщения
   public datetime: Moment = null; // Время Сообщения
