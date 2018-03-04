@@ -54,24 +54,16 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
     this.subscription = this.chatter.syncSelectedChat()
       .subscribe(chat => {
         this.chat = chat;
-        if (this.chat) {
-          this.onScrollDown();
-        }
+        this.onScrollDown();
       });
 
     this.freeChatsStream.subscribe(queue => {
       this.freeChats = queue;
-
-      if (this.chat) {
-        this.onScrollDown();
-      }
+      this.onScrollDown();
     });
     this.myChatsStream.subscribe(queue => {
       this.myChats = queue;
-
-      if (this.chat) {
-        this.onScrollDown();
-      }
+      this.onScrollDown();
     });
   }
 
@@ -123,7 +115,9 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
    */
   public onScrollDown(): void {
     setTimeout(() =>  {
-      this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+      if (this.messagesContainer) {
+        this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
+      }
     }, 0);
   }
 
