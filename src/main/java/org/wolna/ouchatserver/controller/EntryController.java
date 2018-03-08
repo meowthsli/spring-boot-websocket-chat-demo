@@ -5,8 +5,8 @@
  */
 package org.wolna.ouchatserver.controller;
 
-import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.wolna.ouchatserver.model.Company;
 import org.wolna.ouchatserver.model.CompanyRepository;
+import org.wolna.ouchatserver.model.Events;
 import org.wolna.ouchatserver.model.InvalidOperationException;
 import org.wolna.ouchatserver.model.User;
 import org.wolna.ouchatserver.model.UserRepository;
@@ -36,15 +37,19 @@ public class EntryController {
     
     @Autowired
     BCryptPasswordEncoder encoder;
+    
+    @Autowired
+    ApplicationEventPublisher publisher;
 
     @RequestMapping(path = "/register", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     @Transactional
-    public Object registerCompany(@RequestBody RegistrationData data) {
+    public Company registerCompany(@RequestBody RegistrationData data) {
         Company c = new Company(data.getName());    
         User u = registerOpUser(c, data);
         compRepo.save(c);
-        return Collections.EMPTY_MAP;
+        publisher.publishEvent(new Events.NewCompany());
+        return c;
     }
 
     private User registerOpUser(Company c, RegistrationData data) {

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -20,6 +21,7 @@ import org.wolna.ouchat.Envelope.HelloOk;
 import org.wolna.ouchat.Envelope.Response;
 import org.wolna.ouchatserver.model.ApiKeyRepository;
 import org.wolna.ouchatserver.model.Conversations;
+import org.wolna.ouchatserver.model.Events;
 import org.wolna.ouchatserver.model.Message;
 import org.wolna.ouchatserver.security.UserDetailsServiceImpl.SecurityUser;
 
@@ -42,6 +44,9 @@ public class ChatController {
     
     @Autowired
     ApiKeyRepository repo;
+    
+    @Autowired
+    ApplicationEventPublisher publisher;
 
     /**
      * New op is here
@@ -68,6 +73,8 @@ public class ChatController {
 
         // forwart hello to all connected ops
         sender.convertAndSend("/broadcast/all-ops/" + company(who), hello);
+        
+        publisher.publishEvent(new Events.UserConnected());
     }
 
     @MessageMapping("/client.say")
@@ -91,6 +98,8 @@ public class ChatController {
         } else {
             sender.convertAndSendToUser(op, "/queue/op", oe);
         }
+        
+        publisher.publishEvent(new Events.MessageArrived());
     }
 
     /**
