@@ -1,5 +1,6 @@
 package org.wolna.ouchatserver.model;
 
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.List;
 import org.wolna.ouchat.Envelope;
@@ -52,10 +53,10 @@ public interface Conversations {
 
     /**
      * Add message to conversation
-     * @param clientLogin
+     * @param opLogin 
      * @param message 
      */
-    long addOpMessage(String clientLogin, String message);
+    long addOpMessage(String opLogin, String message);
 
     /**
      * Searches by fio
@@ -63,4 +64,9 @@ public interface Conversations {
      * @return list of client ids 
      */
     public List<String> search(String fio);
+    
+    AbstractMap.SimpleEntry<Long, String> addClientFile(String clientLogin, String fileName, byte[] message);
+    AbstractMap.SimpleEntry<Long, String> addOpFile(String opLogin, String fileName, byte[] message);
+    
+    AbstractMap.SimpleEntry<String, byte[]> findFile(String contentReference);
 }

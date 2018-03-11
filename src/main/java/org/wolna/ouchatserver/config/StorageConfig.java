@@ -6,16 +6,21 @@
 package org.wolna.ouchatserver.config;
 
 import java.nio.file.Paths;
+import java.util.HashMap;
 import javax.annotation.PreDestroy;
 import javax.cache.expiry.Duration;
 import javax.cache.expiry.ModifiedExpiryPolicy;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
+import org.apache.ignite.IgniteFileSystem;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.DataRegionConfiguration;
 import org.apache.ignite.configuration.DataStorageConfiguration;
+import org.apache.ignite.configuration.FileSystemConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
+import org.apache.ignite.igfs.IgfsMode;
+import org.apache.ignite.igfs.secondary.local.LocalIgfsSecondaryFileSystem;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -67,6 +72,21 @@ public class StorageConfig {
         dscfg.setWalPath(cwd + pathToStorage + "/wal");
         
         config.setDataStorageConfiguration(dscfg);
+        
+        FileSystemConfiguration fsConfig = new FileSystemConfiguration();
+        fsConfig.setName("userFiles");
+        fsConfig.setDefaultMode(IgfsMode.DUAL_ASYNC);
+        fsConfig.setPathModes(new HashMap<String,IgfsMode>() {
+                {
+                    put("/tmp/.*", IgfsMode.PRIMARY);
+                }
+        });      
+        
+        LocalIgfsSecondaryFileSystem secFs = new LocalIgfsSecondaryFileSystem();
+        secFs.setWorkDirectory(cwd + pathToStorage + "/data/fs");
+        fsConfig.setSecondaryFileSystem(secFs);
+        
+        config.setFileSystemConfiguration(fsConfig);
 
         Ignite i = Ignition.start(config);
         i.active(true);
@@ -113,6 +133,11 @@ public class StorageConfig {
     @PreDestroy
     public void destroy() {
         Ignition.stop(true);
+    }
+    
+    @Bean(name = "allFiles")
+    IgniteFileSystem igfsAllFiles(Ignite ignite) {    
+        return ignite.fileSystem("userFiles");
     }
 
 }

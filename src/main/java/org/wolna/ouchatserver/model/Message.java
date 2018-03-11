@@ -22,7 +22,8 @@ public class Message implements Serializable {
     public long msgId;
     public boolean fromClient;
     public String text;
-
+    public String contentReference;
+    
     public Instant getAt() {
         return created;
     }

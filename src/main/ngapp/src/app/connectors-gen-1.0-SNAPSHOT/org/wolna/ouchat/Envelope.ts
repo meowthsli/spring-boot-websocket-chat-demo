@@ -21,6 +21,10 @@ export class Envelope {
 
     public info : Envelope.Info;
 
+    public fileContent : Envelope.FileContent;
+
+    public fileMessageAccepted : Envelope.FileMessageAccepted;
+
     constructor() {
         if(this.messageAccepted===undefined) this.messageAccepted = null;
         if(this.helloOk===undefined) this.helloOk = null;
@@ -30,6 +34,8 @@ export class Envelope {
         if(this.clientMessage===undefined) this.clientMessage = null;
         if(this.opHello===undefined) this.opHello = null;
         if(this.info===undefined) this.info = null;
+        if(this.fileContent===undefined) this.fileContent = null;
+        if(this.fileMessageAccepted===undefined) this.fileMessageAccepted = null;
     }
 }
 Envelope["__class"] = "org.wolna.ouchat.Envelope";
@@ -322,19 +328,24 @@ export namespace Envelope {
     /**
      * History messages
      * @param {Array} messages
+     * @param {Array} fileMessages
      * @param {string} userLogin
      * @class
      */
     export class MessagesArrived {
         public messages : Envelope.TextMessage[];
 
+        public fileMessages : Envelope.FileTextMessage[];
+
         public userLogin : string;
 
-        public constructor(messages : Envelope.TextMessage[], userLogin : string) {
+        public constructor(messages : Envelope.TextMessage[], fileMessages : Envelope.FileTextMessage[], userLogin : string) {
             if(this.messages===undefined) this.messages = null;
+            if(this.fileMessages===undefined) this.fileMessages = null;
             if(this.userLogin===undefined) this.userLogin = null;
             this.messages = messages;
             this.userLogin = userLogin;
+            this.fileMessages = fileMessages;
         }
     }
     MessagesArrived["__class"] = "org.wolna.ouchat.Envelope.MessagesArrived";
@@ -606,6 +617,65 @@ export namespace Envelope {
         }
     }
     TextMessage["__class"] = "org.wolna.ouchat.Envelope.TextMessage";
+
+
+    export class RequestFileContent {
+        public contentReference : string;
+
+        public constructor(contentReference : string) {
+            if(this.contentReference===undefined) this.contentReference = null;
+            this.contentReference = contentReference;
+        }
+    }
+    RequestFileContent["__class"] = "org.wolna.ouchat.Envelope.RequestFileContent";
+
+
+    export class FileMessageToServer extends Envelope.MessageToServer {
+        public content : number[];
+
+        public constructor(temporaryId : number, content : number[]) {
+            super(null, temporaryId);
+            if(this.content===undefined) this.content = null;
+            this.content = content;
+        }
+    }
+    FileMessageToServer["__class"] = "org.wolna.ouchat.Envelope.FileMessageToServer";
+
+
+    export class FileMessageAccepted extends Envelope.MessageAccepted {
+        public contentReference : string;
+
+        public constructor(reference : string, messageTemporaryId : number, messageId : number, when : Date) {
+            super(messageTemporaryId, messageId, when);
+            if(this.contentReference===undefined) this.contentReference = null;
+            this.contentReference = reference;
+        }
+    }
+    FileMessageAccepted["__class"] = "org.wolna.ouchat.Envelope.FileMessageAccepted";
+
+
+    export class FileTextMessage extends Envelope.TextMessage {
+        public contentReference : string;
+
+        public constructor(id : number, fromClient : boolean, createdAt : Date, contentReference : string) {
+            super(id, null, fromClient, createdAt);
+            if(this.contentReference===undefined) this.contentReference = null;
+            this.contentReference = contentReference;
+        }
+    }
+    FileTextMessage["__class"] = "org.wolna.ouchat.Envelope.FileTextMessage";
+
+
+    export class FileContent extends Envelope.RequestFileContent {
+        public content : number[];
+
+        public constructor(reference : string, content : number[]) {
+            super(reference);
+            if(this.content===undefined) this.content = null;
+            this.content = content;
+        }
+    }
+    FileContent["__class"] = "org.wolna.ouchat.Envelope.FileContent";
 
 }
 

@@ -102,6 +102,35 @@ public class ChatController {
         publisher.publishEvent(new Events.MessageArrived());
     }
 
+    @MessageMapping("/client.putfile")
+    @SendToUser("/queue/client")
+    public Response putClientFile(@Payload Envelope.FileMessageToServer fileMessage,
+            SimpMessageHeaderAccessor smha, Authentication client) {
+        
+        return uploadFile(fileMessage);
+    }
+    
+    @MessageMapping("/op.putfile")
+    @SendToUser("/queue/op")
+    public Response putOpFile(@Payload Envelope.FileMessageToServer fileMessage,
+            SimpMessageHeaderAccessor smha, Authentication op) {
+        
+        return uploadFile(fileMessage);
+    }
+    
+    @MessageMapping("/client.getfile")
+    @SendToUser("/queue/client")
+    public Response getClientFile(@Payload Envelope.RequestFileContent fileRequest,
+            SimpMessageHeaderAccessor smha, Authentication op) {
+        return getFile(fileRequest);
+    }
+    
+    @MessageMapping("/op.getfile")
+    @SendToUser("/queue/op")
+    public Response getOpFile(@Payload Envelope.RequestFileContent fileRequest,
+            SimpMessageHeaderAccessor smha, Authentication op) {
+        return getFile(fileRequest);
+    }
     /**
      * TODO: load real history
      *
@@ -120,6 +149,7 @@ public class ChatController {
         e.messages = new Envelope.MessagesArrived(
                 mm.stream().map(x -> new Envelope.TextMessage(x.msgId, x.text, x.fromClient, Date.from(x.created)))
                         .collect(Collectors.toList()).toArray(new Envelope.TextMessage[0]),
+                new Envelope.FileTextMessage[0],
                 clientLogin(who));
         return e;
     }
@@ -157,6 +187,7 @@ public class ChatController {
                         .map(x -> new Envelope.TextMessage(x.msgId, x.text, x.fromClient, Date.from(x.created)))
                         .collect(Collectors.toList())
                         .toArray(new Envelope.TextMessage[0]),
+                new Envelope.FileTextMessage[0],
                 opHisto.clientLogin);
         return e;
     }
@@ -173,6 +204,7 @@ public class ChatController {
         Response msg = new Response();
         msg.messages = new Envelope.MessagesArrived(
                 new Envelope.TextMessage[]{new Envelope.TextMessage(id, chatMessage.text, false, d)},
+                new Envelope.FileTextMessage[0],
                 chatMessage.clientID);
         sender.convertAndSendToUser(chatMessage.clientID, "/queue/client", msg);
         
@@ -231,5 +263,22 @@ public class ChatController {
     
     private static String company(Authentication user) {
         return ((SecurityUser)user.getPrincipal()).getUser().company.getId().toString();
+    }
+
+    private Response uploadFile(Envelope.FileMessageToServer fileMessage) {
+        // todo: load file
+        Response r = new Response();
+        r.fileMessageAccepted = new Envelope.FileMessageAccepted(
+                "file_" + fileMessage.temporaryId + 999999,
+                fileMessage.temporaryId, fileMessage.temporaryId + 999999, 
+                Date.from(Instant.now())
+        );
+        return r;
+    }
+
+    private Response getFile(Envelope.RequestFileContent fileRequest) {
+        Response r = new Response();
+        r.fileContent = new Envelope.FileContent(fileRequest.contentReference, new byte[]{1, 2, 3});
+        return r;
     }
 }

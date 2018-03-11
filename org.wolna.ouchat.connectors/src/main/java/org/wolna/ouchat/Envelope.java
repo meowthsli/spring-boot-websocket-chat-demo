@@ -17,6 +17,8 @@ public class Envelope {
     public MessageFromClient clientMessage;
     public OpHello opHello;
     public Info info;
+    public FileContent fileContent;
+    public FileMessageAccepted fileMessageAccepted;
     /**
      * Client sends when makes connection
      */
@@ -45,7 +47,7 @@ public class Envelope {
     /**
      * Message sent to server with temp id
      */
-    public static final class MessageToServer {
+    public static class MessageToServer {
         public String text;
         public long temporaryId;
 
@@ -69,7 +71,7 @@ public class Envelope {
     /**
      * Message delivering confirmation. Has to be sent from server to client
      */
-    public static final class MessageAccepted {
+    public static class MessageAccepted {
         public long messageId;
         public long messageTemporaryId;
         public Date when;
@@ -186,10 +188,12 @@ public class Envelope {
      */
     public static class MessagesArrived {
         public final TextMessage[] messages;
+        public final FileTextMessage[] fileMessages;
         public final String userLogin;
-        public MessagesArrived(TextMessage[] messages, String userLogin) {
+        public MessagesArrived(TextMessage[] messages, FileTextMessage[] fileMessages, String userLogin) {
             this.messages = messages;
             this.userLogin = userLogin;
+            this.fileMessages = fileMessages;
         }
     }
     
@@ -340,5 +344,48 @@ public class Envelope {
             this.fromClient = fromClient;
             this.dateAt = createdAt;    
         }
+    }
+    
+    public static class FileTextMessage extends TextMessage {
+        public String contentReference;
+        public FileTextMessage(long id, boolean fromClient, Date createdAt, String contentReference) {
+            super(id, null, fromClient, createdAt);
+            this.contentReference = contentReference;
+        }
+    }
+    
+    public static class FileContent extends RequestFileContent {
+        public byte[] content;
+        public String filename;
+        public FileContent(String reference, byte[] content) {
+            super(reference);
+            this.content = content;
+        }
+    } 
+    
+    public static class RequestFileContent{
+        public String contentReference;
+        public RequestFileContent(String contentReference) {
+            this.contentReference = contentReference;
+        }
+    }
+    
+    public static class FileMessageToServer extends MessageToServer {
+        public byte[] content;
+        public String filename;
+        public FileMessageToServer(long temporaryId, byte[] content, String filename) {
+            super(null, temporaryId);
+            this.content = content;
+            this.filename = filename;
+        }
+    }
+    
+    public static class FileMessageAccepted extends MessageAccepted {
+        public String contentReference;
+        public FileMessageAccepted(String reference, long messageTemporaryId, long messageId, Date when) {
+            super(messageTemporaryId, messageId, when);
+            this.contentReference = reference;
+        }
+        
     }
 }
