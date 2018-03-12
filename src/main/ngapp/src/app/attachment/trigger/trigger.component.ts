@@ -17,12 +17,15 @@ export class TriggerComponent implements OnInit {
   }
 
   public onFileSelect(files: FileList): void {
-    const fileReader = new FileReader();
-    fileReader.onload = fileLoadedEvent => {
-      const data = fileLoadedEvent['target']['result'];
-      this.onUpload.emit(new Attachment(files.item(0).name, data));
-    };
-    fileReader.readAsDataURL(files.item(0));
+    const file: File = files.item(0);
+    if (file) {
+      const fileReader = new FileReader();
+      fileReader.onload = fileLoadedEvent => {
+        const data = fileLoadedEvent['target']['result'];
+        this.onUpload.emit(new Attachment(file.name, data));
+      };
+      fileReader.readAsDataURL(file);
+    }
   }
 
 }
