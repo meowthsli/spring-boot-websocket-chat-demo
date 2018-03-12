@@ -1,0 +1,7 @@
+<a href="javascript:;"
+   class="write-link attach"
+   (click)="file.click()"></a>
+<input type="file"
+       #file
+       (change)="onFileSelect($event.target.files)">
+

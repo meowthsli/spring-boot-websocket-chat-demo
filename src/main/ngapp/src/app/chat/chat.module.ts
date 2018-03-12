@@ -8,6 +8,9 @@ import { routes } from './chat.routes';
 import { PipesModule } from '../pipes/pipes.module';
 import { FormsModule } from '@angular/forms';
 import { OUChatClientConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/client-connector';
+import { TriggerModule } from '../attachment/trigger/trigger.module';
+import { UploaderModule } from '../attachment/uploader/uploader.module';
+import { MessageModule } from '../attachment/message/message.module';
 
 @NgModule({
   imports: [
@@ -17,7 +20,10 @@ import { OUChatClientConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wo
     NbLayoutModule,
     NbCardModule,
     ToasterModule,
-    PipesModule
+    PipesModule,
+    TriggerModule,
+    UploaderModule,
+    MessageModule
   ],
   declarations: [ChatComponent],
   providers: [

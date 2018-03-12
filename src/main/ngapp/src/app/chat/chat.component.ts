@@ -12,6 +12,7 @@ import { OUChatClientConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wo
 import { OUChatOpConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/impl/ops-connector';
 import { Envelope } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/Envelope';
 import { Moment } from 'moment';
+import { Attachment } from '../attachment/models/attachment.model';
 
 type CONNECTOR = OUChatClientConnectorImpl;
 
@@ -127,6 +128,15 @@ export class ChatComponent implements OnInit {
       let element = document.getElementById('chat-lines');
       element.scrollTop = element.scrollHeight ;
     }, 0);
+  }
+
+  /**
+   * Upload Attachment
+   *
+   * @param {Attachment} attachment
+   */
+  public onFileUpload(attachment: Attachment): void {
+    console.log(attachment); // TODO: send attachment
   }
 }
 

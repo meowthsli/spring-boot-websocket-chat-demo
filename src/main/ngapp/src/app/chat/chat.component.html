@@ -27,7 +27,7 @@
         </div>
 
         <div class="write">
-          <a href="javascript:;" class="write-link attach"></a>
+          <app-attachment-trigger (onUpload)="onFileUpload($event)"></app-attachment-trigger>
           <input type="text" placeholder="Введите сообщение" rows="2" (keydown.enter)="$onSendClick();false" [(ngModel)]="$text">
           <!--<a href="javascript:;" class="write-link smiley"></a>-->
           <a href="javascript:;"
