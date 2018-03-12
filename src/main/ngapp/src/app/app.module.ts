@@ -86,7 +86,7 @@ const routes: Routes = [
     NbAuthModule.forRoot({
       forms: {
         login: {
-          redirectDelay: 3000,
+          redirectDelay: 0,
         },
       },
       providers: {

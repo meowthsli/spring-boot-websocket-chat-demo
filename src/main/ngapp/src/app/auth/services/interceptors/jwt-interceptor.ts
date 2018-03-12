@@ -21,7 +21,10 @@ export class NbAuthJWTInterceptor implements HttpInterceptor {
             url: req.url.search(/^\/api\//) > -1 ? 'http://localhost:8080' + req.url : req.url
           });
 
-          if (token && token.getValue()) {
+          if (token && token.getValue() && [
+              this.authService.getProvider('email').getConfigValue('login.endpoint'),
+              this.authService.getProvider('email').getConfigValue('register.endpoint')
+            ].indexOf(req.url) < 0) {
             // const JWT = `Bearer ${token.getValue()}`;
             const JWT = token.getValue();
             req = req.clone({
