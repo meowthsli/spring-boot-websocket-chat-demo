@@ -142,6 +142,14 @@ export class ChatComponent implements OnInit {
     this.uploader.confirm(attachment)
       .then(a => {
         this.attachment = a;
+
+
+        const id = this.connector.say(a.filename);
+        const ci = new ChatItem(id, true, a.filename, moment(), id);
+        this.$history.push(ci);
+        this.scrollDown();
+
+
         console.log(attachment); // TODO: send attachment
       })
       .catch(cancel => {
