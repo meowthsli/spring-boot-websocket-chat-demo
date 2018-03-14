@@ -26,9 +26,6 @@
           </div>
         </div>
 
-
-        <app-attachment-uploader [model]="attachment" *ngIf="attachment"></app-attachment-uploader>
-
         <div class="write">
           <app-attachment-trigger (onUpload)="onFileUpload($event)"></app-attachment-trigger>
           <input type="text" placeholder="Введите сообщение" rows="2" (keydown.enter)="$onSendClick();false" [(ngModel)]="$text">

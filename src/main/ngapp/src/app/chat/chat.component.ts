@@ -13,6 +13,7 @@ import { OUChatOpConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/
 import { Envelope } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/Envelope';
 import { Moment } from 'moment';
 import { Attachment } from '../attachment/models/attachment.model';
+import { UploaderService } from '../attachment/uploader/uploader.service';
 
 type CONNECTOR = OUChatClientConnectorImpl;
 
@@ -42,7 +43,8 @@ export class ChatComponent implements OnInit {
 
   constructor(private router:Router, private uctx: UsercontextService,
               private connector: OUChatClientConnectorImpl,
-              private spinner: NbSpinnerService, private toaster: ToasterService) {}
+              private spinner: NbSpinnerService, private toaster: ToasterService,
+              private uploader: UploaderService) {}
 
   /**
    *  Send message button event handler
@@ -137,8 +139,14 @@ export class ChatComponent implements OnInit {
    * @param {Attachment} attachment
    */
   public onFileUpload(attachment: Attachment): void {
-    this.attachment = attachment;
-    console.log(attachment); // TODO: send attachment
+    this.uploader.confirm(attachment)
+      .then(a => {
+        this.attachment = a;
+        console.log(attachment); // TODO: send attachment
+      })
+      .catch(cancel => {
+
+      });
   }
 }
 

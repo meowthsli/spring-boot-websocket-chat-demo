@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Attachment } from '../models/attachment.model';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-attachment-uploader',
@@ -8,12 +9,21 @@ import { Attachment } from '../models/attachment.model';
 })
 export class UploaderComponent implements OnInit {
 
-  @Input()
-  public model: Attachment;
+  public attachment: Attachment = null;
 
-  constructor() { }
+  constructor(
+    private activeModal: NgbActiveModal
+  ) { }
 
   ngOnInit() {
+  }
+
+  public close(): void {
+    this.activeModal.close(this.attachment);
+  }
+
+  public dismiss(): void {
+    this.activeModal.dismiss();
   }
 
 }
