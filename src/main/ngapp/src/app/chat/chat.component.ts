@@ -24,6 +24,7 @@ type CONNECTOR = OUChatClientConnectorImpl;
 export class ChatComponent implements OnInit {
 
   public readonly fromNow: string = moment().fromNow();
+  public attachment: Attachment = null;
 
   $text: string;
   $history: Array<ChatItem> = new Array();
@@ -136,6 +137,7 @@ export class ChatComponent implements OnInit {
    * @param {Attachment} attachment
    */
   public onFileUpload(attachment: Attachment): void {
+    this.attachment = attachment;
     console.log(attachment); // TODO: send attachment
   }
 }
