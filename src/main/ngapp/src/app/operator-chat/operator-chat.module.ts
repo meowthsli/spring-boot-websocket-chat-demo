@@ -11,6 +11,8 @@ import { PipesModule } from '../pipes/pipes.module';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChatService } from './services/chat.service';
+import { TriggerModule } from '../attachment/trigger/trigger.module';
+import { UploaderModule } from '../attachment/uploader/uploader.module';
 
 @NgModule({
   imports: [
@@ -25,7 +27,9 @@ import { ChatService } from './services/chat.service';
     NbTabsetModule,
     NbUserModule,
     InfiniteScrollModule,
-    PipesModule
+    PipesModule,
+    TriggerModule,
+    UploaderModule
   ],
   declarations: [
     OperatorChatComponent,

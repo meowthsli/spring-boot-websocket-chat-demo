@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Attachment } from '../models/attachment.model';
 
 @Component({
@@ -7,6 +7,9 @@ import { Attachment } from '../models/attachment.model';
   styleUrls: ['./trigger.component.scss']
 })
 export class TriggerComponent implements OnInit {
+
+  @Input()
+  public disabled: boolean;
 
   @Output()
   public onUpload: EventEmitter<Attachment> = new EventEmitter();

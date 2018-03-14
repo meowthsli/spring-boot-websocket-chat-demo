@@ -11,6 +11,9 @@
       background-position: center;
     }
   }
+  &.disabled {
+    pointer-events: none;
+  }
 }
 input[type=file] {
   display: none;

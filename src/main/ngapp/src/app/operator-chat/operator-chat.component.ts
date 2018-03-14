@@ -9,6 +9,8 @@ import 'rxjs/add/operator/switchMap';
 import { FormControl } from '@angular/forms';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import { ToasterConfig } from 'angular2-toaster';
+import { Attachment } from '../attachment/models/attachment.model';
+import { UploaderService } from '../attachment/uploader/uploader.service';
 
 @Component({
   selector: 'app-operator-chat',
@@ -43,7 +45,8 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
   });
 
   constructor(
-    private chatter: ChatService
+    private chatter: ChatService,
+    private uploader: UploaderService
   ) {
 
   }
@@ -108,6 +111,24 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
    */
   public canReleaseClent(chat: Chat): boolean {
     return chat.operatorId === '1';
+  }
+
+  /**
+   * Upload Attachment
+   *
+   * @param {Attachment} attachment
+   */
+  public onFileUpload(attachment: Attachment): void {
+    this.uploader.confirm(attachment)
+      .then(a => {
+        this.onSendMessage(attachment.filename);
+
+
+        console.log(attachment); // TODO: send attachment
+      })
+      .catch(cancel => {
+
+      });
   }
 
   /**

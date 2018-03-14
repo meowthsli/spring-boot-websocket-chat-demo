@@ -56,7 +56,7 @@
         </div>
 
         <div class="write">
-          <a href="javascript:;" class="write-link attach"></a>
+          <app-attachment-trigger (onUpload)="onFileUpload($event)" [disabled]="!chat"></app-attachment-trigger>
           <input type="text"
                  #text
                  placeholder="Введите сообщение"
