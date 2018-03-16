@@ -355,9 +355,9 @@ public class Envelope {
     }
     
     public static class FileContent extends RequestFileContent {
-        public byte[] content;
+        public String content;
         public String filename;
-        public FileContent(String reference, byte[] content) {
+        public FileContent(String reference, String content) {
             super(reference);
             this.content = content;
         }
@@ -371,9 +371,9 @@ public class Envelope {
     }
     
     public static class FileMessageToServer extends MessageToServer {
-        public byte[] content;
+        public String content;
         public String filename;
-        public FileMessageToServer(long temporaryId, byte[] content, String filename) {
+        public FileMessageToServer(long temporaryId, String content, String filename) {
             super(null, temporaryId);
             this.content = content;
             this.filename = filename;

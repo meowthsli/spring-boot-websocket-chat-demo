@@ -1,6 +1,7 @@
 package org.wolna.ouchatserver.controller;
 
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -278,7 +279,9 @@ public class ChatController {
 
     private Response getFile(Envelope.RequestFileContent fileRequest) {
         Response r = new Response();
-        r.fileContent = new Envelope.FileContent(fileRequest.contentReference, new byte[]{1, 2, 3});
+        r.fileContent = new Envelope.FileContent(fileRequest.contentReference, 
+                Base64.getEncoder().encodeToString(new byte[]{1, 2, 3})
+        );
         return r;
     }
 }

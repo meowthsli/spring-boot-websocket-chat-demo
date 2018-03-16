@@ -13,6 +13,43 @@ type USER_ID = string;
 export class OUChatOpConnectorImpl implements OUChatOpsConnector {
     
     company: number = 1;
+
+    /**
+     * Request file from server
+     * @param reference 
+     */
+    requestFile(reference: string): number {
+        if(!this.isConnected()) {
+            var env = new Envelope.Response();
+            env.errorCode = Envelope.Response.ERROR_NOT_CONNECTED;
+            env.errorDescription = "Not connected";
+            this._onError.next(env);
+            return Envelope.Response.ERROR_NOT_CONNECTED;
+        }           
+        this.stompClient.send("/app/client.getfile", {}, JSON.stringify(
+            new Envelope.RequestFileContent(reference)
+        ));
+        return 0;
+    }
+    /**
+     * Send file to server
+     * @param content 
+     * @param name 
+     */
+    sendFile(content: string, name: string): number {
+        if(!this.isConnected()) {
+            var env = new Envelope.Response();
+            env.errorCode = Envelope.Response.ERROR_NOT_CONNECTED;
+            env.errorDescription = "Not connected";
+            this._onError.next(env);
+            return Envelope.Response.ERROR_NOT_CONNECTED;
+        }           
+        this.stompClient.send("/app/client.putfile", {}, JSON.stringify(
+            new Envelope.FileMessageToServer(++this.messageTempId, content, name)
+        ));
+        return this.messageTempId;
+    }
+    
     /**
      * Request full client info
      * 

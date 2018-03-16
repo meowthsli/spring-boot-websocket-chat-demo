@@ -631,12 +631,16 @@ export namespace Envelope {
 
 
     export class FileMessageToServer extends Envelope.MessageToServer {
-        public content : number[];
+        public content : string;
 
-        public constructor(temporaryId : number, content : number[]) {
+        public filename : string;
+
+        public constructor(temporaryId : number, content : string, filename : string) {
             super(null, temporaryId);
             if(this.content===undefined) this.content = null;
+            if(this.filename===undefined) this.filename = null;
             this.content = content;
+            this.filename = filename;
         }
     }
     FileMessageToServer["__class"] = "org.wolna.ouchat.Envelope.FileMessageToServer";
@@ -667,11 +671,14 @@ export namespace Envelope {
 
 
     export class FileContent extends Envelope.RequestFileContent {
-        public content : number[];
+        public content : string;
 
-        public constructor(reference : string, content : number[]) {
+        public filename : string;
+
+        public constructor(reference : string, content : string) {
             super(reference);
             if(this.content===undefined) this.content = null;
+            if(this.filename===undefined) this.filename = null;
             this.content = content;
         }
     }

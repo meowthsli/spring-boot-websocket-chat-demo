@@ -243,6 +243,7 @@ public class ConversationsImpl implements Conversations {
     }
 
     @Override
+    @SuppressWarnings("NestedAssignment")
     public AbstractMap.SimpleEntry<String, byte[]> findFile(String contentReference) {
         
         IgfsPath filePath = new IgfsPath("/file_" + contentReference);
