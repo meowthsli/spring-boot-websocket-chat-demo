@@ -73,7 +73,7 @@ public class ChatController {
         sender.convertAndSendToUser(clientLogin(who), "/queue/client", r);
 
         // forwart hello to all connected ops
-        sender.convertAndSend("/broadcast/all-ops/" + company(who), hello);
+        sender.convertAndSend("/broadcast/all-ops/" + this.repo.findCompanyIdByKeyValue(apiKey(who)), hello);
         
         publisher.publishEvent(new Events.UserConnected());
     }
