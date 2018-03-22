@@ -1,6 +1,7 @@
 package org.wolna.ouchatserver.controller;
 
 import java.time.Instant;
+import java.util.AbstractMap;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
@@ -108,7 +109,10 @@ public class ChatController {
     public Response putClientFile(@Payload Envelope.FileMessageToServer fileMessage,
             SimpMessageHeaderAccessor smha, Authentication client) {
         
-        return uploadFile(fileMessage);
+        Response r = uploadFile(fileMessage, clientLogin(client), true);
+        
+        publisher.publishEvent(new Events.MessageArrived());
+        return r;
     }
     
     @MessageMapping("/op.putfile")
@@ -116,7 +120,10 @@ public class ChatController {
     public Response putOpFile(@Payload Envelope.FileMessageToServer fileMessage,
             SimpMessageHeaderAccessor smha, Authentication op) {
         
-        return uploadFile(fileMessage);
+        Response r = uploadFile(fileMessage, opsLogin(op), false);
+        
+        publisher.publishEvent(new Events.MessageArrived());
+        return r;
     }
     
     @MessageMapping("/client.getfile")
@@ -148,9 +155,14 @@ public class ChatController {
 
         Envelope e = new Envelope();
         e.messages = new Envelope.MessagesArrived(
-                mm.stream().map(x -> new Envelope.TextMessage(x.msgId, x.text, x.fromClient, Date.from(x.created)))
+                mm.stream()
+                        .filter(x -> x.contentReference == null)
+                        .map(x -> new Envelope.TextMessage(x.msgId, x.text, x.fromClient, Date.from(x.created)))
                         .collect(Collectors.toList()).toArray(new Envelope.TextMessage[0]),
-                new Envelope.FileTextMessage[0],
+                mm.stream()
+                        .filter(x -> x.contentReference != null)
+                        .map(x -> new Envelope.FileTextMessage(x.msgId, x.fromClient, Date.from(x.created), x.contentReference))
+                        .collect(Collectors.toList()).toArray(new Envelope.FileTextMessage[0]),
                 clientLogin(who));
         return e;
     }
@@ -266,21 +278,30 @@ public class ChatController {
         return ((SecurityUser)user.getPrincipal()).getUser().company.getId().toString();
     }
 
-    private Response uploadFile(Envelope.FileMessageToServer fileMessage) {
-        // todo: load file
+    private Response uploadFile(Envelope.FileMessageToServer fileMessage, String login, boolean client) {
+        AbstractMap.SimpleEntry<Long, String> res;
+        if(client) {
+            res = storage.addClientFile(login, fileMessage.filename, Base64.getDecoder().decode(fileMessage.content));
+        } else {
+            res = storage.addOpFile(login, fileMessage.filename, Base64.getDecoder().decode(fileMessage.content));
+        }
         Response r = new Response();
         r.fileMessageAccepted = new Envelope.FileMessageAccepted(
-                "file_" + fileMessage.temporaryId + 999999,
-                fileMessage.temporaryId, fileMessage.temporaryId + 999999, 
+                res.getValue(),
+                fileMessage.temporaryId, res.getKey(), 
                 Date.from(Instant.now())
         );
         return r;
     }
 
     private Response getFile(Envelope.RequestFileContent fileRequest) {
+        AbstractMap.SimpleEntry<String, byte[]> bt = storage.findFile(fileRequest.contentReference);
+        
         Response r = new Response();
-        r.fileContent = new Envelope.FileContent(fileRequest.contentReference, 
-                Base64.getEncoder().encodeToString(new byte[]{1, 2, 3})
+        r.fileContent = new Envelope.FileContent(
+                fileRequest.contentReference, 
+                bt.getKey(),
+                Base64.getEncoder().encodeToString(bt.getValue())
         );
         return r;
     }

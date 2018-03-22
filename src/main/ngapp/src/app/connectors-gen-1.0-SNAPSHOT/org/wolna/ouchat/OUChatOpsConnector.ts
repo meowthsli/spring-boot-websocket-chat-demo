@@ -43,20 +43,6 @@ export interface OUChatOpsConnector extends OUChatConnection {
      * @param {string} clientID
      */
     getInfo(clientID : string);
-
-    /**
-     * 
-     * @param content 
-     * @param name 
-     */
-    sendFile(content: string, name: string): number;
-
-     /**
-     * 
-     * @param content 
-     * @param name 
-     */
-    requestFile(reference: string): number;
 }
 
 

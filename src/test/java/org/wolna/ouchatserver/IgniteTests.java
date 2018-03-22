@@ -1,5 +1,6 @@
 package org.wolna.ouchatserver;
 
+import java.util.Collection;
 import java.util.List;
 import javax.cache.Cache.Entry;
 import org.apache.ignite.IgniteCache;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.wolna.ouchatserver.model.Conversation;
+import org.wolna.ouchatserver.model.Conversations;
 import org.wolna.ouchatserver.model.Message;
 
 /**
@@ -31,6 +33,7 @@ public class IgniteTests {
     
     @Test
     public void conversationsClassCastExceptionTest() {
+        messages.clear();
         // Ignite i = Ignition.start();
         //IgniteCache<String, Message> convs = i.getOrCreateCache("messages");
         convs.put("12345L", new Conversation(1L));
@@ -39,6 +42,7 @@ public class IgniteTests {
     
     @Test
     public void messagesIndexesTest() {
+        messages.clear();
         // Ignite i = Ignition.start();
         //IgniteCache<String, Message> convs = i.getOrCreateCache("messages");
         Message m1 = new Message();
@@ -76,5 +80,21 @@ public class IgniteTests {
         Assert.assertTrue(mm.get(0).getKey().equals(3L));
         Assert.assertTrue(mm.get(1).getKey().equals(2L));
         Assert.assertTrue(mm.get(2).getKey().equals(0L));
+    }
+    
+    @Autowired
+    Conversations convs2;
+    
+    @Test
+    public void testLoadFile() {
+        messages.clear();
+        
+        convs2.addClientFile("xxx", "autoexec.bat", new byte[] {1,2,3,4,5});
+        
+        Collection<Message> m = convs2.loadHistory("xxx", -100L);
+        Assert.assertEquals(1, m.size());
+        
+        Object x = convs2.findFile(m.iterator().next().contentReference);
+        Assert.assertNotNull(x);
     }
 }

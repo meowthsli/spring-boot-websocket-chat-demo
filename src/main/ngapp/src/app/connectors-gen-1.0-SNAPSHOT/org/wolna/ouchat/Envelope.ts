@@ -675,10 +675,11 @@ export namespace Envelope {
 
         public filename : string;
 
-        public constructor(reference : string, content : string) {
+        public constructor(reference : string, fileName : string, content : string) {
             super(reference);
             if(this.content===undefined) this.content = null;
             if(this.filename===undefined) this.filename = null;
+            this.filename = fileName;
             this.content = content;
         }
     }

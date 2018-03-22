@@ -20,20 +20,6 @@ export interface OUChatClientConnector extends OUChatConnection {
      * @return {number} Оperation id
      */
     say(text : string) : number;
-
-    /**
-     * 
-     * @param content 
-     * @param name 
-     */
-    sendFile(content: string, name: string): number;
-
-     /**
-     * 
-     * @param content 
-     * @param name 
-     */
-    requestFile(reference: string): number;
 }
 
 

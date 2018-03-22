@@ -357,8 +357,9 @@ public class Envelope {
     public static class FileContent extends RequestFileContent {
         public String content;
         public String filename;
-        public FileContent(String reference, String content) {
+        public FileContent(String reference, String fileName, String content) {
             super(reference);
+            this.filename = fileName;
             this.content = content;
         }
     } 
