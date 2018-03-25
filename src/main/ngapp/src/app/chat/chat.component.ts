@@ -144,7 +144,7 @@ export class ChatComponent implements OnInit {
         this.attachment = a;
 
 
-        const id = this.connector.say(a.filename);
+        const id = this.connector.sendFile(a.data, a.filename);
         const ci = new ChatItem(id, true, a.filename, moment(), id);
         this.$history.push(ci);
         this.scrollDown();
