@@ -636,7 +636,7 @@ export namespace Envelope {
         public filename : string;
 
         public constructor(temporaryId : number, content : string, filename : string) {
-            super(null, temporaryId);
+            super('', temporaryId);
             if(this.content===undefined) this.content = null;
             if(this.filename===undefined) this.filename = null;
             this.content = content;
