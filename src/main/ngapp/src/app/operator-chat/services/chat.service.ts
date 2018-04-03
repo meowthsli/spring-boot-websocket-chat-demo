@@ -67,15 +67,18 @@ export class ChatService {
         }
       } else if(msg.messages) {
         //if (this.selectedChat.value.id === msg.messages.userLogin) {
-          this.selectedChat.next(this.selectedChat.value.updateMessages(msg.messages.messages.map(message => {
-            return new Message({
-              id: message.id,
-              author: message.fromClient ? this.selectedChat.value.author: this.operator,
-              text: message.text,
-              datetime: moment(message.dateAt),
-              fromClient: message.fromClient
-            });
-          })));
+          this.selectedChat.next(this.selectedChat.value.updateMessages(msg.messages.messages
+            .concat(msg.messages.fileMessages)
+            .map(message => {
+              return new Message({
+                id: message.id,
+                author: message.fromClient ? this.selectedChat.value.author: this.operator,
+                text: message.text,
+                datetime: moment(message.dateAt),
+                fromClient: message.fromClient
+              });
+            })
+          ));
         //}
 
         //this.$nowLoading = false;
