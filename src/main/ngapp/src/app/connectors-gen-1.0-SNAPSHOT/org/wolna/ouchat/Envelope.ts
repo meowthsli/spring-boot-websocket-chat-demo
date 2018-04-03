@@ -648,7 +648,7 @@ export namespace Envelope {
         public constructor(temporaryId? : any, content? : any, filename? : any) {
             if(((typeof temporaryId === 'number') || temporaryId === null) && ((typeof content === 'string') || content === null) && ((typeof filename === 'string') || filename === null)) {
                 let __args = Array.prototype.slice.call(arguments);
-                super(null, temporaryId);
+                super('', temporaryId);
                 if(this.content===undefined) this.content = null;
                 if(this.filename===undefined) this.filename = null;
                 if(this.content===undefined) this.content = null;
