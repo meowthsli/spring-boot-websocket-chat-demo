@@ -385,7 +385,7 @@ public class Envelope {
         public String content;
         public String filename;
         public FileMessageToServer(long temporaryId, String content, String filename) {
-            super(null, temporaryId);
+            super("", temporaryId);
             this.content = content;
             this.filename = filename;
         }
