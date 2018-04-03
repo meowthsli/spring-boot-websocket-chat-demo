@@ -685,8 +685,8 @@ export namespace Envelope {
     export class FileTextMessage extends Envelope.TextMessage {
         public contentReference : string;
 
-        public constructor(id : number, fromClient : boolean, createdAt : Date, contentReference : string) {
-            super(id, null, fromClient, createdAt);
+        public constructor(id : number, fromClient : boolean, fileName : string, createdAt : Date, contentReference : string) {
+            super(id, fileName, fromClient, createdAt);
             if(this.contentReference===undefined) this.contentReference = null;
             this.contentReference = contentReference;
         }

@@ -348,8 +348,8 @@ public class Envelope {
     
     public static class FileTextMessage extends TextMessage {
         public String contentReference;
-        public FileTextMessage(long id, boolean fromClient, Date createdAt, String contentReference) {
-            super(id, null, fromClient, createdAt);
+        public FileTextMessage(long id, boolean fromClient, String fileName, Date createdAt, String contentReference) {
+            super(id, fileName, fromClient, createdAt);
             this.contentReference = contentReference;
         }
     }

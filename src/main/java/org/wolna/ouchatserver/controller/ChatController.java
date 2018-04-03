@@ -160,7 +160,7 @@ public class ChatController {
                         .collect(Collectors.toList()).toArray(new Envelope.TextMessage[0]),
                 mm.stream()
                         .filter(x -> x.contentReference != null)
-                        .map(x -> new Envelope.FileTextMessage(x.msgId, x.fromClient, Date.from(x.created), x.contentReference))
+                        .map(x -> new Envelope.FileTextMessage(x.msgId, x.fromClient, x.text, Date.from(x.created), x.contentReference))
                         .collect(Collectors.toList()).toArray(new Envelope.FileTextMessage[0]),
                 clientLogin(who));
         return e;
