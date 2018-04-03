@@ -78,9 +78,17 @@ export class ChatComponent implements OnInit {
         if (item) {
           item.id = mm.messageId;
         }
+      } else if (r.fileMessageAccepted) {
+        let mm = r.fileMessageAccepted;
+        let item = this.$history.find(ci => ci.id == mm.messageTemporaryId);
+        if (item) {
+          item.id = mm.messageId;
+        }
       } else if (r.messages) {
         // Мерджим сообщения (оставляем уникальные)
-        this.$history = r.messages.messages.map(m => new ChatItem(m.id, m.fromClient, m.text, moment(m.dateAt)))
+        this.$history = r.messages.messages
+          .concat(r.messages.fileMessages)
+          .map(m => new ChatItem(m.id, m.fromClient, m.text || 'TODO: Имя файлика', moment(m.dateAt)))
           .concat(this.$history)
           .filter((message, index, messages) => messages.indexOf(messages.find(m => m.id === message.id)) === index)
           .sort((messageA, messageB) => messageA.at.valueOf() - messageB.at.valueOf());

@@ -14,7 +14,7 @@ import { UsercontextService } from '../app.usercontext';
 export class LoginComponent {
 
   $username: string;
-  $apiKey: string = "c68ada81-cde5-4ffe-b6cc-ab5e8443e912";
+  $apiKey: string = "8be0e351-96ba-4829-aebb-b4210c75529c";
 
   $emailFormControl = new FormControl('', [
     Validators.required
