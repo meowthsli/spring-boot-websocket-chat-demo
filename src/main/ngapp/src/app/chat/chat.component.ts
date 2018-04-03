@@ -88,7 +88,7 @@ export class ChatComponent implements OnInit {
         // Мерджим сообщения (оставляем уникальные)
         this.$history = r.messages.messages
           .concat(r.messages.fileMessages)
-          .map(m => new ChatItem(m.id, m.fromClient, m.text || 'TODO: Имя файлика', moment(m.dateAt)))
+          .map(m => new ChatItem(m.id, m.fromClient, m.text, moment(m.dateAt)))
           .concat(this.$history)
           .filter((message, index, messages) => messages.indexOf(messages.find(m => m.id === message.id)) === index)
           .sort((messageA, messageB) => messageA.at.valueOf() - messageB.at.valueOf());
