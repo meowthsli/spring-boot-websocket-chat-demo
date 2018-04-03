@@ -622,9 +622,19 @@ export namespace Envelope {
     export class RequestFileContent {
         public contentReference : string;
 
-        public constructor(contentReference : string) {
-            if(this.contentReference===undefined) this.contentReference = null;
-            this.contentReference = contentReference;
+        public constructor(contentReference? : any) {
+            if(((typeof contentReference === 'string') || contentReference === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.contentReference===undefined) this.contentReference = null;
+                if(this.contentReference===undefined) this.contentReference = null;
+                (() => {
+                    this.contentReference = contentReference;
+                })();
+            } else if(contentReference === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                if(this.contentReference===undefined) this.contentReference = null;
+                if(this.contentReference===undefined) this.contentReference = null;
+            } else throw new Error('invalid overload');
         }
     }
     RequestFileContent["__class"] = "org.wolna.ouchat.Envelope.RequestFileContent";
@@ -635,12 +645,26 @@ export namespace Envelope {
 
         public filename : string;
 
-        public constructor(temporaryId : number, content : string, filename : string) {
-            super('', temporaryId);
-            if(this.content===undefined) this.content = null;
-            if(this.filename===undefined) this.filename = null;
-            this.content = content;
-            this.filename = filename;
+        public constructor(temporaryId? : any, content? : any, filename? : any) {
+            if(((typeof temporaryId === 'number') || temporaryId === null) && ((typeof content === 'string') || content === null) && ((typeof filename === 'string') || filename === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                super(null, temporaryId);
+                if(this.content===undefined) this.content = null;
+                if(this.filename===undefined) this.filename = null;
+                if(this.content===undefined) this.content = null;
+                if(this.filename===undefined) this.filename = null;
+                (() => {
+                    this.content = content;
+                    this.filename = filename;
+                })();
+            } else if(temporaryId === undefined && content === undefined && filename === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                super();
+                if(this.content===undefined) this.content = null;
+                if(this.filename===undefined) this.filename = null;
+                if(this.content===undefined) this.content = null;
+                if(this.filename===undefined) this.filename = null;
+            } else throw new Error('invalid overload');
         }
     }
     FileMessageToServer["__class"] = "org.wolna.ouchat.Envelope.FileMessageToServer";
@@ -675,12 +699,26 @@ export namespace Envelope {
 
         public filename : string;
 
-        public constructor(reference : string, fileName : string, content : string) {
-            super(reference);
-            if(this.content===undefined) this.content = null;
-            if(this.filename===undefined) this.filename = null;
-            this.filename = fileName;
-            this.content = content;
+        public constructor(reference? : any, fileName? : any, content? : any) {
+            if(((typeof reference === 'string') || reference === null) && ((typeof fileName === 'string') || fileName === null) && ((typeof content === 'string') || content === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                super(reference);
+                if(this.content===undefined) this.content = null;
+                if(this.filename===undefined) this.filename = null;
+                if(this.content===undefined) this.content = null;
+                if(this.filename===undefined) this.filename = null;
+                (() => {
+                    this.filename = fileName;
+                    this.content = content;
+                })();
+            } else if(reference === undefined && fileName === undefined && content === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                super();
+                if(this.content===undefined) this.content = null;
+                if(this.filename===undefined) this.filename = null;
+                if(this.content===undefined) this.content = null;
+                if(this.filename===undefined) this.filename = null;
+            } else throw new Error('invalid overload');
         }
     }
     FileContent["__class"] = "org.wolna.ouchat.Envelope.FileContent";

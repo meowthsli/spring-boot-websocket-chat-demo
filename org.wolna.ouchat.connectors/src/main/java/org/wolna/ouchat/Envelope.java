@@ -362,12 +362,22 @@ public class Envelope {
             this.filename = fileName;
             this.content = content;
         }
+
+        // infrastructure only
+        protected FileContent() {
+
+        }
     } 
     
     public static class RequestFileContent{
         public String contentReference;
         public RequestFileContent(String contentReference) {
             this.contentReference = contentReference;
+        }
+
+        // infrastructure only
+        protected RequestFileContent() {
+
         }
     }
     
@@ -379,6 +389,11 @@ public class Envelope {
             this.content = content;
             this.filename = filename;
         }
+
+        // infrastructure only
+        protected FileMessageToServer() {
+
+        }
     }
     
     public static class FileMessageAccepted extends MessageAccepted {
@@ -387,6 +402,5 @@ public class Envelope {
             super(messageTemporaryId, messageId, when);
             this.contentReference = reference;
         }
-        
     }
 }
