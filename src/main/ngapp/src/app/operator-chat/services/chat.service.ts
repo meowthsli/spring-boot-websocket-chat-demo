@@ -151,6 +151,23 @@ export class ChatService {
   }
 
   /**
+   * Send File
+   *
+   * @param {string} clientId
+   * @param {string} text
+   */
+  public sendFile(clientId: string, data: string, filename: string): void {
+    const tempId: number = this.connector.sendFile(data, filename);
+    this.myChats.value.appendMessage(new Message({
+      id: tempId,
+      author: this.operator,
+      text: filename,
+      datetime: moment(),
+      fromClient: false
+    }), clientId);
+  }
+
+  /**
    * Синхронизация свободных чатов
    *
    * @returns {Observable<Queue>}

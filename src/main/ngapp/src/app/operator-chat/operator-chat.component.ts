@@ -121,10 +121,7 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
   public onFileUpload(attachment: Attachment): void {
     this.uploader.confirm(attachment)
       .then(a => {
-        this.onSendMessage(attachment.filename);
-
-
-        console.log(attachment); // TODO: send attachment
+        this.chatter.sendFile(this.chat.id, attachment.data, attachment.filename);
       })
       .catch(cancel => {
 
