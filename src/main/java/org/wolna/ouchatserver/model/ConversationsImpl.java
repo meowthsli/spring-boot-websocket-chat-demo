@@ -199,6 +199,7 @@ public class ConversationsImpl implements Conversations {
         AbstractMap.SimpleEntry<Long, String> res = addFile(filename, content);
         Message m = new Message();
         m.msgId = messageIdGen.incrementAndGet();
+        m.text = filename;
         m.contentReference = res.getValue();
         m.clientLogin = login;
         m.created = Instant.now();
@@ -213,6 +214,7 @@ public class ConversationsImpl implements Conversations {
         AbstractMap.SimpleEntry<Long, String> res = addFile(filename, message);
         Message m = new Message();
         m.msgId = messageIdGen.incrementAndGet();
+        m.text = filename;
         m.contentReference = res.getValue();
         m.clientLogin = login;
         m.created = Instant.now();

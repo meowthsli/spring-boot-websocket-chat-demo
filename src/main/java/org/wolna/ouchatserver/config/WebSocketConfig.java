@@ -5,16 +5,11 @@ import java.util.Map;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
-import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.*;
-import org.springframework.web.socket.server.HandshakeFailureException;
-import org.springframework.web.socket.server.HandshakeHandler;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 import org.wolna.ouchatserver.security.WSInterceptor;
 
@@ -45,9 +40,17 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/broadcast", "/queue");
 
     }
+    
 
     @Bean
     WSInterceptor intr() {
         return new WSInterceptor();
+    }
+
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        super.configureWebSocketTransport(registration); //To change body of generated methods, choose Tools | Templates.
+        registration.setMessageSizeLimit(5*1024*1024);
+        registration.setSendBufferSizeLimit(5*1024*1024);
     }
 }
