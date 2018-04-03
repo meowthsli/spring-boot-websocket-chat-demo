@@ -196,10 +196,13 @@ public class ChatController {
         Envelope e = new Envelope();
         e.messages = new Envelope.MessagesArrived(
                 mm.stream()
+                        .filter(x -> x.contentReference == null)
                         .map(x -> new Envelope.TextMessage(x.msgId, x.text, x.fromClient, Date.from(x.created)))
-                        .collect(Collectors.toList())
-                        .toArray(new Envelope.TextMessage[0]),
-                new Envelope.FileTextMessage[0],
+                        .collect(Collectors.toList()).toArray(new Envelope.TextMessage[0]),
+                mm.stream()
+                        .filter(x -> x.contentReference != null)
+                        .map(x -> new Envelope.FileTextMessage(x.msgId, x.fromClient, x.text, Date.from(x.created), x.contentReference))
+                        .collect(Collectors.toList()).toArray(new Envelope.FileTextMessage[0]),
                 opHisto.clientLogin);
         return e;
     }
