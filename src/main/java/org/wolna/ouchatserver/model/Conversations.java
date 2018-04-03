@@ -65,8 +65,8 @@ public interface Conversations {
      */
     public List<String> search(String fio);
     
-    AbstractMap.SimpleEntry<Long, String> addClientFile(String clientLogin, String fileName, byte[] message);
-    AbstractMap.SimpleEntry<Long, String> addOpFile(String opLogin, String fileName, byte[] message);
+    AbstractMap.SimpleEntry<Long, String> addClientFile(String clientLogin, String fileName, String message);
+    AbstractMap.SimpleEntry<Long, String> addOpFile(String opLogin, String fileName, String message);
     
-    AbstractMap.SimpleEntry<String, byte[]> findFile(String contentReference);
+    AbstractMap.SimpleEntry<String, String> findFile(String contentReference);
 }

@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -193,7 +194,7 @@ public class ConversationsImpl implements Conversations {
     }
 
     @Override
-    public AbstractMap.SimpleEntry<Long, String> addClientFile(String login, String filename, byte[] content) {
+    public AbstractMap.SimpleEntry<Long, String> addClientFile(String login, String filename, String content) {
         // insert message to history
         AbstractMap.SimpleEntry<Long, String> res = addFile(filename, content);
         Message m = new Message();
@@ -207,7 +208,7 @@ public class ConversationsImpl implements Conversations {
     }
 
     @Override
-    public AbstractMap.SimpleEntry<Long, String> addOpFile(String login, String filename, byte[] message) {
+    public AbstractMap.SimpleEntry<Long, String> addOpFile(String login, String filename, String message) {
         // insert message to history   
         AbstractMap.SimpleEntry<Long, String> res = addFile(filename, message);
         Message m = new Message();
@@ -220,7 +221,7 @@ public class ConversationsImpl implements Conversations {
         return res;    
     }
     
-    private AbstractMap.SimpleEntry<Long, String> addFile(String filename, byte[] content) {
+    private AbstractMap.SimpleEntry<Long, String> addFile(String filename, String content) {
         String fileuid = UUID.randomUUID().toString();
         IgfsPath filePath = new IgfsPath("/file_" + fileuid);
         if (!files.exists(filePath)) {
@@ -235,7 +236,7 @@ public class ConversationsImpl implements Conversations {
         try (OutputStream outContent = files.create(fileContent, true); 
             OutputStream outName = files.create(fileName, true)) {
             outName.write(filename.getBytes("UTF-8"));
-            outContent.write(content);
+            outContent.write(content.getBytes("ISO-8859-1"));
         } catch (IOException ex) {
             throw new RuntimeException("error writing file " + filename);
         }
@@ -244,7 +245,7 @@ public class ConversationsImpl implements Conversations {
 
     @Override
     @SuppressWarnings("NestedAssignment")
-    public AbstractMap.SimpleEntry<String, byte[]> findFile(String contentReference) {
+    public AbstractMap.SimpleEntry<String, String> findFile(String contentReference) {
         
         IgfsPath filePath = new IgfsPath("/file_" + contentReference);
         if (!files.exists(filePath)) {
@@ -265,7 +266,8 @@ public class ConversationsImpl implements Conversations {
             }
             buffer.flush();
 
-            return new AbstractMap.SimpleEntry<>(new String(name, "UTF-8"), buffer.toByteArray());
+            return new AbstractMap.SimpleEntry<>(new String(name, "UTF-8"), new String(buffer.toByteArray(), 
+                    Charset.forName("ISO-8859-1")));
         } catch (IOException ex) {
             throw new RuntimeException("error writing file " + contentReference);
         }

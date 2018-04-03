@@ -2,7 +2,6 @@ package org.wolna.ouchatserver.controller;
 
 import java.time.Instant;
 import java.util.AbstractMap;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -281,9 +280,9 @@ public class ChatController {
     private Response uploadFile(Envelope.FileMessageToServer fileMessage, String login, boolean client) {
         AbstractMap.SimpleEntry<Long, String> res;
         if(client) {
-            res = storage.addClientFile(login, fileMessage.filename, Base64.getDecoder().decode(fileMessage.content));
+            res = storage.addClientFile(login, fileMessage.filename, fileMessage.content);
         } else {
-            res = storage.addOpFile(login, fileMessage.filename, Base64.getDecoder().decode(fileMessage.content));
+            res = storage.addOpFile(login, fileMessage.filename, fileMessage.content);
         }
         Response r = new Response();
         r.fileMessageAccepted = new Envelope.FileMessageAccepted(
@@ -295,13 +294,13 @@ public class ChatController {
     }
 
     private Response getFile(Envelope.RequestFileContent fileRequest) {
-        AbstractMap.SimpleEntry<String, byte[]> bt = storage.findFile(fileRequest.contentReference);
+        AbstractMap.SimpleEntry<String, String> bt = storage.findFile(fileRequest.contentReference);
         
         Response r = new Response();
         r.fileContent = new Envelope.FileContent(
                 fileRequest.contentReference, 
                 bt.getKey(),
-                Base64.getEncoder().encodeToString(bt.getValue())
+                bt.getValue()
         );
         return r;
     }

@@ -89,7 +89,7 @@ public class IgniteTests {
     public void testLoadFile() {
         messages.clear();
         
-        convs2.addClientFile("xxx", "autoexec.bat", new byte[] {1,2,3,4,5});
+        convs2.addClientFile("xxx", "autoexec.bat", "1,2,3,4,5");
         
         Collection<Message> m = convs2.loadHistory("xxx", -100L);
         Assert.assertEquals(1, m.size());
