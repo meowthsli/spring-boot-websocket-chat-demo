@@ -104,7 +104,7 @@ export class ChatComponent implements OnInit {
         //if(uc) {
         //  uc.ack(msg.cid, msg.ack);
         //}
-      } else if(msg.clientMessage) {
+      } else if(msg['clientMessage']) {
         //let uc = this.findChat(msg.clientID);
         //if(uc) {
         //  uc.addHistory(this.opID, msg.chatItems);

@@ -49,27 +49,27 @@ export class ChatService {
     this.connector.onResult(msg => {
       if(msg.messageAccepted) { // acknowledge of message
         this.myChats.value.updateMessage(msg.messageAccepted.messageTemporaryId, msg.messageAccepted.messageId, moment(msg.messageAccepted.when))
-      } else if(msg.clientMessage) {
-        const message: Message = new Message({
-          id: msg.clientMessage.message.id,
-          author: new Author({
-            id: msg.clientMessage.clientID,
-            fullname: ''
-          }),
-          text: msg.clientMessage.message.text,
-          datetime: moment(msg.clientMessage.message.dateAt),
-          fromClient: msg.clientMessage.message.fromClient,
-          attachmentId: (msg.clientMessage.message as FileTextMessage).contentReference
-        });
-
-        if ( this.myChats.value.hasClient(message.author) ) {
-          this.myChats.next(this.myChats.value.appendMessage(message));
-        } else {
-          this.freeChats.next(this.freeChats.value.appendMessage(message));
-        }
       } else if(msg.messages) {
+        // const message: Message = new Message({
+        //   id: msg.clientMessage.message.id,
+        //   author: new Author({
+        //     id: msg.clientMessage.clientID,
+        //     fullname: ''
+        //   }),
+        //   text: msg.clientMessage.message.text,
+        //   datetime: moment(msg.clientMessage.message.dateAt),
+        //   fromClient: msg.clientMessage.message.fromClient,
+        //   attachmentId: (msg.clientMessage.message as FileTextMessage).contentReference
+        // });
+		//
+        // if ( this.myChats.value.hasClient(message.author) ) {
+        //   this.myChats.next(this.myChats.value.appendMessage(message));
+        // } else {
+        //   this.freeChats.next(this.freeChats.value.appendMessage(message));
+        // }
+
         //if (this.selectedChat.value.id === msg.messages.userLogin) {
-          this.selectedChat.next(this.selectedChat.value.updateMessages(msg.messages.messages
+          this.selectedChat.value && this.selectedChat.next(this.selectedChat.value.updateMessages(msg.messages.messages
             .concat(msg.messages.fileMessages)
             .map(message => {
               return new Message({
