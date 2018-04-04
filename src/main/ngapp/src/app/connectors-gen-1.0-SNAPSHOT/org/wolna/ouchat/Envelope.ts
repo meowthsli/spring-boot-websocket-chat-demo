@@ -15,8 +15,6 @@ export class Envelope {
 
     public releaseChat : Envelope.OkReleaseChat;
 
-    public clientMessage : Envelope.MessageFromClient;
-
     public opHello : Envelope.OpHello;
 
     public info : Envelope.Info;
@@ -31,7 +29,6 @@ export class Envelope {
         if(this.messages===undefined) this.messages = null;
         if(this.tryLockChat===undefined) this.tryLockChat = null;
         if(this.releaseChat===undefined) this.releaseChat = null;
-        if(this.clientMessage===undefined) this.clientMessage = null;
         if(this.opHello===undefined) this.opHello = null;
         if(this.info===undefined) this.info = null;
         if(this.fileContent===undefined) this.fileContent = null;
