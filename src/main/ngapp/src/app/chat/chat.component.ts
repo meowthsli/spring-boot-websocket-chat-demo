@@ -14,6 +14,7 @@ import { Envelope } from '../connectors-gen-1.0-SNAPSHOT/org/wolna/ouchat/Envelo
 import { Moment } from 'moment';
 import { Attachment } from '../attachment/models/attachment.model';
 import { UploaderService } from '../attachment/uploader/uploader.service';
+import FileTextMessage = Envelope.FileTextMessage;
 
 type CONNECTOR = OUChatClientConnectorImpl;
 
@@ -52,7 +53,7 @@ export class ChatComponent implements OnInit {
   public $onSendClick() {
     if(this.$text) {
       var id = this.connector.say(this.$text);
-      let ci = new ChatItem(id, true, this.$text, moment(), id);
+      let ci = new ChatItem(id, true, this.$text, moment(), id, null);
       this.$history.push(ci);
       this.$text = null;
       this.scrollDown();
@@ -88,7 +89,7 @@ export class ChatComponent implements OnInit {
         // Мерджим сообщения (оставляем уникальные)
         this.$history = r.messages.messages
           .concat(r.messages.fileMessages)
-          .map(m => new ChatItem(m.id, m.fromClient, m.text, moment(m.dateAt)))
+          .map(m => new ChatItem(m.id, m.fromClient, m.text, moment(m.dateAt), null, (m as FileTextMessage).contentReference))
           .concat(this.$history)
           .filter((message, index, messages) => messages.indexOf(messages.find(m => m.id === message.id)) === index)
           .sort((messageA, messageB) => messageA.at.valueOf() - messageB.at.valueOf());
@@ -101,6 +102,15 @@ export class ChatComponent implements OnInit {
 			}
 			this.scrollDown();
 		}*/
+      } else if (r.fileContent) {
+        const data = r.fileContent.content;
+        const filename = r.fileContent.filename;
+        const element: HTMLElement = document.createElement('a');
+        element.setAttribute('download', filename);
+        element.setAttribute('href', data);
+        element.setAttribute('target', '_blank');
+        element.click();
+        element.remove();
       }
     });
 
@@ -153,7 +163,7 @@ export class ChatComponent implements OnInit {
 
 
         const id = this.connector.sendFile(a.data, a.filename);
-        const ci = new ChatItem(id, true, a.filename, moment(), id);
+        const ci = new ChatItem(id, true, a.filename, moment(), id, null);
         this.$history.push(ci);
         this.scrollDown();
 
@@ -163,6 +173,10 @@ export class ChatComponent implements OnInit {
       .catch(cancel => {
 
       });
+  }
+
+  public onAttachmentDownload(message: ChatItem): void {
+    this.connector.requestFile(message.attachmentId);
   }
 }
 
@@ -175,7 +189,8 @@ export class ChatItem {
     public isFromClient: boolean,
     public text: string,
     public at: Moment,
-    public tempId: number = null,
+    public tempId: number,
+    public attachmentId: string
   ) {}
 
   public wasDelivered(): boolean {
