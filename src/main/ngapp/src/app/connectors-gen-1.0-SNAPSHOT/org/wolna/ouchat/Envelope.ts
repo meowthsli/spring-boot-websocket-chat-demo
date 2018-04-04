@@ -682,6 +682,36 @@ export namespace Envelope {
     FileMessageAccepted["__class"] = "org.wolna.ouchat.Envelope.FileMessageAccepted";
 
 
+    export class FileMessageToServerOp extends Envelope.MessageToServerOp {
+        public content : string;
+
+        public filename : string;
+
+        public constructor(clientID? : any, temporaryId? : any, content? : any, filename? : any) {
+            if(((typeof clientID === 'string') || clientID === null) && ((typeof temporaryId === 'number') || temporaryId === null) && ((typeof content === 'string') || content === null) && ((typeof filename === 'string') || filename === null)) {
+                let __args = Array.prototype.slice.call(arguments);
+                super(clientID, "", temporaryId);
+                if(this.content===undefined) this.content = null;
+                if(this.filename===undefined) this.filename = null;
+                if(this.content===undefined) this.content = null;
+                if(this.filename===undefined) this.filename = null;
+                (() => {
+                    this.content = content;
+                    this.filename = filename;
+                })();
+            } else if(clientID === undefined && temporaryId === undefined && content === undefined && filename === undefined) {
+                let __args = Array.prototype.slice.call(arguments);
+                super();
+                if(this.content===undefined) this.content = null;
+                if(this.filename===undefined) this.filename = null;
+                if(this.content===undefined) this.content = null;
+                if(this.filename===undefined) this.filename = null;
+            } else throw new Error('invalid overload');
+        }
+    }
+    FileMessageToServerOp["__class"] = "org.wolna.ouchat.Envelope.FileMessageToServerOp";
+
+
     export class FileTextMessage extends Envelope.TextMessage {
         public contentReference : string;
 

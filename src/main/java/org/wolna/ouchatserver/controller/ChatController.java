@@ -20,6 +20,7 @@ import org.wolna.ouchat.Envelope;
 import org.wolna.ouchat.Envelope.ClientHello;
 import org.wolna.ouchat.Envelope.HelloOk;
 import org.wolna.ouchat.Envelope.Response;
+import org.wolna.ouchat.Envelope.TextMessage;
 import org.wolna.ouchatserver.model.ApiKeyRepository;
 import org.wolna.ouchatserver.model.Conversations;
 import org.wolna.ouchatserver.model.Events;
@@ -88,7 +89,7 @@ public class ChatController {
         e.messageAccepted = new Envelope.MessageAccepted(chatMessage.temporaryId, id, Date.from(Instant.now()));
         sender.convertAndSendToUser(clientLogin(who), "/queue/client", e);
 
-        Envelope oe = new Envelope();
+        Response oe = new Response();
         oe.clientMessage = new Envelope.MessageFromClient(clientLogin(who),
                 new Envelope.TextMessage(id, chatMessage.text, true, Date.from(e.messageAccepted.when.toInstant()))
         );
@@ -109,17 +110,46 @@ public class ChatController {
             SimpMessageHeaderAccessor smha, Authentication client) {
         
         Response r = uploadFile(fileMessage, clientLogin(client), true);
-        
+
+        Response ftm = new Response();
+        ftm.messages = new Envelope.MessagesArrived(new TextMessage[0],                
+                new Envelope.FileTextMessage[]{
+                    new Envelope.FileTextMessage(r.fileMessageAccepted.messageId, 
+                        true, fileMessage.filename, 
+                        r.fileMessageAccepted.when, 
+                        r.fileMessageAccepted.contentReference)
+                },
+                clientLogin(client)
+                );
+        String op = this.storage.whoLocked(clientLogin(client));
+        if(op == null) {
+            sender.convertAndSend("/broadcast/all-ops/" +  this.repo.findCompanyIdByKeyValue(apiKey(client)), ftm);
+        } else {
+            sender.convertAndSendToUser(op, "/queue/op", ftm);
+        }
+
         publisher.publishEvent(new Events.MessageArrived());
         return r;
     }
     
     @MessageMapping("/op.putfile")
     @SendToUser("/queue/op")
-    public Response putOpFile(@Payload Envelope.FileMessageToServer fileMessage,
+    public Response putOpFile(@Payload Envelope.FileMessageToServerOp fileMessage,
             SimpMessageHeaderAccessor smha, Authentication op) {
         
         Response r = uploadFile(fileMessage, opsLogin(op), false);
+
+        Response msg = new Response();
+        msg.messages = new Envelope.MessagesArrived(
+               new TextMessage[0],
+                new Envelope.FileTextMessage[]{
+                    new Envelope.FileTextMessage(r.fileMessageAccepted.messageId,
+                        true, fileMessage.filename,
+                        r.fileMessageAccepted.when,
+                        r.fileMessageAccepted.contentReference)
+                },
+                fileMessage.clientID);
+        sender.convertAndSendToUser(fileMessage.clientID, "/queue/client", msg);
         
         publisher.publishEvent(new Events.MessageArrived());
         return r;
@@ -291,6 +321,22 @@ public class ChatController {
         r.fileMessageAccepted = new Envelope.FileMessageAccepted(
                 res.getValue(),
                 fileMessage.temporaryId, res.getKey(), 
+                Date.from(Instant.now())
+        );
+        return r;
+    }
+
+    private Response uploadFile(Envelope.FileMessageToServerOp fileMessage, String login, boolean client) {
+        AbstractMap.SimpleEntry<Long, String> res;
+        if(client) {
+            res = storage.addClientFile(login, fileMessage.filename, fileMessage.content);
+        } else {
+            res = storage.addOpFile(login, fileMessage.filename, fileMessage.content);
+        }
+        Response r = new Response();
+        r.fileMessageAccepted = new Envelope.FileMessageAccepted(
+                res.getValue(),
+                fileMessage.temporaryId, res.getKey(),
                 Date.from(Instant.now())
         );
         return r;

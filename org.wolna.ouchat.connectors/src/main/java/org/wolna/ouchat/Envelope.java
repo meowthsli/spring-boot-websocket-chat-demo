@@ -102,7 +102,7 @@ public class Envelope {
     /**
      * Message sent to server with temp id and client target
      */
-    public static final class MessageToServerOp {
+    public static class MessageToServerOp {
         public String text;
         public long temporaryId;
         public String clientID;
@@ -392,6 +392,21 @@ public class Envelope {
 
         // infrastructure only
         protected FileMessageToServer() {
+
+        }
+    }
+
+     public static class FileMessageToServerOp extends MessageToServerOp {
+        public String content;
+        public String filename;
+        public FileMessageToServerOp(String clientID, long temporaryId, String content, String filename) {
+            super(clientID, "", temporaryId);
+            this.content = content;
+            this.filename = filename;
+        }
+
+        // infrastructure only
+        protected FileMessageToServerOp() {
 
         }
     }
