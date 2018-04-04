@@ -11,6 +11,7 @@ import { combineLatest } from 'rxjs/observable/combineLatest';
 import { ToasterConfig } from 'angular2-toaster';
 import { Attachment } from '../attachment/models/attachment.model';
 import { UploaderService } from '../attachment/uploader/uploader.service';
+import { Message } from './models/message.model';
 
 @Component({
   selector: 'app-operator-chat',
@@ -137,6 +138,10 @@ export class OperatorChatComponent implements OnInit, OnDestroy {
         this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
       }
     }, 0);
+  }
+
+  public onAttachmentDownload(message: Message): void {
+    this.chatter.downloadAttachment(message);
   }
 
 }

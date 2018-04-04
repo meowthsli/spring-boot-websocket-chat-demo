@@ -13,6 +13,7 @@ import { OUChatOpConnectorImpl } from '../../connectors-gen-1.0-SNAPSHOT/org/wol
 import { ToasterService } from 'angular2-toaster';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
+import FileTextMessage = Envelope.FileTextMessage;
 
 export enum ConnectionStatus {
   DEFAULT = 0,
@@ -57,7 +58,8 @@ export class ChatService {
           }),
           text: msg.clientMessage.message.text,
           datetime: moment(msg.clientMessage.message.dateAt),
-          fromClient: msg.clientMessage.message.fromClient
+          fromClient: msg.clientMessage.message.fromClient,
+          attachmentId: (msg.clientMessage.message as FileTextMessage).contentReference
         });
 
         if ( this.myChats.value.hasClient(message.author) ) {
@@ -75,7 +77,8 @@ export class ChatService {
                 author: message.fromClient ? this.selectedChat.value.author: this.operator,
                 text: message.text,
                 datetime: moment(message.dateAt),
-                fromClient: message.fromClient
+                fromClient: message.fromClient,
+                attachmentId: (message as FileTextMessage).contentReference
               });
             })
           ));
@@ -103,6 +106,14 @@ export class ChatService {
       } else if (msg.releaseChat) {
         // TODO: release chat
         // this.opID = msg.opID;
+      } else if (!!false) {
+        const data = '';
+        const filename = '';
+        if (window.navigator.msSaveOrOpenBlob) {
+          window.navigator.msSaveOrOpenBlob(data, filename);
+        } else if (window.open(data)['execCommand']) {
+          window.open(data)['execCommand']('SaveAs', false, filename);
+        }
       }
     });
 
@@ -149,7 +160,8 @@ export class ChatService {
       author: this.operator,
       text: text,
       datetime: moment(),
-      fromClient: false
+      fromClient: false,
+      attachmentId: null
     }), clientId);
   }
 
@@ -166,7 +178,8 @@ export class ChatService {
       author: this.operator,
       text: filename,
       datetime: moment(),
-      fromClient: false
+      fromClient: false,
+      attachmentId: null
     }), clientId);
   }
 
@@ -224,6 +237,15 @@ export class ChatService {
   public removeChat(chat: Chat): void {
     this.connector.releaseChat(chat.id);
     this.myChats.next(this.myChats.value.removeChat(chat));
+  }
+
+  /**
+   * Download Attachment
+   *
+   * @param {string} data
+   */
+  public downloadAttachment(message: Message): void {
+    this.connector.requestFile(message.attachmentId);
   }
 
 }

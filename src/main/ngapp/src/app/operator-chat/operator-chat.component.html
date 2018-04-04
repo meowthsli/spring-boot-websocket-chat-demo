@@ -50,7 +50,9 @@
           <div class="bubble"
                [ngClass]="{'you': message.fromClient, 'me': !message.fromClient, 'alpha': !message.id}"
                *ngFor="let message of chat.messages">
-            {{ message.text }}
+            <span *ngIf="!message.attachmentId">{{ message.text }}</span>
+            <a *ngIf="message.attachmentId"
+               (click)="onAttachmentDownload(message)">{{ message.text }}</a>
             <span class="chat-line-time">{{ message.datetime | date:'HH:mm' }}</span>
           </div>
         </div>

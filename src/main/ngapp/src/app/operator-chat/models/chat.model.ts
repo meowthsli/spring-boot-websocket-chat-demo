@@ -56,7 +56,8 @@ export class Chat {
         fullname: 'Оператор'
       }),
       datetime: moment(),
-      fromClient: false
+      fromClient: false,
+      attachmentId: null
     }));
     return this;
   }
@@ -101,7 +102,8 @@ export class Chat {
         author: message.author,
         text: message.text,
         datetime: datetime,
-        fromClient: message.fromClient
+        fromClient: message.fromClient,
+        attachmentId: message.attachmentId
       });
       this.initialize();
     }

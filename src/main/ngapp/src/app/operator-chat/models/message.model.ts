@@ -8,6 +8,7 @@ export interface IMessage {
   text: string;
   datetime: Moment;
   fromClient: boolean;
+  attachmentId: string;
 }
 
 export class Message {
@@ -18,6 +19,7 @@ export class Message {
   public text: string = ''; // Текст Сообщения
   public datetime: Moment = null; // Время Сообщения
   public fromClient: boolean = false;
+  public attachmentId: string = null;
 
   constructor(data: IMessage) {
     this.id = data.id;
@@ -26,6 +28,7 @@ export class Message {
     this.text = data.text;
     this.datetime = data.datetime;
     this.fromClient = data.fromClient;
+    this.attachmentId = data.attachmentId;
   }
 
 }
