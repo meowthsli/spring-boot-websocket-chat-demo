@@ -14,7 +14,6 @@ public class Envelope {
     public MessagesArrived messages;
     public OkTryLockChat tryLockChat;
     public OkReleaseChat releaseChat;
-    public MessageFromClient clientMessage;
     public OpHello opHello;
     public Info info;
     public FileContent fileContent;

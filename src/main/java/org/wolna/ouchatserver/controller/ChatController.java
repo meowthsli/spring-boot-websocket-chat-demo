@@ -90,10 +90,11 @@ public class ChatController {
         sender.convertAndSendToUser(clientLogin(who), "/queue/client", e);
 
         Response oe = new Response();
-        oe.clientMessage = new Envelope.MessageFromClient(clientLogin(who),
-                new Envelope.TextMessage(id, chatMessage.text, true, Date.from(e.messageAccepted.when.toInstant()))
-        );
-        // TODO: check if locked then do not send to ops, but only to conv owner
+        oe.messages = new Envelope.MessagesArrived(new TextMessage[] {
+                new TextMessage(e.messageAccepted.messageId, chatMessage.text, true, e.messageAccepted.when)
+                },
+                new Envelope.FileTextMessage[0], 
+                clientLogin(who));
         String op = this.storage.whoLocked(clientLogin(who));
         if(op == null) {
             sender.convertAndSend("/broadcast/all-ops/" +  this.repo.findCompanyIdByKeyValue(apiKey(who)), oe);
