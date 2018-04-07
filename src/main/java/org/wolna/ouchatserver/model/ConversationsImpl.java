@@ -258,7 +258,7 @@ public class ConversationsImpl implements Conversations {
         try (InputStream inContent = files.open(fileContent); 
             InputStream inName = files.open(fileName)) {
             byte[] name = new byte[1000];
-            inName.read(name);
+            int len = inName.read(name);
             name[999] = 0;            
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             int nRead;
@@ -268,7 +268,7 @@ public class ConversationsImpl implements Conversations {
             }
             buffer.flush();
 
-            return new AbstractMap.SimpleEntry<>(new String(name, "UTF-8"), new String(buffer.toByteArray(), 
+            return new AbstractMap.SimpleEntry<>(new String(name, 0, len, "UTF-8"), new String(buffer.toByteArray(), 
                     Charset.forName("ISO-8859-1")));
         } catch (IOException ex) {
             throw new RuntimeException("error writing file " + contentReference);
