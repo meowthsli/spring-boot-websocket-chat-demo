@@ -14,6 +14,7 @@ import { ToasterService } from 'angular2-toaster';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import FileTextMessage = Envelope.FileTextMessage;
+import TextMessage = Envelope.TextMessage;
 
 export enum ConnectionStatus {
   DEFAULT = 0,
@@ -47,29 +48,35 @@ export class ChatService {
 
   private initialize(): void {
     this.connector.onResult(msg => {
+
       if(msg.messageAccepted) { // acknowledge of message
         this.myChats.value.updateMessage(msg.messageAccepted.messageTemporaryId, msg.messageAccepted.messageId, moment(msg.messageAccepted.when))
       } else if(msg.messages) {
-        // const message: Message = new Message({
-        //   id: msg.clientMessage.message.id,
-        //   author: new Author({
-        //     id: msg.clientMessage.clientID,
-        //     fullname: ''
-        //   }),
-        //   text: msg.clientMessage.message.text,
-        //   datetime: moment(msg.clientMessage.message.dateAt),
-        //   fromClient: msg.clientMessage.message.fromClient,
-        //   attachmentId: (msg.clientMessage.message as FileTextMessage).contentReference
-        // });
-		//
-        // if ( this.myChats.value.hasClient(message.author) ) {
-        //   this.myChats.next(this.myChats.value.appendMessage(message));
-        // } else {
-        //   this.freeChats.next(this.freeChats.value.appendMessage(message));
-        // }
 
-        //if (this.selectedChat.value.id === msg.messages.userLogin) {
-          this.selectedChat.value && this.selectedChat.next(this.selectedChat.value.updateMessages(msg.messages.messages
+        if (msg.messages.messages.length + msg.messages.fileMessages.length === 1) {
+
+          const m: TextMessage = msg.messages.messages.concat(msg.messages.fileMessages)[0];
+
+          const message: Message = new Message({
+            id: m.id,
+            author: new Author({
+              id: msg.messages.userLogin,
+              fullname: msg.messages.userLogin
+            }),
+            text: m.text,
+            datetime: moment(m.dateAt),
+            fromClient: m.fromClient,
+            attachmentId: (m as FileTextMessage).contentReference
+          });
+
+          if ( this.myChats.value.hasClient(message.author) ) {
+            this.myChats.next(this.myChats.value.appendMessage(message));
+          } else {
+            this.freeChats.next(this.freeChats.value.appendMessage(message));
+          }
+
+        } else if (this.selectedChat.value && this.selectedChat.value.id === msg.messages.userLogin) {
+          this.selectedChat.next(this.selectedChat.value.updateMessages(msg.messages.messages
             .concat(msg.messages.fileMessages)
             .map(message => {
               return new Message({
@@ -82,7 +89,7 @@ export class ChatService {
               });
             })
           ));
-        //}
+        }
 
         //this.$nowLoading = false;
         //if(!msg.chatItems) return;
@@ -106,14 +113,15 @@ export class ChatService {
       } else if (msg.releaseChat) {
         // TODO: release chat
         // this.opID = msg.opID;
-      } else if (!!false) {
-        const data = '';
-        const filename = '';
-        if (window.navigator.msSaveOrOpenBlob) {
-          window.navigator.msSaveOrOpenBlob(data, filename);
-        } else if (window.open(data)['execCommand']) {
-          window.open(data)['execCommand']('SaveAs', false, filename);
-        }
+      } else if (msg.fileContent) {
+        const data = msg.fileContent.content;
+        const filename = msg.fileContent.filename;
+        const element: HTMLElement = document.createElement('a');
+        element.setAttribute('download', filename);
+        element.setAttribute('href', data);
+        element.setAttribute('target', '_blank');
+        element.click();
+        element.remove();
       }
     });
 
