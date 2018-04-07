@@ -1,0 +1,56 @@
+<nb-layout>
+
+  <nb-layout-header fixed>
+    <span>OU!Chat</span>
+  </nb-layout-header>
+
+  <nb-layout-column>
+
+    <nb-card>
+      <nb-card-header>
+        Клиент
+      </nb-card-header>
+      <nb-card-body>
+        <button class="btn btn-info" routerLink="/chat/client/login">
+          Войти как клиент
+        </button>
+      </nb-card-body>
+    </nb-card>
+
+  </nb-layout-column>
+
+  <nb-layout-column>
+
+    <nb-card>
+      <nb-card-header>
+        Оператор
+      </nb-card-header>
+      <nb-card-body>
+        <button class="btn btn-primary" routerLink="/auth/login">
+          Войти как оператор
+        </button>
+      </nb-card-body>
+    </nb-card>
+
+  </nb-layout-column>
+
+  <nb-layout-column>
+
+    <nb-card>
+      <nb-card-header>
+        Владелец
+      </nb-card-header>
+      <nb-card-body>
+        <button class="btn btn-danger" routerLink="/auth/login">
+          Войти как владелец
+        </button>
+      </nb-card-body>
+    </nb-card>
+
+  </nb-layout-column>
+
+  <nb-layout-footer fixed>
+    2018
+  </nb-layout-footer>
+
+</nb-layout>

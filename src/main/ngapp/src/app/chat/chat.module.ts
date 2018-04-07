@@ -11,6 +11,7 @@ import { OUChatClientConnectorImpl } from '../connectors-gen-1.0-SNAPSHOT/org/wo
 import { TriggerModule } from '../attachment/trigger/trigger.module';
 import { UploaderModule } from '../attachment/uploader/uploader.module';
 import { MessageModule } from '../attachment/message/message.module';
+import { LoginModule } from './login/login.module';
 
 @NgModule({
   imports: [
@@ -23,7 +24,8 @@ import { MessageModule } from '../attachment/message/message.module';
     PipesModule,
     TriggerModule,
     UploaderModule,
-    MessageModule
+    MessageModule,
+    LoginModule
   ],
   declarations: [ChatComponent],
   providers: [

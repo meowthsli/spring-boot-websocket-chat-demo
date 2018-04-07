@@ -130,7 +130,7 @@ export class NbLoginComponent {
       const redirect = result.getRedirect();
       if (redirect) {
         setTimeout(() => {
-          return this.router.navigateByUrl(redirect);
+          return this.router.navigateByUrl(result.getResponse().body.isSupervisor ? redirect : '/chat/operator');
         }, this.redirectDelay);
       }
     });

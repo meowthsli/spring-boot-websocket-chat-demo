@@ -42,12 +42,13 @@ import { ChatModule } from './chat/chat.module';
 import { AppGuardService } from './app.guard.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NbAuthJWTInterceptor } from './auth/services/interceptors/jwt-interceptor';
+import { WelcomeModule } from './welcome/welcome.module';
 
 const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'login'
+    redirectTo: 'welcome'
   },
   { path: 'login', component: LoginComponent, pathMatch: "full" },
   { path: 'ops-chat', component: ChatComponent, pathMatch: "full" },
@@ -82,6 +83,7 @@ const routes: Routes = [
     AdminModule,
     ChatModule,
     OperatorChatModule,
+    WelcomeModule,
 
     NbAuthModule.forRoot({
       forms: {
