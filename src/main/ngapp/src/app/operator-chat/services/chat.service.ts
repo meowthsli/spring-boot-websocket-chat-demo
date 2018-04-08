@@ -15,6 +15,8 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { combineLatest } from 'rxjs/observable/combineLatest';
 import FileTextMessage = Envelope.FileTextMessage;
 import TextMessage = Envelope.TextMessage;
+import { UserStore } from '../models/user.store';
+import { User } from '../models/user.model';
 
 export enum ConnectionStatus {
   DEFAULT = 0,
@@ -32,10 +34,11 @@ export class ChatService {
   private myChats: BehaviorSubject<Queue> = new BehaviorSubject(new Queue({chats: []}));
   private selectedChat: BehaviorSubject<Chat> = new BehaviorSubject(null);
 
-  private operator: Author = new Author({
-    id: '1',
-    operatorId: '1',
-    fullname: 'A A'
+  private users: UserStore = new UserStore();
+
+  private operator: User = new User({
+    login: '1',
+    name: 'A A'
   }); // TODO: Operator
 
   constructor(
@@ -49,7 +52,14 @@ export class ChatService {
   private initialize(): void {
     this.connector.onResult(msg => {
 
-      if(msg.messageAccepted) { // acknowledge of message
+      if (msg['desc']) {
+        const user = msg['desc'];
+        this.users.addUser(new User({
+          login: user.userLogin,
+          name: user.fio,
+          tags: user.tags
+        }));
+      } else if(msg.messageAccepted) { // acknowledge of message
         this.myChats.value.updateMessage(msg.messageAccepted.messageTemporaryId, msg.messageAccepted.messageId, moment(msg.messageAccepted.when))
       } else if(msg.messages) {
 
@@ -59,10 +69,7 @@ export class ChatService {
 
           const message: Message = new Message({
             id: m.id,
-            author: new Author({
-              id: msg.messages.userLogin,
-              fullname: msg.messages.userLogin
-            }),
+            author: this.users.find(msg.messages.userLogin.replace('client:', '')),
             text: m.text,
             datetime: moment(m.dateAt),
             fromClient: m.fromClient,

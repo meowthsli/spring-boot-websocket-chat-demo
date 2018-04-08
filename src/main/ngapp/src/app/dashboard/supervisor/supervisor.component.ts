@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NbAuthService } from '../../auth/services/auth.service';
 
 @Component({
   selector: 'app-supervisor',
@@ -15,13 +14,10 @@ export class SupervisorComponent implements OnInit {
     }
   ];
 
-  constructor(
-    private auth: NbAuthService
-  ) { }
+  constructor() { }
 
   ngOnInit() {
-    debugger;
-    this.auth;
+
   }
 
 }

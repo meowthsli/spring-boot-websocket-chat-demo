@@ -7,11 +7,14 @@
       <div class="left">
         <div class="top">
           <input type="text"
-                 placeholder="Поиск клиента"
+                 placeholder="Фильтр по имени или тегам"
                  [formControl]="freeChatsSearchQuery">
           <a href="javascript:;"
-             class="search"
-             (click)="freeChatsSearchQuery.reset()"></a>
+             class="remove"
+             *ngIf="freeChatsSearchQuery.value"
+             (click)="freeChatsSearchQuery.reset()">
+            <i class="fa fa-remove"></i>
+          </a>
         </div>
 
         <p *ngIf="freeChatsSearchQuery.value && freeChats?.chats.length < 1"
@@ -30,13 +33,19 @@
           <span *ngIf="chat">
             Клиент:
             <span class="name">
-              {{ chat.author.fullname }}
+              {{ chat.author.name }}
             </span>
 
             <button class="button"
                     *ngIf="canReleaseClent(chat)"
                     (click)="onRelease()">Отпустить клиента</button>
 
+
+            <div>
+              <span *ngFor="let tag of chat.author.tags">
+                #{{ tag }}
+              </span>
+            </div>
           </span>
         </div>
 
@@ -48,11 +57,14 @@
             <span>{{ chat.messages[0].datetime.format('dddd, MMMM YYYY') }}</span>
           </div>
           <div class="bubble"
-               [ngClass]="{'you': message.fromClient, 'me': !message.fromClient, 'alpha': !message.id}"
+               [ngClass]="{'you': message.fromClient, 'me': !message.fromClient, 'alpha': !message.id, 'attachment': message.attachmentId}"
                *ngFor="let message of chat.messages">
             <span *ngIf="!message.attachmentId">{{ message.text }}</span>
             <a *ngIf="message.attachmentId"
-               (click)="onAttachmentDownload(message)">{{ message.text }}</a>
+               (click)="onAttachmentDownload(message)">
+              <i class="fa fa-file"></i>
+              {{ message.text }}
+            </a>
             <span class="chat-line-time">{{ message.datetime | date:'HH:mm' }}</span>
           </div>
         </div>

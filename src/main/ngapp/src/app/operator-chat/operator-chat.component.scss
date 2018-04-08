@@ -89,7 +89,7 @@
       }
       input {
         float: left;
-        width: 188px;
+        width: 100%;
         height: 42px;
         padding: 0 15px;
         border: 1px solid $light;
@@ -98,6 +98,18 @@
         @include font();
         &:focus {
           outline: none;
+        }
+      }
+      a.remove {
+        display: block;
+        position: absolute;
+        top: 37px;
+        right: 42px;
+        width: 24px;
+        height: 24px;
+        text-align: center;
+        i {
+
         }
       }
       a.search {
@@ -289,6 +301,13 @@
         }
         &.alpha {
           color: #999999;
+        }
+        &.attachment {
+          padding-bottom: 1em;
+          a {
+            border-bottom: 1px dashed;
+            cursor: pointer;
+          }
         }
       }
       .conversation-start {

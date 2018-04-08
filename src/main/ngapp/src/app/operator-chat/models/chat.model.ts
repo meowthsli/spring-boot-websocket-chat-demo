@@ -1,5 +1,5 @@
 import { Message } from './message.model';
-import { Author } from './author.model';
+import { User } from './user.model';
 import * as moment from 'moment';
 import { Moment } from 'moment';
 
@@ -7,7 +7,7 @@ export interface IChat {
   operatorId: string;
   id: string;
   messages: Message[];
-  author: Author;
+  author: User;
 }
 
 export class Chat {
@@ -15,7 +15,7 @@ export class Chat {
   public readonly id: string = null; // Идентификатор чата
   public operatorId: string = null; // Идентификатор Оператора
   public messages: Message[] = []; // Сообщения
-  public readonly author: Author = null; // Клиент
+  public readonly author: User = null; // Клиент
 
   public newMessagesLength: number = 0; // Количество непрочитанных сообщений
   public lastMessage: Message = null; // Последнее сообщение
@@ -50,10 +50,9 @@ export class Chat {
   public appendMessage(text: string): Chat {
     this.messages.push(new Message({
       text: text,
-      author: new Author({
-        id: '1',
-        operatorId: '2',
-        fullname: 'Оператор'
+      author: new User({
+        login: '1',
+        name: 'Оператор'
       }),
       datetime: moment(),
       fromClient: false,

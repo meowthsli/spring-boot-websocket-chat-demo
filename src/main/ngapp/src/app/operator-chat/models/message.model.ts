@@ -1,10 +1,10 @@
-import { Author } from './author.model';
 import { Moment } from 'moment';
+import { User } from './user.model';
 
 export interface IMessage {
   id?: number;
   tempId?: number;
-  author: Author;
+  author: User;
   text: string;
   datetime: Moment;
   fromClient: boolean;
@@ -15,7 +15,7 @@ export class Message {
 
   public id: number; // Идентификатор Сообщения
   public tempId: number; // Временный Идентификатор Сообщения
-  public author: Author = null; // Автор Сообщения
+  public author: User = null; // Автор Сообщения
   public text: string = ''; // Текст Сообщения
   public datetime: Moment = null; // Время Сообщения
   public fromClient: boolean = false;

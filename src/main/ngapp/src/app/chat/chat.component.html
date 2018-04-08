@@ -18,12 +18,15 @@
             <span>{{ fromNow }}</span>
           </div>
           <div class="bubble"
-               [ngClass]="{'you': !ci.isFromClient, 'me': ci.isFromClient, 'alpha': !ci.wasDelivered()}"
+               [ngClass]="{'you': !ci.isFromClient, 'me': ci.isFromClient, 'alpha': !ci.wasDelivered(), 'attachment': ci.attachmentId}"
                *ngFor="let ci of $history" [class.chat-line-fromclient]="!ci.opId" [class.noack]="ci.id == null || ci.id &lt; 0">
             <span *ngIf="ci.opId" class="chat-line-avatar-op"></span>
             <span *ngIf="!ci.attachmentId">{{ ci.text }}</span>
             <a *ngIf="ci.attachmentId"
-               (click)="onAttachmentDownload(ci)">{{ ci.text }}</a>
+               (click)="onAttachmentDownload(ci)">
+              <i class="fa fa-file"></i>
+              {{ ci.text }}
+            </a>
             <span class="chat-line-time">{{ ci.at | timeformat }}</span>
           </div>
         </div>

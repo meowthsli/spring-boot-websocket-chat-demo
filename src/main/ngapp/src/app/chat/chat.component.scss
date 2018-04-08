@@ -227,6 +227,13 @@
         &.alpha {
           color: #999999;
         }
+        &.attachment {
+          padding-bottom: 1em;
+          a {
+            border-bottom: 1px dashed;
+            cursor: pointer;
+          }
+        }
       }
       .conversation-start {
         position: relative;

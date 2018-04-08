@@ -84,6 +84,7 @@ export class ChatComponent implements OnInit {
         let item = this.$history.find(ci => ci.id == mm.messageTemporaryId);
         if (item) {
           item.id = mm.messageId;
+          item.attachmentId = mm.contentReference;
         }
       } else if (r.messages) {
         // Мерджим сообщения (оставляем уникальные)
@@ -121,11 +122,10 @@ export class ChatComponent implements OnInit {
     this.$connectionPhase = 1; // connecting..
     this.spinner.load();
 
-    let email = `${this.uctx.username}-cli@acme.org`;  // TODO: use actual email
     this.connector.connect(
       environment.wsAddress + "Client",
       this.uctx.apiKey,
-      new Envelope.UserDescription("login1", "fio fio", [])
+      new Envelope.UserDescription(this.uctx.username, this.uctx.name, this.uctx.tags)
     );
   }
 

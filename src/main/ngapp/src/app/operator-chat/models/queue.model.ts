@@ -1,6 +1,6 @@
 import { Chat } from './chat.model';
 import { Message } from './message.model';
-import { Author } from './author.model';
+import { User } from './user.model';
 import { Moment } from 'moment';
 
 export interface IQueue {
@@ -24,7 +24,9 @@ export class Queue {
   public filterChats(query: string): Queue {
     const term: string = (query || '').trim().toLowerCase();
     return new Queue({
-      chats: this.chats.filter(chat => chat.author.fullname.toLowerCase().search(term) > -1)
+      chats: this.chats.filter(chat => [chat.author.name]
+        .concat(chat.author.tags)
+        .some(value => value.toLowerCase().search(term) > -1))
     });
   }
 
@@ -71,15 +73,15 @@ export class Queue {
   public appendMessage(message: Message, clientId: string = null): Queue {
     // TODO: append message
     const chat: Chat = clientId ?
-      this.chats.find(chat => chat.author.id === clientId)
+      this.chats.find(chat => chat.author.login === clientId)
       :
-      this.chats.find(chat => chat.author.id === message.author.id);
+      this.chats.find(chat => chat.author.login === message.author.login);
     if (chat) {
       this.updateChat(chat.addMessage(message));
     } else {
       this.prependChat(new Chat({
         operatorId: null,
-        id: message.author.id,
+        id: message.author.login,
         messages: [message],
         author: message.author
       }));
@@ -90,11 +92,11 @@ export class Queue {
   /**
    * Has Client
    *
-   * @param {Author} author
+   * @param {User} author
    * @returns {boolean}
    */
-  public hasClient(author: Author): boolean {
-    return this.chats.some(chat => chat.author.id === author.id);
+  public hasClient(author: User): boolean {
+    return this.chats.some(chat => chat.author.login === author.login);
   }
 
   /**
