@@ -123,12 +123,18 @@ export class ChatService {
       } else if (msg.fileContent) {
         const data = msg.fileContent.content;
         const filename = msg.fileContent.filename;
-        const element: HTMLElement = document.createElement('a');
-        element.setAttribute('download', filename);
-        element.setAttribute('href', data);
-        element.setAttribute('target', '_blank');
-        element.click();
-        element.remove();
+        if (window.navigator.msSaveOrOpenBlob) {
+          window.navigator.msSaveOrOpenBlob(data, filename);
+        } else if (window['execCommand']) {
+          window.open(data)['execCommand']('SaveAs', false, filename);
+        } else {
+          const element: HTMLElement = document.createElement('a');
+          element.setAttribute('download', filename);
+          element.setAttribute('href', data);
+          element.setAttribute('target', '_blank');
+          element.click();
+          element.remove();
+        }
       }
     });
 
